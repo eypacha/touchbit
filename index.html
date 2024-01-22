@@ -28,12 +28,6 @@
   <script src="js/lzma.js"></script>
   <script src="js/wavmaker.js"></script>
   <style>
-    :root {
-      /* This is a hack just to make the songs button stay on top right
-     and other buttons wrap */
-      --show-songs-width: 7em;
-    }
-
     html,
     body {
       width: 100%;
@@ -125,13 +119,6 @@
       height: 100%;
     }
 
-    #showSongs {
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: var(--show-songs-width);
-    }
-
     #background {
       width: 100%;
       height: 100%;
@@ -153,9 +140,16 @@
       display: block;
     }
 
+    .timer {
+      flex: 1;
+    }
+
     .status {
       color: #0F0;
       display: block;
+      width: 100%;
+      max-width: 100%;
+      text-align: right;
     }
 
     .status.error {
@@ -163,7 +157,11 @@
     }
 
     #controls {
-      margin-right: var(--show-songs-width);
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 1.5em;
+      margin-top: 5px;
+      margin-left: 5px;
     }
 
     #code {
@@ -339,7 +337,7 @@
       select,
       .buttonstyle,
       #showSongs {
-        max-width: 8em;
+        max-width: 6.7em;
       }
 
     }
@@ -352,7 +350,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 5px;
-      padding: 5px;
+      padding: 5px 20px;
     }
 
     .slot {
@@ -423,10 +421,12 @@
 
     #keyboard button{
       width: -webkit-fill-available;
-      border: solid 1px grey;
+      border-color: grey grey #3b3b3b;
       margin: 0;
       height: 60px;
       font-size: 20px;
+      border-style: solid;
+      border-width: 1px 1px 3px;
     }
 
     #keyboard:not(.fn-mode) .layer-2 {
@@ -566,7 +566,7 @@
       <div id="song-list" class="layout-scrollbar"></div>
     </div>
   </div>
-  <button id="showSongs"> ▶ beats</button>
+  <button style="display: none;" id="showSongs"> ▶ beats</button>
   <div id="savedialog">
     <div id="savecontainer">
       <div id="saveform">

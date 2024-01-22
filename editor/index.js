@@ -25,7 +25,6 @@ import {
   makeExposedPromise,
   splitBySections,
   s_beatTypes,
-  s_expressionTypes,
 } from './utils.js';
 
 function $(id) {
@@ -57,7 +56,6 @@ let g_vsaEffect;
 let g_vsaIndex;
 let playing = false;
 let codeElem;
-let helpElem;
 let timeElem;
 let playElem;
 let beatTypeElem;
@@ -75,7 +73,7 @@ const g_slow = false;
 let numberMode = false;
 let fnMode = false;
 
-const stack = ['t','>>','4'];
+const stack = [''];
 
 /*
   ByteBeatNode--->Splitter--->analyser---->merger---->context
@@ -172,15 +170,12 @@ async function main() {
     updateTimeDisplay();
   }
 
-  helpElem = el('a', {
-      href: 'https://github.com/eypacha/touchbit',
-      textContent: '?',
-      target: '_blank',
-      className: 'buttonstyle',
+  timeElem = el('button', {
+    onClick: resetToZero,
+    className: 'timer',
+    innerHTML: '0',
   });
-  controls.appendChild(helpElem);
 
-  timeElem = el('button', {onClick: resetToZero});
   controls.appendChild(timeElem);
 
   function playPause() {
@@ -218,9 +213,7 @@ async function main() {
       if (!isNaN(parseFloat(s)) && isFinite(s)) {
         slotDiv.classList.add('number')
 
-        console.log(s)
         slotDiv.textContent  = slotDiv.textContent.startsWith('0.') ? '.' + slotDiv.textContent.slice(2) : s
-
 
         if (ndx === selectedSlot) {
           const plusOneDiv = document.createElement('div')
@@ -261,7 +254,6 @@ async function main() {
       stackContainer.appendChild(slotDiv)
     })
 
-    console.log(stack.join(' '))
     stackContainer.children[selectedSlot].classList.add('selected')
   }
 
@@ -444,16 +436,6 @@ async function main() {
   });
   controls.appendChild(beatTypeElem);
 
-  expressionTypeElem = addSelection(s_expressionTypes, 0, {
-      onChange(event) {
-        console.log('setExpresion type',event.target.selectedIndex)
-
-        g_byteBeat.setExpressionType(event.target.selectedIndex);
-        setExpressions(g_byteBeat.getExpressions());
-      },
-  });
-  controls.appendChild(expressionTypeElem);
-
   const sampleRates = [8000, 11000, 22000, 32000, 44100, 48000];
   sampleRateElem = addSelection(['8kHz', '11kHz', '22kHz', '32kHz', '44kHz', '48kHz'], 0, {
     onChange(event) {
@@ -543,6 +525,7 @@ async function main() {
         { name: 'simple', visualizer: new CanvasVisualizer(canvas), },
       ];
     }
+    
   }
 
   {
@@ -582,13 +565,12 @@ async function main() {
 
   compileStatusElem = el('button', {
     className: 'status',
-    textContent: '---',
+    textContent: '',
   });
   controls.appendChild(compileStatusElem);
 
   codeElem = $('code');
   codeElem.addEventListener('input', () => {
-    console.log('codeElem', codeElem.value);
     compile(codeElem.value);
   });
 
@@ -654,7 +636,6 @@ async function main() {
   function readURL(hash) {
     const data = Object.fromEntries(new URLSearchParams(hash).entries());
     const t = data.t !== undefined ? parseFloat(data.t) : 1;
-    const e = data.e !== undefined ? parseFloat(data.e) : 0;
     const s = data.s !== undefined ? parseFloat(data.s) : 8000;
     let rateNdx = sampleRates.indexOf(s);
     if (rateNdx < 0) {
@@ -664,9 +645,7 @@ async function main() {
     }
     setSelectOption(sampleRateElem, rateNdx);
     setSelectOption(beatTypeElem, t);
-    setSelectOption(expressionTypeElem, e);
     g_byteBeat.setType(parseInt(t));
-    g_byteBeat.setExpressionType(parseInt(e));
     g_byteBeat.setDesiredSampleRate(parseInt(s));
     if (data.v) {
       setVisualizerByName(data.v);
@@ -829,7 +808,7 @@ async function setExpressions(expressions, resetToZero) {
     error = e;
   }
 
-  compileStatusElem.textContent = error ? error : '*';
+  compileStatusElem.textContent = error ? error : '♥';
   compileStatusElem.classList.toggle('error', error);
   setURL();
 }
