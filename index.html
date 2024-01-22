@@ -1,13 +1,589 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<meta charset="utf-8">
-<title>HTML5 Bytebeat - About</title>
-<script>
-window.location = "http://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html";
-</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#000000">
+
+  <meta property="og:title" content="HTML5ByteBeat" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.png" />
+  <meta property="og:description" content="music by math" />
+  <meta property="og:url" content="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@greggman">
+  <meta name="twitter:creator" content="@greggman">
+  <meta name="twitter:domain" content="greggman.com">
+  <meta name="twitter:title" content="HTML5ByteBeat">
+  <meta name="twitter:url" content="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html">
+  <meta name="twitter:description" content="music by math">
+  <meta name="twitter:image:src" content="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.png">
+
+  <link href="icon.png" rel="shortcut icon" type="image/png">
+  <link href="js/scrollbars.css" rel="stylesheet">
+
+  <title>Touchbit</title>
+  <script src="js/lzma.js"></script>
+  <script src="js/wavmaker.js"></script>
+  <style>
+    :root {
+      /* This is a hack just to make the songs button stay on top right
+     and other buttons wrap */
+      --show-songs-width: 7em;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      font-family: Monospace;
+      background-color: black;
+      color: white;
+      overflow: hidden;
+    }
+
+    a:link,
+    a:visited,
+    a:hover,
+    a:active {
+      color: white;
+      text-decoration: none;
+    }
+
+    details>* {
+      margin-left: 0.5em;
+    }
+
+    summary:hover {
+      color: red;
+    }
+
+    .category summary {
+      cursor: pointer;
+      background-color: rgb(0, 0, 200, 0.4);
+    }
+
+    .sub-category summary {
+      cursor: pointer;
+      background-color: rgb(0, 0, 250, 0.4);
+    }
+
+    #split {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      z-index: 2;
+    }
+
+    #songs {
+      flex: 0 0 auto;
+      width: 300px;
+      max-width: 35%;
+      height: 100%;
+      word-break: break-word;
+      background-color: rgba(64, 64, 64, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #song-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    #songs a {
+      list-style: circle outside;
+      margin-left: 0.5em;
+      margin-bottom: 0.5em;
+      display: list-item;
+      max-height: 3.5em;
+      overflow-y: hidden;
+    }
+
+    #search:focus,
+    summary:focus,
+    #songs a:focus {
+      outline: 1px solid rgba(100, 50, 255, 1);
+    }
+
+    #songs .odd {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    #songs a:hover {
+      color: magenta;
+    }
+
+    #main {
+      position: relative;
+      flex: 1 1 auto;
+      width: 100%;
+      height: 100%;
+    }
+
+    #showSongs {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: var(--show-songs-width);
+    }
+
+    #background {
+      width: 100%;
+      height: 100%;
+    }
+
+    #foreground {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #visualization {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .status {
+      color: #0F0;
+      display: block;
+    }
+
+    .status.error {
+      color: #F00;
+    }
+
+    #controls {
+      margin-right: var(--show-songs-width);
+    }
+
+    #code {
+
+      display: none;
+      min-height: 0;
+      padding: 12px;
+
+      border: none;
+      border-radius: 5px;
+
+      color: #ffffff;
+      background-color: transparent;
+      font-family: Monospace;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: rgba(0, 0, 0, 1) 0px 1px 2px;
+
+      white-space: pre-wrap;
+    }
+
+    #code:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    textarea:focus {
+      outline: 0;
+      /* this removes browser-side outline */
+    }
+
+    button,
+    select,
+    .buttonstyle,
+    #showSongs {
+      padding: 8px 12px 8px 12px;
+      white-space: pre;
+      border: none;
+      border-radius: 5px;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      color: #aaa;
+      background-color: rgba(0, 0, 0, 0.5);
+      font-family: Monospace;
+      font-size: 12px;
+      height: 32px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover,
+    select:hover,
+    .buttonstyle:select {
+      opacity: 1;
+    }
+
+    option {
+      color: #ffffff;
+      background-color: #000000;
+    }
+
+    .play:before {
+      content: " play ▶";
+    }
+
+    .pause:before {
+      content: "pause ■";
+    }
+
+    #savedialog {
+      display: none;
+      z-index: 10;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    #savecontainer {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    #screenshot {
+      max-width: 100%;
+    }
+
+    #saveform {
+      margin: auto;
+      width: 400px;
+      max-width: calc(100vw - 80px);
+      background-color: #2e2e2e;
+      padding: 20px;
+      border-radius: 3px;
+    }
+
+    #saveform .settings {
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+
+    input {
+      background: #444;
+      color: white;
+      border: none;
+    }
+
+    #search {
+      margin-top: 32px;
+    }
+
+    .highlight {
+      color: red !important;
+    }
+
+    .hide {
+      display: none !important;
+    }
+
+    #loadingContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0px;
+      top: 0px;
+      background-color: rgba(0, 0, 0, 1);
+    }
+
+    #loadingContainer>* {
+      color: white;
+      font-size: 20px;
+      padding: 0.2em;
+      border-radius: 0.2em;
+    }
+
+    #debug {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      padding: 0.5em;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: #0F0
+    }
+
+    @media screen and (max-width: 700px) {
+
+      #code {
+        font-size: 16px;
+      }
+
+      #songs a {
+        margin-left: 0.5em;
+      }
+
+      details>* {
+        margin-left: 0.25em;
+      }
+
+      .play:before {
+        content: "▶";
+      }
+
+      .pause:before {
+        content: "■";
+      }
+
+      button,
+      select,
+      .buttonstyle,
+      #showSongs {
+        max-width: 8em;
+      }
+
+    }
+
+    .stack-container {
+      flex: 1;
+    }
+
+    #stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 5px;
+    }
+
+    .slot {
+      position: relative;
+      text-align: center;
+      border-bottom: solid 1px transparent;
+      border-top: solid 1px transparent;
+      height: 30px;
+      min-width: 25px;
+      line-height: 30px;
+      margin-bottom: 10px;
+      transition: all 200ms;
+      font-weight: bold;
+      font-size: 24px;
+      cursor: pointer;  
+    }
+
+    .slot.number {
+      color: yellow;
+    }
+
+    .slot .modifier {
+      position: absolute;
+      width: 100%;
+      font-size: .6em;
+      color: grey;
+    }
+
+    .slot .modifier.plus-one {
+      top: -30px;
+    }
+
+    .slot.t {
+      color: cyan;
+    }
+
+    .slot.special {
+      color: #c452c1;
+    }
+
+    .slot.selected {
+      border-bottom-color: rgba(128, 128, 128, .4);
+    }
+
+    .slot.number.selected {
+      border-top-color: rgba(128, 128, 128, .4);
+    }
+
+    #keyboard {
+      display: flex;
+      gap: 5px;
+      padding: 5px;
+    }
+
+    #keyboard .column {
+      flex: 1;
+    }
+
+    #keyboard .row {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    #keyboard .row:not(:last-child) {
+      margin-bottom: 5px;
+    }
+
+    #keyboard button{
+      width: -webkit-fill-available;
+      border: solid 1px grey;
+      margin: 0;
+      height: 60px;
+      font-size: 20px;
+    }
+
+    #keyboard:not(.fn-mode) .layer-2 {
+      display: none;
+    }
+
+    #keyboard.fn-mode .layer-1 {
+      display: none;
+    }
+
+    #keyboard.fn-mode #fnMode {
+      background: rgba(212, 212, 212, 0.2);
+      border-color: #c452c1 !important;
+    }
+
+    .button.number {
+      color: yellow;
+    }
+
+    .button.symbol {
+      color: white;
+    }
+
+    .button.t {
+      color: cyan;
+    }
+
+    .button.layer-2 {
+      border-color: #c452c1 !important;
+    }
+    
+    .button.small {
+      font-variant: all-petite-caps;
+    }
+
+    .button.modifier {
+        color: yellow;
+        font-variant: all-petite-caps;
+    }
+  </style>
 </head>
+
 <body>
-<a href="http://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html">HTML5 ByteBeat</a>
+  <div id="split">
+    <div id="main">
+      <div id="background">
+        <canvas id="visualization"></canvas>
+      </div>
+      <div id="foreground">
+        <div id="controls"></div>
+        <textarea id="code" class="layout-scrollbar" autofocus autocomplete="off"></textarea>
+        <div class="stack-container">
+          <div id="stack"></div>
+        </div>
+        <pre id="debug" style="display: none;"></pre>
+        <div id="keyboard">
+          <div class="column">
+            <div class="row">
+              <button class="button command" id="selectPrev">←</button>
+              <button class="button command" id="selectNext">→</button>
+            </div>
+            <div class="row">
+              <button class="button number layer-1" data-insert="7">7</button>
+              <button class="button modifier layer-2" data-modifier="+1">+1</button>
+              <button class="button number layer-1" data-insert="8">8</button>
+              <button class="button modifier layer-2" data-modifier="+5">+5</button>
+              <button class="button number layer-1" data-insert="9">9</button>
+              <button class="button modifier layer-2" data-modifier="+10">+10</button>
+            </div>
+            <div class="row">
+              <button class="button number layer-1" data-insert="4">4</button>
+              <button class="button modifier layer-2" data-modifier="-1">-1</button>
+              <button class="button number layer-1" data-insert="5">5</button>
+              <button class="button modifier layer-2" data-modifier="-5">-5</button>
+              <button class="button number layer-1" data-insert="6">6</button>
+              <button class="button modifier layer-2" data-modifier="-10">-10</button>
+            </div>
+            <div class="row">
+              <button class="button number layer-1" data-insert="1">1</button>
+              <button class="button modifier layer-2" data-modifier="+0.1">+0.1</button>
+              <button class="button number layer-1" data-insert="2">2</button>
+              <button class="button modifier layer-2" data-modifier="+0.5">+0.5</button>
+              <button class="button number layer-1" data-insert="3">3</button>
+              <button class="button modifier layer-2" data-modifier="*2">*2</button>
+            </div>
+            <div class="row">
+              <button class="button number layer-1" data-insert="0">0</button>
+              <button class="button modifier layer-2" data-modifier="-0.1">-0.1</button>
+              <button class="button number layer-1" data-insert=".">.</button>
+              <button class="button modifier layer-2" data-modifier="-0.5">-0.5</button>
+              <button class="button symbol t layer-1" data-insert="t">t</button>
+              <button class="button modifier layer-2" data-modifier="*0.5">/2</button>
+            </div>
+          </div>
+          <div class="column">
+            <div class="row">
+              <button class="button command" id="insertSlot">INS</button>
+              <button class="button command" id="deleteSlot">DEL</button>
+            </div>
+            <div class="row">
+              <button class="button symbol layer-1" data-insert="*">*</button>
+              <button class="button symbol layer-2" data-insert="(">(</button>
+              <button class="button symbol layer-1" data-insert="/">/</button>
+              <button class="button symbol layer-2" data-insert=")">)</button>
+              <button class="button symbol layer-1" data-insert="&">&</button>
+              <button class="button symbol layer-2" data-insert="&&">&&</button>
+            </div>
+            <div class="row">
+              <button class="button symbol layer-1" data-insert="+">+</button>
+              <button class="button symbol layer-2" data-insert="<">&lt;</button>
+              <button class="button symbol layer-1" data-insert="-">-</button>
+              <button class="button symbol layer-2" data-insert=">">&gt;</button>
+              <button class="button symbol layer-1"  data-insert="|">&vert;</button>
+              <button class="button symbol layer-2"  data-insert="||">&vert;&vert;</button>
+            </div>
+            <div class="row">
+              <button class="button symbol layer-1" data-insert="%">%</button>
+              <button class="button symbol layer-2 small" data-insert="drop">drop</button>
+              <button class="button symbol layer-1" data-insert="<<">&laquo;</button>
+              <button class="button symbol layer-2 small" data-insert="dup">dup</button>
+              <button class="button symbol layer-1" data-insert=">>">&raquo;</button>
+              <button class="button symbol layer-2 small" data-insert="swap">swap</button>
+            </div>
+            <div class="row">
+              <button class="button symbol layer-1" data-insert="^">^</button>
+              <button class="button symbol layer-2 small" data-insert="pick">pick</button>
+              <button class="button symbol layer-1" data-insert="~">~</button>
+              <button class="button symbol layer-2 small" data-insert="put">put</button>
+              <button class="button command" id="fnMode">FN</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display: none;" id="songs">
+      <input id="search" type="text" placeholder="Search" autocomplete="off" />
+      <div id="song-list" class="layout-scrollbar"></div>
+    </div>
+  </div>
+  <button id="showSongs"> ▶ beats</button>
+  <div id="savedialog">
+    <div id="savecontainer">
+      <div id="saveform">
+        <div>
+          <img id="screenshot" />
+        </div>
+        <div class="settings">
+          <div> seconds: <input id="seconds" type="number" value="30" min="0" max="10000"></div>
+        </div>
+        <div><button id="save">save</button><button id="cancel">cancel</button></div>
+      </div>
+    </div>
+  </div>
+  <div id="loadingContainer">
+    <div>loading...</div>
+  </div>
+ <script type="module" src="editor/index.js"></script>
 </body>
+
 </html>

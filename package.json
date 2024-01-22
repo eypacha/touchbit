@@ -40,5 +40,8 @@
     "open": "^8.4.1",
     "rollup": "^2.79.0",
     "servez-lib": "^2.6.0"
+  },
+  "dependencies": {
+    "simple-keyboard": "^3.7.45"
   }
 }
