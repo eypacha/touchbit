@@ -91,18 +91,22 @@ Some demos
 Click any expression for listen and edit:
 
 [`t 10 >> 42 & t *`](https://dev.eypacha.com/touchbit/#t=0&s=8000&bb=5d000001001100000000000000003a08022320c71e600da2fd801a00aff0d5ef0fcd7fffe72aa000) 
+
 *"the 42 melody", separately discovery by several people on irc etc*
 
 [`t 5 * t 7 >> & t 3 * t 10 >> & |
 `](https://dev.eypacha.com/touchbit/#t=0&s=8000&bb=5d000001002000000000000000003a0802a21110374e9e47df2702e314befe34e21e70386123d52ffffffd6bc000)
+
 *from viznut [the 3rd iteration](http://youtu.be/tCRPUv8V22o) video*
 
 
 [`t 34 ^ t 67 | t 5 >> & | t 15 >> 9 & 1 + * 2 * 0 t 19 >> 3 & 8 SWAP - t SWAP >> - 255 & + 2 / DUP`](https://dev.eypacha.com/touchbit/#t=0&s=8000&bb=5d000001006200000000000000003a0802636dade27e1a010d38eb504b71364ab686ec86e8789c78ea29c1b3e6c4c651b5b28f1c7ce0a3a02070358da719c86f64dda557d457e9d019ce0122a7b912b60b3da4920b255557ffe248e000)
+
 *rhytimgrind from Glitch Machine*
 
 [`t 10 >> 16 % 1 + / 10 % t * t 16 >> 3 % 1 + * DUP 9 PICK | t 5 >> t 7 >> - | + t 2 >> |
 `](https://dev.eypacha.com/touchbit/#t=0&s=8000&bb=5d00000100630000000000000000188c2c6c3495df81c04a46ed1c57f4e6ddbed5682062f4663f9cbad77277ac9082192cd83e2434de4ec6717b4668b514b3e3a2dd9baba8b5c621fab79538faaa89791c117d3072a1d98cb73ffde4b300)
+
 *quiddit from Glitch Machine*
 
 For more info
