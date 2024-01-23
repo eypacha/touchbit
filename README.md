@@ -98,8 +98,8 @@ Check out <http://canonical.org/~kragen/bytebeat/> and be sure follow the many l
 Special thanks to:
 ------------------
 
-* [Greggman](https://github.com/greggman) for build all the real thing.
-* Gabriel Vinazza [GLSL Sandbox](https://github.com/gabochi) the real
+* [Greggman](https://github.com/greggman) for build all the real thing. This is only makeup.
+* [Gabriel Vinazza](https://github.com/gabochi), friend and teacher.
 * All the people making awesome bytebeats!
 
 # License
