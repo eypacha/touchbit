@@ -1,0 +1,431 @@
+@charset "UTF-8";
+* {
+  -webkit-user-select: none;
+  /* Safari */
+  /* IE 10 and IE 11 */
+  -moz-user-select: none;
+       user-select: none;
+  /* Standard syntax */
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-family: monospace;
+  background-color: black;
+  color: white;
+  overflow: hidden;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: white;
+  text-decoration: none;
+}
+
+details > * {
+  margin-left: 0.5em;
+}
+
+summary:hover {
+  color: red;
+}
+
+.category summary {
+  cursor: pointer;
+  background-color: rgba(0, 0, 200, 0.4);
+}
+
+.sub-category summary {
+  cursor: pointer;
+  background-color: rgba(0, 0, 250, 0.4);
+}
+
+#split {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 2;
+}
+
+#songs {
+  flex: 0 0 auto;
+  width: 300px;
+  max-width: 35%;
+  height: 100%;
+  word-break: break-word;
+  background-color: rgba(64, 64, 64, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+#song-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+#songs a {
+  list-style: circle outside;
+  margin-left: 0.5em;
+  margin-bottom: 0.5em;
+  display: list-item;
+  max-height: 3.5em;
+  overflow-y: hidden;
+}
+
+#search:focus,
+summary:focus,
+#songs a:focus {
+  outline: 1px solid rgb(100, 50, 255);
+}
+
+#songs .odd {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+#songs a:hover {
+  color: magenta;
+}
+
+#main {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+}
+
+#foreground {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.timer {
+  flex: 1;
+}
+
+.byte-type,
+.visualizer-type {
+  display: none;
+}
+
+.status {
+  color: #0F0;
+  position: absolute;
+  top: 0;
+  left: -5px;
+  width: 100%;
+  max-width: 100%;
+  text-align: right;
+  pointer-events: none;
+}
+
+.number-mode {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  pointer-events: none;
+}
+
+.status.error {
+  color: #F00;
+}
+
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+textarea:focus {
+  outline: 0;
+  /* this removes browser-side outline */
+}
+
+button,
+select,
+.buttonstyle {
+  padding: 8px 12px 8px 12px;
+  white-space: pre;
+  border: none;
+  border-radius: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  color: #aaa;
+  background-color: rgba(0, 0, 0, 0.5);
+  font-family: monospace;
+  font-size: 12px;
+  height: 32px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button,
+select,
+.buttonstyle,
+button:hover,
+select:hover,
+.buttonstyle:select {
+  opacity: 1;
+}
+
+option {
+  color: #ffffff;
+  background-color: #000000;
+}
+
+.play:before {
+  content: " play ▶";
+}
+
+.pause:before {
+  content: "pause ■";
+}
+
+#savedialog {
+  display: none;
+  z-index: 10;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+#savecontainer {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#saveform {
+  margin: auto;
+  width: 400px;
+  max-width: calc(100vw - 80px);
+  background-color: #2e2e2e;
+  padding: 20px;
+  border-radius: 3px;
+}
+
+#saveform .settings {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+input {
+  background: #444;
+  color: white;
+  border: none;
+}
+
+.highlight {
+  color: red !important;
+}
+
+.hide {
+  display: none !important;
+}
+
+#loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  background-color: rgb(0, 0, 0);
+}
+#loadingContainer > * {
+  color: white;
+  font-size: 20px;
+  padding: 0.2em;
+  border-radius: 0.2em;
+}
+
+@media screen and (max-width: 700px) {
+  .play:before {
+    content: "▶";
+  }
+  .pause:before {
+    content: "■";
+  }
+  button,
+  select,
+  .buttonstyle {
+    max-width: 6.7em;
+  }
+}
+.stack-container {
+  flex: 1;
+  border-top: solid 1px #919191;
+  border-bottom: solid 1px #919191;
+  overflow-y: auto;
+  padding-top: 1.5em;
+}
+.stack-container::-webkit-scrollbar {
+  width: 8px;
+}
+.stack-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+}
+.stack-container::-webkit-scrollbar-thumb:active {
+  background-color: #999999;
+}
+.stack-container::-webkit-scrollbar-thumb:hover {
+  background: #b3b3b3;
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.8);
+}
+.stack-container::-webkit-scrollbar-track {
+  background: rgba(225, 225, 225, 0.1647058824);
+}
+.stack-container::-webkit-scrollbar-track:hover, .stack-container::-webkit-scrollbar-track:active {
+  background: rgba(225, 225, 225, 0.1647058824);
+}
+
+#stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px 10px;
+}
+
+.slot {
+  position: relative;
+  text-align: center;
+  border-style: solid;
+  border-width: 1px;
+  border-color: transparent;
+  border-bottom-color: #525050;
+  height: 28px;
+  min-width: 20px;
+  line-height: 28px;
+  margin-bottom: 10px;
+  transition: all 200ms;
+  font-weight: bold;
+  font-size: 22px;
+  padding-inline: 2px;
+  cursor: pointer;
+}
+.slot.number {
+  color: yellow;
+}
+.slot.number.selected {
+  border-top-color: rgba(128, 128, 128, 0.4);
+}
+.slot.t {
+  color: cyan;
+}
+.slot.special {
+  color: #c452c1;
+}
+.slot.selected {
+  border-color: white;
+  border-inline: solid 1px;
+}
+.slot .modifier {
+  z-index: 9;
+  position: absolute;
+  width: 24px;
+  display: block;
+  font-size: 0.7em;
+  color: grey;
+  left: 50%;
+  background: rgba(0, 0, 0, 0.7882352941);
+  margin-left: -12px;
+}
+.slot .modifier.plus-one {
+  top: -29px;
+}
+.slot .modifier.minus-one {
+  margin-top: 1px;
+}
+
+.number-mode-on .slot.number.selected {
+  border-right: 1px solid transparent;
+  /* Borde derecho inicial */
+  animation: blinkNumberMode 0.5s infinite;
+}
+
+@keyframes blinkNumberMode {
+  0% {
+    border-right: 1px solid transparent;
+    /* Borde derecho transparente al inicio */
+  }
+  50% {
+    border-right: 1px solid yellow;
+    /* Borde derecho de color (ajusta según lo que desees) a la mitad de la animación */
+  }
+  100% {
+    border-right: 1px solid transparent;
+    /* Borde derecho transparente al final */
+  }
+}
+#keyboard {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+#keyboard .column {
+  flex: 1;
+}
+#keyboard .row {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+}
+#keyboard .row:not(:last-child) {
+  margin-bottom: 5px;
+}
+#keyboard button {
+  width: -webkit-fill-available;
+  margin: 0;
+  height: 50px;
+  font-size: 17px;
+  border-style: solid;
+  border-width: 1px 1px 3px;
+  flex: 1;
+  padding: 0;
+}
+#keyboard button.number {
+  color: yellow;
+}
+#keyboard button.magenta {
+  border-color: #c452c1 !important;
+}
+#keyboard button.symbol {
+  color: white;
+}
+#keyboard button.t {
+  color: cyan;
+}
+#keyboard button.small {
+  font-size: 13px !important;
+}
+#keyboard button.modifier {
+  color: yellow;
+  font-variant: all-petite-caps;
+}
+#keyboard:not(.fn-mode) .layer-2 {
+  display: none;
+}
+#keyboard.fn-mode .layer-1 {
+  display: none;
+}
+#keyboard.fn-mode #fnMode {
+  color: white;
+}/*# sourceMappingURL=main.css.map */

@@ -1,16 +1,12 @@
-export const s_beatTypes = ['bytebeat', 'floatbeat', 'signed bytebeat'];
-export function typeParamToTypeName(s) {
-  return s_beatTypes[parseInt(s)];
-}
+export const s_beatTypes = ['bytebeat', 'floatbeat', 'signed bytebeat']
+export const typeParamToTypeName = s => s_beatTypes[parseInt(s)]
 
-export const s_expressionTypes = ['infix', 'postfix(rpn)', 'glitch', 'function'];
-export function expressionTypeParamToExpressionName(s) {
-  return s_expressionTypes[parseInt(s)];
-}
+export const s_expressionTypes = ['infix', 'postfix(rpn)', 'glitch', 'function']
+export const expressionTypeParamToExpressionName = s => s_expressionTypes[parseInt(s)]
 
 export function convertHexToBytes(text) {
   const array = [];
-  for (let i = 0; i < text.length; i += 2) {
+  for (let i = 0; i < text.length; i += 2) {1
     const tmpHex = text.substring(i, i + 2);
     array.push(parseInt(tmpHex, 16));
   }
