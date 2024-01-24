@@ -106,14 +106,6 @@ async function main() {
     updateTimeDisplay();
   }
 
-  timeElem = el('button', {
-    onClick: resetToZero,
-    className: 'timer',
-    innerHTML: '0',
-  });
-
-  controls.appendChild(timeElem);
-
   function playPause() {
     if (!playing) {
       playElem.classList.remove('play');
@@ -127,7 +119,17 @@ async function main() {
     }
   }
   playElem = el('button', { className: 'play', onClick: playPause });
+
   controls.appendChild(playElem);
+  
+  timeElem = el('button', {
+    onClick: resetToZero,
+    className: 'timer',
+    innerHTML: '0',
+  });
+
+  controls.appendChild(timeElem);
+
   g_byteBeat.setExpressionType(1);
   // Stack
   
