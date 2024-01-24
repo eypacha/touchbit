@@ -156,11 +156,11 @@ async function main() {
                                   : slotDiv.textContent;
 
         if (ndx === selectedSlot) {
-          const plusOneDiv = document.createElement('div')
+          const plusOneDiv = document.createElement('button')
           plusOneDiv.className = 'modifier plus-one'
           plusOneDiv.textContent = '+1'
   
-          const minusOneDiv = document.createElement('div')
+          const minusOneDiv = document.createElement('button')
           minusOneDiv.className = 'modifier minus-one'
           minusOneDiv.textContent = '-1'
 
@@ -177,10 +177,10 @@ async function main() {
         }
 
       }
-xº
+
       if (s === "t") slotDiv.classList.add('t')
 
-      if (['drop','dup','swap','pick','put'].includes(s.toLowerCase())) slotDiv.classList.add('special')
+      if (['drop','dup','swap','pick','put'].includes(slotDiv.textContent.toLocaleLowerCase())) slotDiv.classList.add('special')
 
       if(s === "<<") slotDiv.textContent = "«"
       if(s === ">>") slotDiv.textContent = "»"
