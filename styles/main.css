@@ -346,12 +346,19 @@ input {
   left: 50%;
   background: rgba(0, 0, 0, 0.7882352941);
   margin-left: -12px;
+  padding: 0;
 }
 .slot .modifier.plus-one {
   top: -29px;
 }
+.slot .modifier.plus-one:active {
+  background: rgba(255, 255, 255, 0.2);
+}
 .slot .modifier.minus-one {
   margin-top: 1px;
+}
+.slot .modifier.minus-one:active {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .number-mode-on .slot.number.selected {
@@ -404,14 +411,26 @@ input {
 #keyboard button.number {
   color: yellow;
 }
+#keyboard button.number:active {
+  background: rgba(255, 255, 0, 0.5);
+}
 #keyboard button.magenta {
   border-color: #c452c1 !important;
+}
+#keyboard button.magenta:active {
+  background: rgba(196, 82, 193, 0.5);
 }
 #keyboard button.symbol {
   color: white;
 }
+#keyboard button.symbol:active {
+  background: rgba(255, 255, 255, 0.5);
+}
 #keyboard button.t {
   color: cyan;
+}
+#keyboard button.t:active {
+  background: rgba(0, 255, 255, 0.5);
 }
 #keyboard button.small {
   font-size: 13px !important;
@@ -419,6 +438,9 @@ input {
 #keyboard button.modifier {
   color: yellow;
   font-variant: all-petite-caps;
+}
+#keyboard button.modifier:active {
+  background: rgba(255, 255, 0, 0.5);
 }
 #keyboard:not(.fn-mode) .layer-2 {
   display: none;

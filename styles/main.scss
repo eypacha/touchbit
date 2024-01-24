@@ -1,3 +1,8 @@
+$white: white;
+$magenta: #c452c1;
+$yellow: yellow;
+$cyan: cyan;
+
 * {
   -webkit-user-select: none;
   /* Safari */
@@ -336,7 +341,7 @@ input {
   cursor: pointer;
 
   &.number {
-    color: yellow;
+    color: $yellow;
 
     &.selected {
       border-top-color: rgba(128, 128, 128, .4);
@@ -348,7 +353,7 @@ input {
   }
 
   &.special {
-    color: #c452c1;
+    color: $magenta;
   }
 
   &.selected {
@@ -366,13 +371,23 @@ input {
     left: 50%;
     background: #000000c9;
     margin-left: -12px;
+    padding: 0;
 
     &.plus-one {
       top: -29px;
+
+      &:active {
+        background: rgba($white, .2);
+      }
+      
     }
 
     &.minus-one {
       margin-top: 1px;
+
+      &:active {
+        background: rgba($white, .2);
+      }
     }
   }
 }
@@ -390,7 +405,7 @@ input {
   }
 
   50% {
-    border-right: 1px solid yellow;
+    border-right: 1px solid $yellow;
     /* Borde derecho de color (ajusta según lo que desees) a la mitad de la animación */
   }
 
@@ -431,19 +446,35 @@ input {
     padding: 0;
 
     &.number {
-      color: yellow;
+      color: $yellow;
+
+      &:active {
+        background: rgba($yellow,.5);
+      }
     }
 
     &.magenta {
-      border-color: #c452c1 !important;
+      border-color: $magenta !important;
+
+      &:active {
+        background: rgba($magenta,.5);
+      }
     }
 
     &.symbol {
-      color: white;
+      color: $white;
+
+      &:active {
+        background: rgba($white,.5);
+      }
     }
 
     &.t {
-      color: cyan;
+      color: $cyan;
+
+      &:active {
+        background: rgba($cyan,.5);
+      }
     }
 
     &.small {
@@ -451,8 +482,12 @@ input {
     }
 
     &.modifier {
-      color: yellow;
+      color: $yellow;
       font-variant: all-petite-caps;
+
+      &:active {
+        background: rgba($yellow,.5);
+      }
     }
   }
 
