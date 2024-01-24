@@ -317,7 +317,6 @@ input {
   transition: all 200ms;
   font-weight: bold;
   font-size: 22px;
-  padding-inline: 2px;
   cursor: pointer;
 }
 .slot.number {
