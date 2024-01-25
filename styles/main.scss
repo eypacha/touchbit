@@ -282,10 +282,10 @@ input {
 
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 550px) {
   #keyboard {
     width: -webkit-fill-available;
-    max-width: 600px;
+    max-width: 550px;
     margin-inline: auto;
   }
 }
