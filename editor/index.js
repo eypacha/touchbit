@@ -39,6 +39,8 @@ let numberMode = false;
 let holdMode = false;
 let fnMode = false;
 let stack = [''];
+let undoStack = [];
+let redoStack = [];
 
 function connectFor2Channels() {
   g_byteBeat.disconnect();
@@ -264,6 +266,7 @@ async function main() {
 
       const newSymbol = this.getAttribute('data-insert')
       stack[selectedSlot] = newSymbol
+      saveState()
       selectNext()
 
     })
@@ -283,11 +286,13 @@ async function main() {
       ) {
         // Si es un número, agrega el nuevo número a continuación del existente en el slot
         stack[selectedSlot] += newNumber
+        
       } else {
         // Si no es un número, reemplaza el contenido del slot con el nuevo número
         stack[selectedSlot] = newNumber
       }
 
+      saveState()
       changeNumberMode(true)
       
       renderStack()
@@ -329,6 +334,7 @@ async function main() {
       }
       
       stack[selectedSlot] = evaluated
+      saveState()
       changeNumberMode(true)
       renderStack()
 
@@ -342,6 +348,7 @@ async function main() {
     // Verifica si el valor actual es un número
     if (!isNaN(currentValue) && isFinite(currentValue)) {
       stack[index] = (currentValue + increment).toString();
+      saveState()
       renderStack();
     }
   }
@@ -351,7 +358,10 @@ async function main() {
   deleteButton.addEventListener('click', function() {
 
 
-    if (stack.length == 1) stack[0] = ''
+    if (stack.length == 1) {
+      stack[0] = ''
+      saveState()
+    }
     if (stack.length > 1) {
  
       stack.splice(selectedSlot, 1) 
@@ -367,6 +377,7 @@ async function main() {
 
   insertButton.addEventListener('click', function() {
     stack.splice(selectedSlot, 0, ''); // Inserta un elemento vacío en el slot seleccionado
+    saveState()
     changeNumberMode(false)
     renderStack();
   });
@@ -392,6 +403,35 @@ async function main() {
     if(!holdMode) compile(stack.join(' '))
 
   })
+
+  const undoButton = $('undo');
+  undoButton.addEventListener('click', function() {
+
+    if (undoStack.length > 0) {
+      redoStack.push({ stack: [...stack], selectedSlot });
+      const prevState = undoStack.pop();
+      stack = [...prevState.stack];
+      selectedSlot = prevState.selectedSlot;
+      renderStack();
+    }
+
+  })
+
+  const redoButton = $('redo');
+  redoButton.addEventListener('click', function() {
+    if (redoStack.length > 0) {
+      undoStack.push({ stack: [...stack], selectedSlot });
+      const nextState = redoStack.pop();
+      stack = [...nextState.stack];
+      selectedSlot = nextState.selectedSlot;
+      renderStack();
+    }
+  })
+
+  function saveState(){
+    redoStack = [];
+    undoStack.push({ stack: [...stack], selectedSlot });
+  }
 
   function addOption(textContent, selected) {
       return el('option', {
@@ -447,7 +487,11 @@ async function main() {
     readURL(hash);
   });
 
-  if (window.location.hash) readURL(window.location.hash.substr(1))
+  if (window.location.hash) {
+    readURL(window.location.hash.substr(1))
+  } else {
+    saveState()
+  }
 
   function render() {
     requestAnimationFrame(render)
@@ -481,6 +525,7 @@ async function main() {
 
         stack = [...text.split(' ')]
         selectedSlot = stack.length - 1
+        saveState()
         renderStack()
         
       },
