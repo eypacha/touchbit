@@ -282,6 +282,13 @@ input {
 
 }
 
+@media screen and (min-width: 600px) {
+  #keyboard {
+    width: -webkit-fill-available;
+    max-width: 600px;
+    margin-inline: auto;
+  }
+}
 .stack-container {
   flex: 1;
   border-top: solid 1px #919191;
@@ -438,12 +445,13 @@ input {
   button {
     width: -webkit-fill-available;
     margin: 0;
-    height: 50px;
+    height: 40px;
     font-size: 17px;
     border-style: solid;
     border-width: 1px 1px 3px;
     flex: 1;
     padding: 0;
+    transitioN: all 100ms;
 
     &.number {
       color: $yellow;
@@ -455,6 +463,7 @@ input {
 
     &.magenta {
       border-color: $magenta !important;
+      font-size: 15px;
 
       &:active {
         background: rgba($magenta,.5);
@@ -505,6 +514,13 @@ input {
       color: white;
     }
 
+  }
+
+  #holdMode {
+    &.active {
+      color: $white;
+      background: rgba($white, .3)
+    }
   }
 
 }

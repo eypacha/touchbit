@@ -36,6 +36,7 @@ let controls;
 let doNotSetURL = true;
 let selectedSlot = 0;
 let numberMode = false;
+let holdMode = false;
 let fnMode = false;
 let stack = [''];
 
@@ -381,6 +382,17 @@ async function main() {
 
   })
 
+  const holdModeButton = $('holdMode');
+
+  holdModeButton.addEventListener('click', function() {
+
+    holdMode = !holdMode
+
+    holdModeButton.classList.toggle('active')
+    if(!holdMode) compile(stack.join(' '))
+
+  })
+
   function addOption(textContent, selected) {
       return el('option', {
         textContent,
@@ -586,7 +598,8 @@ function compile(text, resetToZero) {
       expressions.push(sections.channel2.body);
     }
 
-    setExpressions(expressions, resetToZero);
+    if(!holdMode) setExpressions(expressions, resetToZero);
+    
   }
 
 }
