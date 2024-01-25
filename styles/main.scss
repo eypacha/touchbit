@@ -282,13 +282,6 @@ input {
 
 }
 
-@media screen and (min-width: 550px) {
-  #keyboard {
-    width: -webkit-fill-available;
-    max-width: 550px;
-    margin-inline: auto;
-  }
-}
 .stack-container {
   flex: 1;
   border-top: solid 1px #919191;
@@ -426,6 +419,9 @@ input {
   display: flex;
   flex-direction: column;
   padding: 5px;
+  width: -webkit-fill-available;
+  max-width: 550px;
+  margin-inline: auto;
 
   .column {
     flex: 1;
