@@ -192,8 +192,11 @@ async function main() {
       if(s === "||") slotDiv.textContent = "‖"
 
       slotDiv.addEventListener('click', () => {
-        selectedSlot = ndx
-        renderStack()
+        
+          changeNumberMode(selectedSlot == ndx && slotDiv.classList.contains('number'));
+          selectedSlot = ndx
+          renderStack()
+          
       })
       
       stackContainer.appendChild(slotDiv)
@@ -260,7 +263,7 @@ async function main() {
     symbol.addEventListener('click', function() {
 
       if(numberMode) {
-       changeNumberMode(false)
+        changeNumberMode(false)
         selectNext()
       }
 
