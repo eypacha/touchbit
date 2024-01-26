@@ -461,7 +461,7 @@ input {
     border-width: 1px 1px 3px;
     flex: 1;
     padding: 0;
-    transitioN: all 100ms;
+    transition: all 50ms;
 
     &:active {
       border-width: 1px 1px 1px !important;
