@@ -14,7 +14,7 @@ body {
   height: 100%;
   margin: 0;
   font-family: monospace;
-  background-color: black;
+  background-color: #100c16;
   color: white;
   overflow: hidden;
 }
@@ -111,7 +111,7 @@ select:hover,
 
 option {
   color: white;
-  background-color: black;
+  background-color: #100c16;
 }
 
 .play:before {
@@ -130,7 +130,7 @@ option {
   top: 0px;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(16, 12, 22, 0.7);
 }
 
 #savecontainer {
@@ -172,7 +172,7 @@ input {
   height: 100%;
   left: 0px;
   top: 0px;
-  background-color: black;
+  background-color: #100c16;
 }
 #loadingContainer > * {
   color: white;
@@ -276,7 +276,7 @@ input {
   font-size: 0.7em;
   color: grey;
   left: 50%;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(16, 12, 22, 0.8);
   margin-left: -12px;
   padding: 0;
 }
