@@ -31,99 +31,93 @@
 
   </head>
   <body>
-
-      <div id="split">
-        <div id="main">
-          <div id="foreground">
-            <div id="controls"></div>
-            <div class="stack-container">
-              <div id="stack"></div>
-            </div>
-            <pre id="debug" style="display: none;"></pre>
-            <div id="keyboard">
+      <div id="main">
+        <div id="controls"></div>
+        <div class="stack-container">
+          <div id="stack"></div>
+        </div>
+        <div id="keyboard">
+          <div class="row">
+            <div class="column">
               <div class="row">
-                <div class="column">
-                  <div class="row">
-                    <button class="button number layer-1" data-insert="7">7</button>
-                    <button class="button modifier layer-2" data-modifier="+1">+1</button>
-                    <button class="button number layer-1" data-insert="8">8</button>
-                    <button class="button modifier layer-2" data-modifier="+5">+5</button>
-                    <button class="button number layer-1" data-insert="9">9</button>
-                    <button class="button modifier layer-2" data-modifier="+10">+10</button>
-                  </div>
-                  <div class="row">
-                    <button class="button number layer-1" data-insert="4">4</button>
-                    <button class="button modifier layer-2" data-modifier="-1">-1</button>
-                    <button class="button number layer-1" data-insert="5">5</button>
-                    <button class="button modifier layer-2" data-modifier="-5">-5</button>
-                    <button class="button number layer-1" data-insert="6">6</button>
-                    <button class="button modifier layer-2" data-modifier="-10">-10</button>
-                  </div>
-                  <div class="row">
-                    <button class="button number layer-1" data-insert="1">1</button>
-                    <button class="button modifier layer-2" data-modifier="+0.1">+.1</button>
-                    <button class="button number layer-1" data-insert="2">2</button>
-                    <button class="button modifier layer-2" data-modifier="+0.01">+.01</button>
-                    <button class="button number layer-1" data-insert="3">3</button>
-                    <button class="button modifier layer-2" data-modifier="+0.001">+.001</button>
-                  </div>
-                  <div class="row">
-                    <button class="button number layer-1" data-insert=".">.</button>
-                    <button class="button modifier layer-2" data-modifier="-0.1">-.1</button>
-                    <button class="button number layer-1" data-insert="0">0</button>
-                    <button class="button modifier layer-2" data-modifier="-0.01">-.01</button>
-                    <button class="button modifier layer-1" data-modifier="clear">⌫</button>
-                    <button class="button modifier layer-2" data-modifier="-0.001">-.001</button>
-                    
-                  </div>
-                </div>
-                <div class="column">
-                  <div class="row">
-                    <button class="button symbol layer-1" data-insert="*">*</button>
-                    <button class="button magenta command small layer-2" id="undo">UNDO</button>
-                    <button class="button symbol layer-1" data-insert="/">/</button>
-                    <button class="button magenta command small layer-2" id="redo">REDO</button>
-                    <button class="button symbol layer-1" data-insert="&">&</button>
-                    <button class="button symbol layer-2" data-insert="&&">&&</button>
-                  </div>
-                  <div class="row">
-                    <button class="button symbol layer-1" data-insert="+">+</button>
-                    <button class="button symbol layer-2" data-insert="<">&lt;</button>
-                    <button class="button symbol layer-1" data-insert="-">-</button>
-                    <button class="button symbol layer-2" data-insert=">">&gt;</button>
-                    <button class="button symbol layer-1"  data-insert="|">&vert;</button>
-                    <button class="button symbol layer-2"  data-insert="=">=</button>
-                  </div>
-                  <div class="row">
-                    <button class="button symbol layer-2" data-insert="||">‖</button>
-                    <button class="button symbol layer-1" data-insert="%">%</button>
-                    <button class="button symbol layer-2 small" data-insert="drop">drop</button>
-                    <button class="button symbol layer-1" data-insert="~">~</button>
-                    <button class="button symbol layer-2 small" data-insert="dup">dup</button>
-                    <button class="button symbol layer-1" data-insert="^">^</button>
-                  </div>
-                  <div class="row">
-                    <button class="button symbol t layer-1" data-insert="t">t</button>
-                    <button class="button symbol layer-2 small" data-insert="swap">swap</button>
-                    <button class="button symbol layer-1" data-insert="<<">&laquo;</button>
-                    <button class="button symbol layer-2 small" data-insert="pick">pick</button>
-                    <button class="button symbol layer-1" data-insert=">>">&raquo;</button>
-                    <button class="button symbol layer-2 small" data-insert="put">put</button>
-                  </div>
-                </div>
-             </div>
-    
-             <div class="row">
-  
-              <button class="button magenta small command" id="fnMode">FN</button>
-              <button class="button magenta small command" id="holdMode">HOLD</button>
-              <button class="button magenta small command" id="insertSlot">INS</button>
-              <button class="button magenta small command" id="deleteSlot">DEL</button>
-                <button class="button magenta command" id="selectPrev">←</button>
-                <button class="button magenta command" id="selectNext">→</button>
+                <button class="button number layer-1" data-insert="7">7</button>
+                <button class="button modifier layer-2" data-modifier="+1">+1</button>
+                <button class="button number layer-1" data-insert="8">8</button>
+                <button class="button modifier layer-2" data-modifier="+5">+5</button>
+                <button class="button number layer-1" data-insert="9">9</button>
+                <button class="button modifier layer-2" data-modifier="+10">+10</button>
+              </div>
+              <div class="row">
+                <button class="button number layer-1" data-insert="4">4</button>
+                <button class="button modifier layer-2" data-modifier="-1">-1</button>
+                <button class="button number layer-1" data-insert="5">5</button>
+                <button class="button modifier layer-2" data-modifier="-5">-5</button>
+                <button class="button number layer-1" data-insert="6">6</button>
+                <button class="button modifier layer-2" data-modifier="-10">-10</button>
+              </div>
+              <div class="row">
+                <button class="button number layer-1" data-insert="1">1</button>
+                <button class="button modifier layer-2" data-modifier="+0.1">+.1</button>
+                <button class="button number layer-1" data-insert="2">2</button>
+                <button class="button modifier layer-2" data-modifier="+0.01">+.01</button>
+                <button class="button number layer-1" data-insert="3">3</button>
+                <button class="button modifier layer-2" data-modifier="+0.001">+.001</button>
+              </div>
+              <div class="row">
+                <button class="button number layer-1" data-insert=".">.</button>
+                <button class="button modifier layer-2" data-modifier="-0.1">-.1</button>
+                <button class="button number layer-1" data-insert="0">0</button>
+                <button class="button modifier layer-2" data-modifier="-0.01">-.01</button>
+                <button class="button modifier layer-1" data-modifier="clear">⌫</button>
+                <button class="button modifier layer-2" data-modifier="-0.001">-.001</button>
+                
+              </div>
             </div>
+            <div class="column">
+              <div class="row">
+                <button class="button symbol layer-1" data-insert="*">*</button>
+                <button class="button magenta command small layer-2" id="undo">UNDO</button>
+                <button class="button symbol layer-1" data-insert="/">/</button>
+                <button class="button magenta command small layer-2" id="redo">REDO</button>
+                <button class="button symbol layer-1" data-insert="&">&</button>
+                <button class="button symbol layer-2" data-insert="&&">&&</button>
+              </div>
+              <div class="row">
+                <button class="button symbol layer-1" data-insert="+">+</button>
+                <button class="button symbol layer-2" data-insert="<">&lt;</button>
+                <button class="button symbol layer-1" data-insert="-">-</button>
+                <button class="button symbol layer-2" data-insert=">">&gt;</button>
+                <button class="button symbol layer-1"  data-insert="|">&vert;</button>
+                <button class="button symbol layer-2"  data-insert="=">=</button>
+              </div>
+              <div class="row">
+                <button class="button symbol layer-2" data-insert="||">‖</button>
+                <button class="button symbol layer-1" data-insert="%">%</button>
+                <button class="button symbol layer-2 small" data-insert="drop">drop</button>
+                <button class="button symbol layer-1" data-insert="~">~</button>
+                <button class="button symbol layer-2 small" data-insert="dup">dup</button>
+                <button class="button symbol layer-1" data-insert="^">^</button>
+              </div>
+              <div class="row">
+                <button class="button symbol t layer-1" data-insert="t">t</button>
+                <button class="button symbol layer-2 small" data-insert="swap">swap</button>
+                <button class="button symbol layer-1" data-insert="<<">&laquo;</button>
+                <button class="button symbol layer-2 small" data-insert="pick">pick</button>
+                <button class="button symbol layer-1" data-insert=">>">&raquo;</button>
+                <button class="button symbol layer-2 small" data-insert="put">put</button>
+              </div>
             </div>
           </div>
+
+          <div class="row">
+
+          <button class="button magenta small command" id="fnMode">FN</button>
+          <button class="button magenta small command" id="holdMode">HOLD</button>
+          <button class="button magenta small command" id="insertSlot">INS</button>
+          <button class="button magenta small command" id="deleteSlot">DEL</button>
+            <button class="button magenta command" id="selectPrev">←</button>
+            <button class="button magenta command" id="selectNext">→</button>
+        </div>
         </div>
       </div>
     
