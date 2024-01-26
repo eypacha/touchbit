@@ -270,6 +270,14 @@ input {
     max-width: 6.7em;
   }
 }
+@media screen and (max-height: 350px) {
+  #keyboard button {
+    height: 35px !important;
+  }
+  #keyboard button:active {
+    height: 33px !important;
+  }
+}
 .stack-container {
   flex: 1;
   border-top: solid 1px #919191;
@@ -411,6 +419,11 @@ input {
   flex: 1;
   padding: 0;
   transitioN: all 100ms;
+}
+#keyboard button:active {
+  border-width: 1px 1px 1px !important;
+  margin-top: 2px;
+  height: 38px;
 }
 #keyboard button.number {
   color: yellow;

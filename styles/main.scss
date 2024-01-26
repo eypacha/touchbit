@@ -282,6 +282,20 @@ input {
 
 }
 
+@media screen and (max-height: 350px) {
+
+  #keyboard {
+    button {
+      height: 35px !important;
+
+      &:active {
+        height: 33px !important;
+      }
+    } 
+  }
+
+}
+
 .stack-container {
   flex: 1;
   border-top: solid 1px #919191;
@@ -449,6 +463,12 @@ input {
     padding: 0;
     transitioN: all 100ms;
 
+    &:active {
+      border-width: 1px 1px 1px !important;
+      margin-top: 2px;
+      height: 38px; 
+    }
+    
     &.number {
       color: $yellow;
 
