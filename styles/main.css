@@ -96,6 +96,10 @@ select,
   cursor: pointer;
 }
 
+select {
+  text-align: right;
+}
+
 button,
 select,
 .buttonstyle,
@@ -272,7 +276,7 @@ input {
   font-size: 0.7em;
   color: grey;
   left: 50%;
-  background: rgba(0, 0, 0, 0.7882352941);
+  background: rgba(0, 0, 0, 0.8);
   margin-left: -12px;
   padding: 0;
 }

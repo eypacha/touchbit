@@ -1,4 +1,4 @@
-$black: black;;
+$black: black;
 $white: white;
 $magenta: #c452c1;
 $yellow: yellow;
@@ -103,6 +103,9 @@ select,
   cursor: pointer;
 }
 
+select {
+  text-align: right;
+}
 
 button,
 select,
@@ -306,7 +309,7 @@ input {
     font-size: .7em;
     color: grey;
     left: 50%;
-    background: #000000c9;
+    background: rgba($black, 0.8);
     margin-left: -12px;
     padding: 0;
 
