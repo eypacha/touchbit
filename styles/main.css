@@ -264,7 +264,7 @@ input {
   .pause:before {
     content: "■";
   }
-  button,
+  button:not(.timer),
   select,
   .buttonstyle {
     max-width: 6.7em;
