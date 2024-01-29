@@ -53,6 +53,9 @@ let isLongClickSelectPrev = false;
 
 let clickTimerSelectNext;
 let isLongClickSelectNext = false;
+const touchable = 'ontouchstart' in window;
+const keyDown = touchable ? 'touchstart' : 'mousedown';
+const keyUp = touchable ? 'touchend' : 'mouseup';
 
 function connectFor2Channels() {
   g_byteBeat.disconnect();
@@ -296,7 +299,7 @@ async function main() {
       
   }
   
-  selectNextBtn.addEventListener('mousedown', function() {
+  selectNextBtn.addEventListener(keyDown, function() {
 
     clickTimerSelectNext = setTimeout(function() {
 
@@ -307,7 +310,7 @@ async function main() {
     
   });
 
-  selectNextBtn.addEventListener('mouseup', function() {
+  selectNextBtn.addEventListener(keyUp, function() {
 
     clearTimeout(clickTimerSelectNext);
   
@@ -322,7 +325,7 @@ async function main() {
 
   const selectPrev = $('selectPrev');
 
-  selectPrev.addEventListener('mousedown', function() {
+  selectPrev.addEventListener(keyDown, function() {
 
     clickTimerSelectPrev = setTimeout(function() {
 
@@ -334,7 +337,7 @@ async function main() {
     }, longClickTime);
   });
 
-  selectPrev.addEventListener('mouseup', function() {
+  selectPrev.addEventListener(keyUp, function() {
 
     clearTimeout(clickTimerSelectPrev);
   
@@ -464,7 +467,7 @@ async function main() {
 
   const deleteButton = $('deleteSlot');
 
-  deleteButton.addEventListener('mousedown', function() {
+  deleteButton.addEventListener(keyDown, function() {
 
     clickTimerDelete = setTimeout(function() {
 
@@ -478,7 +481,7 @@ async function main() {
     }, longClickTime);
   });
 
-  deleteButton.addEventListener('mouseup', function() {
+  deleteButton.addEventListener(keyUp, function() {
 
     clearTimeout(clickTimerDelete);
   
