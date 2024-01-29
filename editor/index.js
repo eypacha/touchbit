@@ -23,6 +23,7 @@ let g_splitter;
 let g_merger;
 let g_saving = false;
 let g_saveDialogInitialized = false;
+let g_settingsDialogInitialized = false;
 let g_ignoreHashChange;
 let playing = false;
 let timeElem;
@@ -30,6 +31,7 @@ let playElem;
 let beatTypeElem;
 let sampleRateElem;
 let saveElem;
+let settingsElem;
 let compileStatusElem;
 let compressor;
 let controls;
@@ -41,6 +43,16 @@ let fnMode = false;
 let stack = [''];
 let undoStack = [];
 let redoStack = [];
+const longClickTime = 1000;
+
+let clickTimerDelete;
+let isDeleteLongClick = false;
+
+let clickTimerSelectPrev;
+let isLongClickSelectPrev = false;
+
+let clickTimerSelectNext;
+let isLongClickSelectNext = false;
 
 function connectFor2Channels() {
   g_byteBeat.disconnect();
@@ -133,6 +145,51 @@ async function main() {
 
   controls.appendChild(timeElem);
 
+  function addSelection(options, selectedIndex, props = {}) {
+    const select = el('select', props, options.map((option, i) => {
+      return addOption(option, i === selectedIndex);
+    }));
+    return select;
+  }
+
+  beatTypeElem = addSelection(s_beatTypes, 0, {
+    onChange(event) {
+      g_byteBeat.setType(event.target.selectedIndex);
+      setURL();
+    },
+  });
+  beatTypeElem.classList.add('byte-type')
+  controls.appendChild(beatTypeElem);
+
+  const sampleRates = [8000, 11000, 22000, 32000, 44100, 48000];
+  sampleRateElem = addSelection(['8kHz', '11kHz', '22kHz', '32kHz', '44kHz', '48kHz'], 0, {
+    onChange(event) {
+      g_byteBeat.setDesiredSampleRate(sampleRates[event.target.selectedIndex]);
+      setURL();
+    },
+  });
+  sampleRateElem.classList.add('sample-rate')
+  controls.appendChild(sampleRateElem);
+
+  saveElem = el('button', {
+    textContent: 'save',
+    onClick: startSave,
+  });
+  controls.appendChild(saveElem);
+
+  compileStatusElem = el('div', {
+    className: 'status',
+    textContent: '',
+  });
+  controls.appendChild(compileStatusElem);
+
+  settingsElem = el('button', {
+    onClick: showSettingsDialog,
+    className: 'settings',
+  });
+
+  controls.appendChild(settingsElem);
+
   g_byteBeat.setExpressionType(1);
   // Stack
   
@@ -141,7 +198,7 @@ async function main() {
   function renderStack() {
     stackContainer.innerHTML = ''
 
-    compile(stack.join(' '))
+    if(!holdMode) compile(stack.join(' '))
 
     stack.forEach((s, ndx) => {
 
@@ -217,42 +274,86 @@ async function main() {
 
   selectSlot(0);
 
-  $('selectNext').addEventListener('click', selectNext);
+  const selectNextBtn = $('selectNext');
 
   function selectNext() {
-
     changeNumberMode(false)
 
-    if(selectedSlot != (stack.length - 1)){
+      if(selectedSlot != (stack.length - 1)){
 
-      selectedSlot++ 
+        selectedSlot++ 
+      
+      } else {
+
+        if(stack[selectedSlot] != '') {
+          stack.push('')
+          selectedSlot++
+        }
+        
+      }
+
+      renderStack()
+      
+  }
+  
+  selectNextBtn.addEventListener('mousedown', function() {
+
+    clickTimerSelectNext = setTimeout(function() {
+
+      selectedSlot = stack.length-1
+      renderStack();
+
+    }, longClickTime);
     
-    } else {
+  });
 
-      if(stack[selectedSlot] != '') {
-        stack.push('')
-        selectedSlot++
+  selectNextBtn.addEventListener('mouseup', function() {
+
+    clearTimeout(clickTimerSelectNext);
+  
+    if (!isLongClickSelectNext) {
+
+      selectNext();
+
+    }
+  
+    isLongClickSelectNext = false;
+  });
+
+  const selectPrev = $('selectPrev');
+
+  selectPrev.addEventListener('mousedown', function() {
+
+    clickTimerSelectPrev = setTimeout(function() {
+
+      if (selectedSlot > 0) {
+        selectedSlot = 0;
+        renderStack();
+      }
+      isLongClickSelectPrev = true;
+    }, longClickTime);
+  });
+
+  selectPrev.addEventListener('mouseup', function() {
+
+    clearTimeout(clickTimerSelectPrev);
+  
+    if (!isLongClickSelectPrev) {
+      changeNumberMode(false)
+
+      if (selectedSlot > 0) {
+        selectedSlot--;
+        renderStack();
       }
       
     }
-
-    renderStack()
   
-  }
-
-  $('selectPrev').addEventListener('click', selectPrev);
-
-  function selectPrev() {
-
-    changeNumberMode(false)
-
-    if (selectedSlot > 0) selectedSlot--
-    renderStack()
-  }
+    isLongClickSelectPrev = false;
+  });
 
   function changeNumberMode(toValue) {
-    numberMode = toValue
 
+    numberMode = toValue
     numberMode ? stackContainer.classList.add("number-mode-on"): stackContainer.classList.remove("number-mode-on")
     
   }
@@ -332,10 +433,15 @@ async function main() {
 
       } else {
         // Si no es un número, reemplaza el contenido del slot con el nuevo número
-        evaluated = eval(0 + newModifier)
-        evaluated =  Math.round(evaluated * 100000) / 100000
+        if(newModifier === "clear") {
+          evaluated = "0"
+        } else {
+          evaluated = eval(0 + newModifier)
+          evaluated = Math.round(evaluated * 100000) / 100000
+        }
+       
       }
-      
+      console.log(evaluated)
       stack[selectedSlot] = evaluated
       saveState()
       changeNumberMode(true)
@@ -358,23 +464,40 @@ async function main() {
 
   const deleteButton = $('deleteSlot');
 
-  deleteButton.addEventListener('click', function() {
+  deleteButton.addEventListener('mousedown', function() {
 
+    clickTimerDelete = setTimeout(function() {
 
-    if (stack.length == 1) {
-      stack[0] = ''
-      saveState()
+      stack = [''];
+      selectedSlot = 0;
+      compile('0')
+      saveState();
+      changeNumberMode(false);
+      renderStack();
+      isDeleteLongClick = true;
+    }, longClickTime);
+  });
+
+  deleteButton.addEventListener('mouseup', function() {
+
+    clearTimeout(clickTimerDelete);
+  
+    if (!isDeleteLongClick) {
+      if (stack.length == 1) {
+        stack[0] = '';
+        saveState();
+      }
+      if (stack.length > 1) {
+        stack.splice(selectedSlot, 1);
+        if (selectedSlot >= stack.length) selectedSlot = stack.length - 1;
+      }
+  
+      changeNumberMode(false);
+      renderStack();
     }
-    if (stack.length > 1) {
- 
-      stack.splice(selectedSlot, 1) 
-      if (selectedSlot >= stack.length)  selectedSlot = stack.length - 1;
-    
-    }
-
-    changeNumberMode(false)
-    renderStack()
-  })
+  
+    isDeleteLongClick = false;
+  });
 
   const insertButton = $('insertSlot');
 
@@ -403,7 +526,10 @@ async function main() {
     holdMode = !holdMode
 
     holdModeButton.classList.toggle('active')
-    if(!holdMode) compile(stack.join(' '))
+    if(!holdMode) {
+
+      renderStack()
+    }
 
   })
 
@@ -432,8 +558,11 @@ async function main() {
   })
 
   function saveState(){
+
+    if(holdMode) return
     redoStack = [];
     undoStack.push({ stack: [...stack], selectedSlot });
+
   }
 
   function addOption(textContent, selected) {
@@ -442,44 +571,6 @@ async function main() {
         ...(selected && {selected}),
       });
   }
-
-  function addSelection(options, selectedIndex, props = {}) {
-    const select = el('select', props, options.map((option, i) => {
-      return addOption(option, i === selectedIndex);
-    }));
-    return select;
-  }
-
-  beatTypeElem = addSelection(s_beatTypes, 0, {
-    onChange(event) {
-      g_byteBeat.setType(event.target.selectedIndex);
-      setURL();
-    },
-  });
-  beatTypeElem.classList.add('byte-type')
-  controls.appendChild(beatTypeElem);
-
-  const sampleRates = [8000, 11000, 22000, 32000, 44100, 48000];
-  sampleRateElem = addSelection(['8kHz', '11kHz', '22kHz', '32kHz', '44kHz', '48kHz'], 0, {
-    onChange(event) {
-      g_byteBeat.setDesiredSampleRate(sampleRates[event.target.selectedIndex]);
-      setURL();
-    },
-  });
-  controls.appendChild(sampleRateElem);
-
-  saveElem = el('button', {
-    textContent: 'save',
-    onClick: startSave,
-  });
-  controls.appendChild(saveElem);
-
-  compileStatusElem = el('div', {
-    className: 'status',
-    textContent: '',
-  });
-  controls.appendChild(compileStatusElem);
-
 
   window.addEventListener('hashchange', function() {
     if (g_ignoreHashChange) {
@@ -546,8 +637,8 @@ function startSave() {
 }
 
 async function showSaveDialog() {
-  function closeSave() {
-    $('savedialog').style.display = 'none';
+  function close() {
+    $('savedialog').classList.remove('active')
     g_saving = false;
   }
 
@@ -605,18 +696,45 @@ async function showSaveDialog() {
 
         if (wasPlaying) play();
       }
-      closeSave();
+      close();
     }
     realSave();
   }
 
   if (!g_saveDialogInitialized) {
     g_saveDialogInitialized = true;
-    $('save').addEventListener('click', save);
-    $('cancel').addEventListener('click', closeSave);
+    $('saveWav').addEventListener('click', save);
+    $('cancelSave').addEventListener('click', close);
   }
   const saveDialogElem = $('savedialog');
-  saveDialogElem.style.display = 'table';
+  saveDialogElem.classList.add('active')
+}
+
+
+function showSettingsDialog(){
+
+  const themeSelector = $('selectTheme');
+  
+  if (!g_settingsDialogInitialized) {
+    g_settingsDialogInitialized = true;
+    $('saveSettings').addEventListener('click', save);
+    $('cancelSettings').addEventListener('click', close);
+  }
+  
+  const settingseDialogElem = $('settingsdialog');
+  settingseDialogElem.classList.add('active')
+
+  function save() {
+
+    document.documentElement.dataset.theme = themeSelector.value
+    localStorage.setItem('theme', themeSelector.value);
+    close()
+  }
+
+  function close() {
+    $('settingsdialog').classList.remove('active')
+  }
+  
 }
 
 const dummyFunction = () => {}
@@ -646,7 +764,7 @@ function compile(text, resetToZero) {
       expressions.push(sections.channel2.body);
     }
 
-    if(!holdMode) setExpressions(expressions, resetToZero);
+    setExpressions(expressions, resetToZero);
     
   }
 
@@ -671,6 +789,14 @@ function setURL() {
 }
 
 {
+
+  let theme = localStorage.getItem('theme');
+
+  if (theme !== null) {
+    document.documentElement.dataset.theme = theme;
+    $('selectTheme').value = theme;
+  } 
+
   $('loadingContainer').style.display = 'none';
   main();
 

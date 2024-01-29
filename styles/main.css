@@ -1,4 +1,97 @@
 @charset "UTF-8";
+:root {
+  --main-font: monospace;
+  --border-radius: 5px;
+  --background: #17111f;
+  --black: #000;
+  --app-background: var(--background);
+  --selected: white;
+  --symbol: #eeeeee;
+  --text: silver;
+  --number: yellow;
+  --command: #c452c1;
+  --t: cyan;
+  --success: #0F0;
+  --error: red;
+  --button-color: rgba(0,0,0,0.5);
+  --button-text: var(--text);
+  --button-border-radius: var(--border-radius);
+  --button-border-style: solid;
+  --button-border-width: 6px;
+  --button-font: var(--main-font);
+  --button-font-size: 12px;
+  --inline-button-color: color-mix(in srgb, var(--background), transparent 20%);
+  --keyboard-background: transparent;
+  --key-gap: 5px;
+  --key-height: 40px;
+  --key-background: var(--button-color);
+  --key-border-radius: var(--button-border-radius);
+  --key-border-style: var(--button-border-style);
+  --key-border-width: 1px 1px 3px;
+  --key-active-height: 38px;
+  --key-active-border-width: 1px 1px 1px !important;
+  --key-active-margin: 2px 0 0;
+  --key-active-background: var(--button-color);
+  --key-symbol: var(--symbol);
+  --key-t: var(--t);
+  --key-number: var(--number);
+  --key-command: var(--command);
+  --key-symbol-bg-active: color-mix(in srgb, var(--symbol), transparent 50%);
+  --key-t-bg-active: color-mix(in srgb, var(--t), transparent 50%);
+  --key-number-bg-active: color-mix(in srgb, var(--number), transparent 50%);
+  --key-command-bg-active: color-mix(in srgb, var(--command), transparent 50%);
+  --key-font: var(--button-font);
+  --key-font-size: 17px;
+  --link-color: var(--t);
+  --option-color: var(--text);
+  --option-background: var(--background);
+  --modal-backdrop: color-mix(in srgb, var(--black), transparent 60%);
+  --modal-background: var(--background);
+}
+
+:root[data-theme=tropical] {
+  --background: #023047ff;
+  --button-color: #012232;
+  --key-symbol-bg-active: var(--button-color);
+  --key-t-bg-active: var(--button-color);
+  --key-number-bg-active: var(--button-color);
+  --key-command-bg-active: var(--button-color);
+  --key-border-radius: 20px;
+  --key-border-width: 1px 1px 10px;
+  --selected: #8ecae6ff;
+  --symbol: #b4d9d6;
+  --text: #c9c3c3;
+  --number: #ffb703ff;
+  --command: #fb8500ff;
+  --t: #219ebcff;
+  --success: #2ecc71;
+  --error: #e74c3c;
+}
+
+:root[data-theme=monochrome-dark] {
+  --border-radius: 0px;
+  filter: grayscale(1);
+}
+
+:root[data-theme=monochrome-light] {
+  --border-radius: 0px;
+  filter: grayscale(1) invert(1);
+}
+
+:root[data-theme=lavander] {
+  --border-radius: 20px;
+  --background: #ffe9f4;
+  --button-color: #f9f5f7;
+  --selected: white;
+  --symbol: #c0a9bd;
+  --text: #a36b9c;
+  --number: #64766a;
+  --command: #2e97cc;
+  --t: #b4398b;
+  --success: #2ecc71;
+  --error: #e74c3c;
+}
+
 * {
   -webkit-user-select: none;
   /* Safari */
@@ -13,9 +106,9 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
-  font-family: monospace;
-  background-color: #100c16;
-  color: white;
+  font-family: var(--main-font);
+  background: var(--app-background);
+  color: var(--text);
   overflow: hidden;
 }
 
@@ -23,7 +116,7 @@ a:link,
 a:visited,
 a:hover,
 a:active {
-  color: white;
+  color: var(--link-color);
   text-decoration: none;
 }
 
@@ -41,6 +134,7 @@ a:active {
 .timer {
   flex: 1;
   text-align: right;
+  color: var(--number);
 }
 
 .byte-type,
@@ -48,8 +142,12 @@ a:active {
   display: none;
 }
 
+.sample-rate {
+  text-align: right;
+}
+
 .status {
-  color: #0F0;
+  color: var(--success);
   position: absolute;
   top: 0;
   left: -5px;
@@ -68,7 +166,7 @@ a:active {
 }
 
 .status.error {
-  color: red;
+  color: var(--error);
 }
 
 #controls {
@@ -84,20 +182,16 @@ select,
   padding: 8px 12px 8px 12px;
   white-space: pre;
   border: none;
-  border-radius: 5px;
+  border-radius: var(--button-border-radius);
   margin-right: 5px;
   margin-bottom: 5px;
-  color: #aaa;
-  background-color: rgba(0, 0, 0, 0.5);
-  font-family: monospace;
-  font-size: 12px;
+  background-color: var(--button-color);
+  color: var(--button-text);
+  font-family: var(--button-font);
+  font-size: var(--button-font-size);
   height: 32px;
   font-weight: bold;
   cursor: pointer;
-}
-
-select {
-  text-align: right;
 }
 
 button,
@@ -110,52 +204,83 @@ select:hover,
 }
 
 option {
-  color: white;
-  background-color: #100c16;
+  color: var(--option-text);
+  background-color: var(--option-background);
+}
+option:checked {
+  color: var(--number);
+}
+
+.play,
+.pause {
+  width: 68px;
 }
 
 .play:before {
-  content: " play ▶";
+  content: "play ▶";
 }
 
 .pause:before {
   content: "pause ■";
+  width: 70px;
 }
 
-#savedialog {
-  display: none;
-  z-index: 10;
+.settings:before {
+  content: " settings ⚙";
+}
+
+.modal-backdrop {
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
   position: absolute;
   left: 0px;
   top: 0px;
+  z-index: 10;
   width: 100%;
   height: 100%;
-  background-color: rgba(16, 12, 22, 0.7);
+  background-color: var(--modal-backdrop);
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+  transition: opacity 100ms;
+}
+.modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-#savecontainer {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-#saveform {
-  margin: auto;
+.dialog {
   width: 400px;
-  max-width: calc(100vw - 80px);
-  background-color: #2e2e2e;
+  max-width: calc(100svw - 80px);
+  max-height: calc(100svh - 80px);
+  background-color: var(--modal-background);
   padding: 20px;
-  border-radius: 3px;
+  border-radius: var(--border-radius);
 }
-
-#saveform .settings {
-  margin-top: 1em;
+.dialog input {
+  background: var(--background);
+  color: var(--number);
+  border: none;
+  padding: 8px;
+  border-radius: var(--border-radius);
+}
+.dialog input[type=number] {
+  text-align: right;
+}
+.dialog select {
+  width: 200px;
+}
+.dialog .dialog-body {
   margin-bottom: 1em;
 }
-
-input {
-  background: #444;
-  color: white;
-  border: none;
+.dialog .title {
+  font-size: 17px;
+  margin-bottom: 1em;
+}
+.dialog .dialog-footer {
+  text-align: right;
 }
 
 .hide {
@@ -172,25 +297,34 @@ input {
   height: 100%;
   left: 0px;
   top: 0px;
-  background-color: #100c16;
+  background-color: var(--background);
 }
 #loadingContainer > * {
-  color: white;
+  color: #eeeeee;
   font-size: 20px;
   padding: 0.2em;
   border-radius: 0.2em;
 }
 
 @media screen and (max-width: 700px) {
+  .play,
+  .pause {
+    width: 35px;
+  }
   .play:before {
     content: "▶";
   }
   .pause:before {
     content: "■";
   }
+  .settings:before {
+    content: "⚙";
+  }
   button:not(.timer),
-  select,
   .buttonstyle {
+    max-width: 6.7em;
+  }
+  .controls select {
     max-width: 6.7em;
   }
 }
@@ -204,8 +338,8 @@ input {
 }
 .stack-container {
   flex: 1;
-  border-top: solid 1px #919191;
-  border-bottom: solid 1px #919191;
+  border-top: solid 1px var(--text);
+  border-bottom: solid 1px var(--text);
   overflow-y: auto;
   padding-top: 1.5em;
 }
@@ -242,7 +376,7 @@ input {
   border-style: solid;
   border-width: 1px;
   border-color: transparent;
-  border-bottom-color: #525050;
+  border-bottom-color: var(--text);
   height: 28px;
   min-width: 20px;
   line-height: 28px;
@@ -253,19 +387,19 @@ input {
   cursor: pointer;
 }
 .slot.number {
-  color: yellow;
+  color: var(--number);
 }
 .slot.number.selected {
   border-top-color: rgba(128, 128, 128, 0.4);
 }
 .slot.t {
-  color: cyan;
+  color: var(--t);
 }
 .slot.special {
-  color: #c452c1;
+  color: var(--command);
 }
 .slot.selected {
-  border-color: white;
+  border-color: var(--selected);
   border-inline: solid 1px;
 }
 .slot .modifier {
@@ -274,9 +408,9 @@ input {
   width: 24px;
   display: block;
   font-size: 0.7em;
-  color: grey;
+  color: var(--text);
   left: 50%;
-  background: rgba(16, 12, 22, 0.8);
+  background: var(--inline-button-color);
   margin-left: -12px;
   padding: 0;
 }
@@ -284,13 +418,13 @@ input {
   top: -29px;
 }
 .slot .modifier.plus-one:active {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(238, 238, 238, 0.2);
 }
 .slot .modifier.minus-one {
   margin-top: 1px;
 }
 .slot .modifier.minus-one:active {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(238, 238, 238, 0.2);
 }
 
 .number-mode-on .slot.number.selected {
@@ -305,7 +439,7 @@ input {
     /* Borde derecho transparente al inicio */
   }
   50% {
-    border-right: 1px solid yellow;
+    border-right: 1px solid var(--number);
     /* Borde derecho de color (ajusta según lo que desees) a la mitad de la animación */
   }
   100% {
@@ -316,10 +450,11 @@ input {
 #keyboard {
   display: flex;
   flex-direction: column;
-  padding: 5px;
+  padding: var(--key-gap);
   max-width: 550px;
   position: relative;
   left: 50%;
+  background: var(--keyboard-background);
   transform: translateX(-50%);
 }
 #keyboard .column {
@@ -328,62 +463,62 @@ input {
 #keyboard .row {
   display: flex;
   justify-content: center;
-  gap: 5px;
+  gap: var(--key-gap);
   width: 100%;
 }
 #keyboard .row:not(:last-child) {
-  margin-bottom: 5px;
+  margin-bottom: var(--key-gap);
 }
 #keyboard button {
+  color: var(--button-color);
   width: -webkit-fill-available;
   margin: 0;
-  height: 40px;
-  font-size: 17px;
-  border-style: solid;
-  border-width: 1px 1px 3px;
+  height: var(--key-height);
+  font-size: var(--key-font-size);
+  border-style: var(--key-border-style);
+  border-width: var(--key-border-width);
+  border-radius: var(--key-border-radius);
+  background: var(--key-background);
   flex: 1;
   padding: 0;
   transition: all 50ms;
 }
 #keyboard button:active {
-  border-width: 1px 1px 1px !important;
-  margin-top: 2px;
-  height: 38px;
+  border-width: var(--key-active-border-width);
+  margin: var(--key-active-margin);
+  height: var(--key-active-height);
+  background: var(--key-active-background);
 }
 #keyboard button.number {
-  color: yellow;
+  --button-color: var(--key-number);
 }
 #keyboard button.number:active {
-  background: rgba(255, 255, 0, 0.5);
+  background: var(--key-number-bg-active);
 }
-#keyboard button.magenta {
-  border-color: #c452c1 !important;
-  font-size: 15px;
+#keyboard button.command {
+  --button-color: var(--key-command);
 }
-#keyboard button.magenta:active {
-  background: rgba(196, 82, 193, 0.5);
+#keyboard button.command:active {
+  background: var(--key-command-bg-active);
 }
 #keyboard button.symbol {
-  color: white;
+  --button-color: var(--key-symbol);
 }
 #keyboard button.symbol:active {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--key-symbol-bg-active);
 }
 #keyboard button.t {
-  color: cyan;
+  --button-color: var(--t);
 }
 #keyboard button.t:active {
-  background: rgba(0, 255, 255, 0.5);
+  background: var(--key-t-bg-active);
 }
 #keyboard button.small {
   font-size: 13px !important;
 }
 #keyboard button.modifier {
-  color: yellow;
+  --button-color: var(--number);
   font-variant: all-petite-caps;
-}
-#keyboard button.modifier:active {
-  background: rgba(255, 255, 0, 0.5);
 }
 #keyboard:not(.fn-mode) .layer-2 {
   display: none;
@@ -392,9 +527,10 @@ input {
   display: none;
 }
 #keyboard.fn-mode #fnMode {
-  color: white;
+  color: var(--selected);
+  background: var(--key-command-bg-active);
 }
 #keyboard #holdMode.active {
-  color: white;
-  background: rgba(255, 255, 255, 0.3);
+  color: var(--selected);
+  background: var(--key-command-bg-active);
 }/*# sourceMappingURL=main.css.map */
