@@ -269,6 +269,9 @@ option:checked {
 .dialog input[type=number] {
   text-align: right;
 }
+.dialog label > span {
+  margin-right: 0.5em;
+}
 .dialog select {
   width: 200px;
 }

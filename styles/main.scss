@@ -296,9 +296,13 @@ option {
 
   }
 
+  label > span {
+    margin-right: .5em;
+  }
   select {
     width: 200px;
   }
+
   .dialog-body {
     margin-bottom: 1em;
   }
