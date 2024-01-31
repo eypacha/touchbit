@@ -21,6 +21,7 @@ const g_analyzers = [];
 let g_splitter;
 let g_merger;
 let g_settingsDialogInitialized = false;
+let g_helpDialogInitialized = false;
 let g_ignoreHashChange;
 let playing = false;
 let timeElem;
@@ -28,7 +29,7 @@ let playElem;
 let beatTypeElem;
 let sampleRateElem;
 let settingsElem;
-let randommThemeElem;
+let helpBtn;
 let compileStatusElem;
 let compressor;
 let controls;
@@ -187,12 +188,12 @@ async function main() {
 
   controls.appendChild(settingsElem);
 
-  randommThemeElem = el('button', {
-    onclick: setRandomTheme,
+  helpBtn = el('button', {
+    onclick: showHelpDialog,
     textContent: '?',
   })
 
-  controls.appendChild(randommThemeElem);
+  controls.appendChild(helpBtn);
 
   g_byteBeat.setExpressionType(1);
   // Stack
@@ -670,9 +671,11 @@ function showSettingsDialog() {
     $('cancelSettings').addEventListener('click', close);
     themeSelector.addEventListener('change', save);
     settingseDialogElem.addEventListener('click', close)
-    settingseDialogElem.querySelector('.dialog').addEventListener('click', function (event) {
-      event.stopPropagation();
+    settingseDialogElem.querySelector('.dialog').addEventListener('click', (e) => {
+      e.stopPropagation()
     })
+
+    $('randomizeBtn').addEventListener('click', setRandomTheme)
     keyHeight.addEventListener('change', save);
     expFontSize.addEventListener('change', save);
   }
@@ -685,6 +688,7 @@ function showSettingsDialog() {
     localStorage.setItem('theme', themeSelector.value);
 
     $('main').style.setProperty('--key-height', `${keyHeight.value}px`);
+    $('main').style.setProperty('--key-active-height', `${keyHeight.value-2}px`);
     localStorage.setItem('key-height', keyHeight.value);
 
     $('main').style.setProperty('--exp-font-size', `${expFontSize.value}px`);
@@ -699,7 +703,30 @@ function showSettingsDialog() {
   }
 
   function close() {
-    $('settingsdialog').classList.remove('active')
+    settingseDialogElem.classList.remove('active')
+  }
+
+}
+
+function showHelpDialog() {
+
+  console.log('showhelp')
+
+  const helpDialogElem = $('helpdialog');
+
+  if (!g_helpDialogInitialized) {
+    g_helpDialogInitialized = true;
+    $('cancelhelp').addEventListener('click', close);
+  
+    helpDialogElem.querySelector('.dialog').addEventListener('click', (e) => {
+      e.stopPropagation()
+    })
+  }
+
+  helpDialogElem.classList.add('active')
+
+  function close() {
+    helpDialogElem.classList.remove('active')
   }
 
 }
@@ -770,6 +797,7 @@ function setURL() {
 
   if (keyHeight !== null) {
     document.getElementById('main').style.setProperty('--key-height', `${keyHeight}px`);
+    $('main').style.setProperty('--key-active-height', `${parseInt(keyHeight)-2}px`);
     $('keyHeight').value = keyHeight;
   }
 

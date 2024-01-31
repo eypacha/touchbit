@@ -147,15 +147,16 @@
             <div>
               <label>
                 <span>Theme </span>
-              <select id="selectTheme">
-                <option>default</option>
-                <option>tropical</option>
-                <option>lavander</option>
-                <option>monochrome-dark</option>
-                <option>monochrome-light</option>
-                <option>randomize</option>
-              </select>
-            </label>
+                <select id="selectTheme">
+                  <option>default</option>
+                  <option>tropical</option>
+                  <option>lavander</option>
+                  <option>monochrome-dark</option>
+                  <option>monochrome-light</option>
+                  <option>randomize</option>
+                </select>
+              </label>
+              <span><button id="randomizeBtn">?</button></span>
             </div>
             <div>
               <div>Expresion font size: <input id="expFontSize" type="number" inputmode="numeric"  value="22" min="8" max="100">px</div>
@@ -176,8 +177,21 @@
         </div>
       </div>
 
-      <div id="hand">
+      <div id="helpdialog" class="modal-backdrop">
+        <div class="dialog">
+          <div class="dialog-header">
+            <div class="title">About Touchbit</div>
+            <button id="cancelhelp">&times;</button>
+          </div>
+          <div class="dialog-body">
+          <div>Touchbit is a 'mobile-friendly' interface for composing bytebeat music using postfix expressions.</div>
 
+          <div><b>More info: </b><br/>
+            <a href="https://github.com/eypacha/touchbit" target="_blank">github.com/eypacha/touchbit</a>
+          </div>
+          
+          </div> 
+        </div>
       </div>
 
       <div id="loadingContainer">

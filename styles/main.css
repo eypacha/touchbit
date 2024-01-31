@@ -299,7 +299,8 @@ option:checked {
   text-align: right;
 }
 .dialog select {
-  width: 200px;
+  width: -moz-min-content;
+  width: min-content;
 }
 .dialog .title {
   font-size: 17px;
