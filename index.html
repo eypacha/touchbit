@@ -27,7 +27,6 @@
   
     <title>Touchbit</title>
     <script src="js/lzma.min.js"></script>
-    <script src="js/wavmaker.min.js"></script>
 
   </head>
   <body>
@@ -76,9 +75,9 @@
             <div class="column">
               <div class="row">
                 <button class="symbol layer-1" data-insert="*">*</button>
-                <button class="button command small layer-2" id="undo">UNDO</button>
+                <button class="button command small layer-2 notranslate" id="undo">UNDO</button>
                 <button class="symbol layer-1" data-insert="/">/</button>
-                <button class="button command small layer-2" id="redo">REDO</button>
+                <button class="button command small layer-2 notranslate" id="redo">REDO</button>
                 <button class="symbol layer-1" data-insert="&">&</button>
                 <button class="symbol layer-2" data-insert="&&">&&</button>
               </div>
@@ -93,18 +92,18 @@
               <div class="row">
                 <button class="symbol layer-2" data-insert="||">‖</button>
                 <button class="symbol layer-1" data-insert="%">%</button>
-                <button class="symbol layer-2 small" data-insert="drop">drop</button>
+                <button class="symbol layer-2 small notranslate" data-insert="drop">drop</button>
                 <button class="symbol layer-1" data-insert="~">~</button>
-                <button class="symbol layer-2 small" data-insert="dup">dup</button>
+                <button class="symbol layer-2 small notranslate" data-insert="dup">dup</button>
                 <button class="symbol layer-1" data-insert="^">^</button>
               </div>
               <div class="row">
                 <button class="symbol t layer-1" data-insert="t">t</button>
-                <button class="symbol layer-2 small" data-insert="swap">swap</button>
+                <button class="symbol layer-2 small notranslate" data-insert="swap">swap</button>
                 <button class="symbol layer-1" data-insert="<<">&laquo;</button>
-                <button class="symbol layer-2 small" data-insert="pick">pick</button>
+                <button class="symbol layer-2 small notranslate" data-insert="pick">pick</button>
                 <button class="symbol layer-1" data-insert=">>">&raquo;</button>
-                <button class="symbol layer-2 small" data-insert="put">put</button>
+                <button class="symbol layer-2 small notranslate" data-insert="put">put</button>
               </div>
             </div>
           </div>
@@ -112,9 +111,9 @@
           <div class="row">
 
           <button class="command small" id="fnMode">FN</button>
-          <button class="command small" id="holdMode">HOLD</button>
-          <button class="command small" id="insertSlot">INS</button>
-          <button class="command small" id="deleteSlot">DEL</button>
+          <button class="command small notranslate" id="holdMode">HOLD</button>
+          <button class="command small notranslate" id="insertSlot">INS</button>
+          <button class="command small notranslate" id="deleteSlot">DEL</button>
           <button class="command" id="selectPrev">←</button>
           <button class="command" id="selectNext">→</button>
         </div>
@@ -124,13 +123,15 @@
       <div id="savedialog" class="modal-backdrop">
 
           <div class="dialog">
+            <div class="dialog-header">
+              <div class="title">↓ Save audio</div>
+              <button id="cancelSave">&times;</button>
+            </div>
             <div class="dialog-body">
-              <div class="title">Save audio</div>
               <div> seconds: <input id="seconds" type="number" inputmode="numeric"  value="30" min="0" max="10000"></div>
             </div>
             <div class="dialog-footer">
               <button id="saveWav">save</button>
-              <button id="cancelSave">cancel</button>
             </div>
           </div>
 
@@ -138,26 +139,45 @@
 
       <div id="settingsdialog" class="modal-backdrop">
         <div class="dialog">
-          <div class="dialog-body">
+          <div class="dialog-header">
             <div class="title">⚙ Settings</div>
-            <div class="row">
+            <button id="cancelSettings">&times;</button>
+          </div>
+          <div class="dialog-body">
+            <div>
               <label>
-                <span>Theme</span>
+                <span>Theme </span>
               <select id="selectTheme">
                 <option>default</option>
                 <option>tropical</option>
                 <option>lavander</option>
                 <option>monochrome-dark</option>
                 <option>monochrome-light</option>
+                <option>randomize</option>
               </select>
             </label>
             </div>
-          </div>
-          <div class="dialog-footer">
-            <button id="saveSettings">save</button>
-            <button id="cancelSettings">cancel</button>
-          </div>
+            <div>
+              <div>Expresion font size: <input id="expFontSize" type="number" inputmode="numeric"  value="22" min="8" max="100">px</div>
+            </div>
+            <div>
+              <div>Key height: <input id="keyHeight" type="number" inputmode="numeric"  value="40" min="20" max="100">px</div>
+            </div>
+            <!-- <div class="row">
+              <span>Switch &nbsp;</span>
+              <label>
+                <label class="switch">
+                  <input type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+              </label>
+            </div>-->
+          </div> 
         </div>
+      </div>
+
+      <div id="hand">
+
       </div>
 
       <div id="loadingContainer">

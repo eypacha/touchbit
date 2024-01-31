@@ -6,6 +6,7 @@
   --black: #000;
   --app-background: var(--background);
   --selected: white;
+  --exp-font-size: 22px;
   --symbol: #eeeeee;
   --text: silver;
   --number: yellow;
@@ -28,7 +29,7 @@
   --key-border-radius: var(--button-border-radius);
   --key-border-style: var(--button-border-style);
   --key-border-width: 1px 1px 3px;
-  --key-active-height: 38px;
+  --key-active-height: calc(var(--key-height) - 2px);
   --key-active-border-width: 1px 1px 1px !important;
   --key-active-margin: 2px 0 0;
   --key-active-background: var(--button-color);
@@ -90,6 +91,10 @@
   --t: #b4398b;
   --success: #2ecc71;
   --error: #e74c3c;
+}
+
+:root:not([data-theme=randomize]) #randomizeBtn {
+  display: none;
 }
 
 * {
@@ -225,8 +230,12 @@ option:checked {
   width: 70px;
 }
 
+.save:before {
+  content: "save ↓";
+}
+
 .settings:before {
-  content: " settings ⚙";
+  content: "settings ⚙";
 }
 
 .modal-backdrop {
@@ -253,14 +262,34 @@ option:checked {
 
 .dialog {
   width: 400px;
-  max-width: calc(100svw - 80px);
-  max-height: calc(100svh - 80px);
+  max-width: calc(100svw - 40px);
+  max-height: calc(100svh - 40px);
   background-color: var(--modal-background);
-  padding: 20px;
   border-radius: var(--border-radius);
 }
+.dialog .dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  padding: 0.5em;
+}
+.dialog .dialog-header button {
+  margin: 0;
+}
+.dialog .dialog-body {
+  padding: 1em;
+  border-top: solid 1px var(--button-color);
+}
+.dialog .dialog-body > div {
+  margin-bottom: 0.6em;
+}
+.dialog .row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
 .dialog input {
-  background: var(--background);
+  background: var(--button-color);
   color: var(--number);
   border: none;
   padding: 8px;
@@ -269,21 +298,22 @@ option:checked {
 .dialog input[type=number] {
   text-align: right;
 }
-.dialog label > span {
-  margin-right: 0.5em;
-}
 .dialog select {
   width: 200px;
 }
-.dialog .dialog-body {
-  margin-bottom: 1em;
-}
 .dialog .title {
   font-size: 17px;
-  margin-bottom: 1em;
+  line-height: 32px;
+  margin-left: 0.5em;
 }
 .dialog .dialog-footer {
+  border-top: solid 1px var(--button-color);
   text-align: right;
+  padding: 0.5em;
+}
+.dialog .dialog-footer button {
+  margin: 0;
+  width: 6.7em;
 }
 
 .hide {
@@ -320,6 +350,9 @@ option:checked {
   .pause:before {
     content: "■";
   }
+  .save:before {
+    content: "↓";
+  }
   .settings:before {
     content: "⚙";
   }
@@ -344,7 +377,8 @@ option:checked {
   border-top: solid 1px var(--text);
   border-bottom: solid 1px var(--text);
   overflow-y: auto;
-  padding-top: 1.5em;
+  font-size: var(--exp-font-size);
+  padding-top: 1em;
 }
 .stack-container::-webkit-scrollbar {
   width: 8px;
@@ -369,7 +403,7 @@ option:checked {
 #stack {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 0 2px;
   padding: 5px 10px;
 }
 
@@ -379,14 +413,13 @@ option:checked {
   border-style: solid;
   border-width: 1px;
   border-color: transparent;
-  border-bottom-color: var(--text);
-  height: 28px;
-  min-width: 20px;
-  line-height: 28px;
-  margin-bottom: 10px;
+  border-bottom-color: color-mix(in srgb, var(--text), transparent 80%);
+  height: 1.3em;
+  min-width: 0.8em;
+  line-height: 1.3em;
+  margin-bottom: 0.4em;
   transition: all 200ms;
   font-weight: bold;
-  font-size: 22px;
   cursor: pointer;
 }
 .slot.number {
@@ -405,20 +438,31 @@ option:checked {
   border-color: var(--selected);
   border-inline: solid 1px;
 }
+.slot.break {
+  flex-basis: 100%;
+  height: 0;
+  margin-bottom: 0.4em;
+  border-style: dashed;
+  border-color: transparent;
+}
+.slot.break.selected {
+  border-bottom-color: color-mix(in srgb, var(--text), transparent 80%);
+}
 .slot .modifier {
   z-index: 9;
   position: absolute;
-  width: 24px;
+  width: 2em;
   display: block;
   font-size: 0.7em;
   color: var(--text);
   left: 50%;
   background: var(--inline-button-color);
-  margin-left: -12px;
+  margin-left: -1em;
   padding: 0;
+  height: 1.2em;
 }
 .slot .modifier.plus-one {
-  top: -29px;
+  top: -1.3em;
 }
 .slot .modifier.plus-one:active {
   background: rgba(238, 238, 238, 0.2);
@@ -536,4 +580,44 @@ option:checked {
 #keyboard #holdMode.active {
   color: var(--selected);
   background: var(--key-command-bg-active);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch input:checked + .slider {
+  background-color: var(--command);
+}
+.switch input:checked + .slider:before {
+  transform: translateX(26px);
+}
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--button-color);
+  transition: 0.2s;
+  border-radius: var(--border-radius);
+}
+.switch .slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: var(--border-radius);
 }/*# sourceMappingURL=main.css.map */

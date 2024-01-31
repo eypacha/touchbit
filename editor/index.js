@@ -1,6 +1,5 @@
 /* eslint-disable */
 /* global LZMA */
-/* global WavMaker */
 
 import { createElem as el } from './elem.min.js';
 
@@ -21,8 +20,6 @@ let g_filter;
 const g_analyzers = [];
 let g_splitter;
 let g_merger;
-let g_saving = false;
-let g_saveDialogInitialized = false;
 let g_settingsDialogInitialized = false;
 let g_ignoreHashChange;
 let playing = false;
@@ -30,8 +27,8 @@ let timeElem;
 let playElem;
 let beatTypeElem;
 let sampleRateElem;
-let saveElem;
 let settingsElem;
+let randommThemeElem;
 let compileStatusElem;
 let compressor;
 let controls;
@@ -53,6 +50,10 @@ let isLongClickSelectPrev = false;
 
 let clickTimerSelectNext;
 let isLongClickSelectNext = false;
+
+let clickTimerInsert;
+let isLongClickInsert = false;
+
 const touchable = 'ontouchstart' in window;
 const keyDown = touchable ? 'touchstart' : 'mousedown';
 const keyUp = touchable ? 'touchend' : 'mouseup';
@@ -103,7 +104,7 @@ function setSelectOption(select, selectedIndex) {
 }
 
 async function main() {
-  compressor = new LZMA( 'js/lzma_worker.js' );
+  compressor = new LZMA('js/lzma_worker.js');
   controls = $('controls');
 
   g_context = new AudioContext();
@@ -139,7 +140,6 @@ async function main() {
   playElem = el('button', { className: 'play', onClick: playPause });
 
   controls.appendChild(playElem);
-  
   timeElem = el('button', {
     onClick: resetToZero,
     className: 'timer',
@@ -174,12 +174,6 @@ async function main() {
   sampleRateElem.classList.add('sample-rate')
   controls.appendChild(sampleRateElem);
 
-  saveElem = el('button', {
-    textContent: 'save',
-    onClick: startSave,
-  });
-  controls.appendChild(saveElem);
-
   compileStatusElem = el('div', {
     className: 'status',
     textContent: '',
@@ -193,15 +187,21 @@ async function main() {
 
   controls.appendChild(settingsElem);
 
+  randommThemeElem = el('button', {
+    onclick: setRandomTheme,
+    textContent: '?',
+  })
+
+  controls.appendChild(randommThemeElem);
+
   g_byteBeat.setExpressionType(1);
   // Stack
-  
   const stackContainer = $('stack');
 
   function renderStack() {
     stackContainer.innerHTML = ''
 
-    if(!holdMode) compile(stack.join(' '))
+    if (!holdMode) compile(stack.join(' '))
 
     stack.forEach((s, ndx) => {
 
@@ -214,17 +214,16 @@ async function main() {
       if (!isNaN(parseFloat(s)) && isFinite(s)) {
         slotDiv.classList.add('number')
 
-        slotDiv.textContent = slotDiv.textContent.startsWith('-0.') 
-                                ? '-' + slotDiv.textContent.slice(2) 
-                                : slotDiv.textContent.startsWith('0.') 
-                                  ? '.' + slotDiv.textContent.slice(2) 
-                                  : slotDiv.textContent;
+        slotDiv.textContent = slotDiv.textContent.startsWith('-0.')
+          ? '-' + slotDiv.textContent.slice(2)
+          : slotDiv.textContent.startsWith('0.')
+            ? '.' + slotDiv.textContent.slice(2)
+            : slotDiv.textContent;
 
         if (ndx === selectedSlot) {
           const plusOneDiv = document.createElement('button')
           plusOneDiv.className = 'modifier plus-one'
           plusOneDiv.textContent = '+1'
-  
           const minusOneDiv = document.createElement('button')
           minusOneDiv.className = 'modifier minus-one'
           minusOneDiv.textContent = '-1'
@@ -232,11 +231,9 @@ async function main() {
           plusOneDiv.addEventListener('click', () => {
             modifySlotValue(selectedSlot, 1)
           })
-  
           minusOneDiv.addEventListener('click', () => {
             modifySlotValue(selectedSlot, -1)
           })
-  
           slotDiv.appendChild(plusOneDiv)
           slotDiv.appendChild(minusOneDiv)
         }
@@ -244,21 +241,24 @@ async function main() {
       }
 
       if (s === "t") slotDiv.classList.add('t')
+      if (s === "\n") slotDiv.classList.add('break')
 
-      if (['drop','dup','swap','pick','put'].includes(slotDiv.textContent.toLocaleLowerCase())) slotDiv.classList.add('special')
+      if (['drop', 'dup', 'swap', 'pick', 'put'].includes(slotDiv.textContent.toLocaleLowerCase())) slotDiv.classList.add('special')
 
-      if(s === "<<") slotDiv.textContent = "«"
-      if(s === ">>") slotDiv.textContent = "»"
-      if(s === "||") slotDiv.textContent = "‖"
+      if (s === "<<") slotDiv.textContent = "«"
+      if (s === ">>") slotDiv.textContent = "»"
+      if (s === "||") slotDiv.textContent = "‖"
+
+
 
       slotDiv.addEventListener('click', () => {
-        
-          changeNumberMode(selectedSlot == ndx && slotDiv.classList.contains('number'));
-          selectedSlot = ndx
-          renderStack()
-          
+
+        changeNumberMode(selectedSlot == ndx && slotDiv.classList.contains('number'));
+        selectedSlot = ndx
+        renderStack()
+
       })
-      
+
       stackContainer.appendChild(slotDiv)
     })
 
@@ -273,6 +273,7 @@ async function main() {
     selectedSlot = index;
     const slot = stackContainer.children[index];
     slot.classList.add('selected');
+
   }
 
   selectSlot(0);
@@ -282,52 +283,51 @@ async function main() {
   function selectNext() {
     changeNumberMode(false)
 
-      if(selectedSlot != (stack.length - 1)){
+    if (selectedSlot != (stack.length - 1)) {
 
-        selectedSlot++ 
-      
-      } else {
+      selectedSlot++
 
-        if(stack[selectedSlot] != '') {
-          stack.push('')
-          selectedSlot++
-        }
-        
+    } else {
+
+      if (stack[selectedSlot] != '') {
+        stack.push('')
+        selectedSlot++
       }
 
-      renderStack()
-      
+    }
+
+    renderStack()
+
   }
-  
-  selectNextBtn.addEventListener(keyDown, function() {
 
-    clickTimerSelectNext = setTimeout(function() {
+  selectNextBtn.addEventListener(keyDown, function (event) {
 
-      selectedSlot = stack.length-1
+    event.preventDefault()
+    clickTimerSelectNext = setTimeout(function () {
+
+      selectedSlot = stack.length - 1
       renderStack();
 
     }, longClickTime);
-    
   });
 
-  selectNextBtn.addEventListener(keyUp, function() {
+  selectNextBtn.addEventListener(keyUp, function () {
 
     clearTimeout(clickTimerSelectNext);
-  
     if (!isLongClickSelectNext) {
 
       selectNext();
 
     }
-  
     isLongClickSelectNext = false;
   });
 
   const selectPrev = $('selectPrev');
 
-  selectPrev.addEventListener(keyDown, function() {
+  selectPrev.addEventListener(keyDown, function (event) {
 
-    clickTimerSelectPrev = setTimeout(function() {
+    event.preventDefault()
+    clickTimerSelectPrev = setTimeout(function () {
 
       if (selectedSlot > 0) {
         selectedSlot = 0;
@@ -337,10 +337,10 @@ async function main() {
     }, longClickTime);
   });
 
-  selectPrev.addEventListener(keyUp, function() {
+  selectPrev.addEventListener(keyUp, function () {
 
     clearTimeout(clickTimerSelectPrev);
-  
+
     if (!isLongClickSelectPrev) {
       changeNumberMode(false)
 
@@ -348,25 +348,25 @@ async function main() {
         selectedSlot--;
         renderStack();
       }
-      
+
     }
-  
+
     isLongClickSelectPrev = false;
   });
 
   function changeNumberMode(toValue) {
 
     numberMode = toValue
-    numberMode ? stackContainer.classList.add("number-mode-on"): stackContainer.classList.remove("number-mode-on")
-    
+    numberMode ? stackContainer.classList.add("number-mode-on") : stackContainer.classList.remove("number-mode-on")
+
   }
 
   const symbols = document.querySelectorAll('.symbol');
 
   symbols.forEach(symbol => {
-    symbol.addEventListener('click', function() {
+    symbol.addEventListener('click', function () {
 
-      if(numberMode) {
+      if (numberMode) {
         changeNumberMode(false)
         selectNext()
       }
@@ -382,8 +382,8 @@ async function main() {
   const numbers = document.querySelectorAll('.number');
 
   numbers.forEach(number => {
-    number.addEventListener('click', function() {
-      
+    number.addEventListener('click', function () {
+
       const newNumber = this.getAttribute('data-insert')
 
       // Verifica si el contenido del slot actual cumple con la condición numérica
@@ -393,7 +393,7 @@ async function main() {
       ) {
         // Si es un número, agrega el nuevo número a continuación del existente en el slot
         stack[selectedSlot] += newNumber
-        
+
       } else {
         // Si no es un número, reemplaza el contenido del slot con el nuevo número
         stack[selectedSlot] = newNumber
@@ -401,7 +401,7 @@ async function main() {
 
       saveState()
       changeNumberMode(true)
-      
+
       renderStack()
 
     })
@@ -411,8 +411,8 @@ async function main() {
   const modifiers = document.querySelectorAll('.modifier');
 
   modifiers.forEach(modifier => {
-    modifier.addEventListener('click', function() {
-      
+    modifier.addEventListener('click', function () {
+
       const newModifier = this.getAttribute('data-modifier')
 
       let evaluated = null
@@ -421,7 +421,9 @@ async function main() {
       if (!isNaN(parseFloat(stack[selectedSlot])) && isFinite(stack[selectedSlot])) {
         // Si es un número, agrega el nuevo número a continuación del existente en el slot
 
-        if(newModifier === "clear") {
+        if (newModifier === "clear") {
+
+
 
           evaluated = stack[selectedSlot].slice(0, -1)
           if (evaluated === '') evaluated = "0"
@@ -429,20 +431,20 @@ async function main() {
         } else {
 
           evaluated = eval(stack[selectedSlot] + newModifier)
-          evaluated =  Math.round(evaluated * 100000) / 100000
+          evaluated = Math.round(evaluated * 100000) / 100000
 
         }
-        
+
 
       } else {
         // Si no es un número, reemplaza el contenido del slot con el nuevo número
-        if(newModifier === "clear") {
+        if (newModifier === "clear") {
           evaluated = "0"
         } else {
           evaluated = eval(0 + newModifier)
           evaluated = Math.round(evaluated * 100000) / 100000
         }
-       
+
       }
       console.log(evaluated)
       stack[selectedSlot] = evaluated
@@ -456,7 +458,7 @@ async function main() {
 
   function modifySlotValue(index, increment) {
     const currentValue = parseFloat(stack[index]);
-    
+
     // Verifica si el valor actual es un número
     if (!isNaN(currentValue) && isFinite(currentValue)) {
       stack[index] = (currentValue + increment).toString();
@@ -467,13 +469,16 @@ async function main() {
 
   const deleteButton = $('deleteSlot');
 
-  deleteButton.addEventListener(keyDown, function() {
+  deleteButton.addEventListener(keyDown, function (event) {
 
-    clickTimerDelete = setTimeout(function() {
+    event.preventDefault()
+    clickTimerDelete = setTimeout(function () {
 
       stack = [''];
       selectedSlot = 0;
-      compile('0')
+
+      if (!holdMode) compile('0')
+
       saveState();
       changeNumberMode(false);
       renderStack();
@@ -481,10 +486,10 @@ async function main() {
     }, longClickTime);
   });
 
-  deleteButton.addEventListener(keyUp, function() {
+  deleteButton.addEventListener(keyUp, function () {
 
     clearTimeout(clickTimerDelete);
-  
+
     if (!isDeleteLongClick) {
       if (stack.length == 1) {
         stack[0] = '';
@@ -494,27 +499,48 @@ async function main() {
         stack.splice(selectedSlot, 1);
         if (selectedSlot >= stack.length) selectedSlot = stack.length - 1;
       }
-  
+
       changeNumberMode(false);
       renderStack();
     }
-  
+
     isDeleteLongClick = false;
   });
 
   const insertButton = $('insertSlot');
 
-  insertButton.addEventListener('click', function() {
-    stack.splice(selectedSlot, 0, ''); // Inserta un elemento vacío en el slot seleccionado
-    saveState()
-    changeNumberMode(false)
-    renderStack();
+  insertButton.addEventListener(keyDown, function (event) {
+
+    event.preventDefault()
+    clickTimerInsert = setTimeout(function () {
+
+      stack.splice(selectedSlot, 0, '\n'); // Inserta un elemento vacío en el slot seleccionado
+      saveState()
+      selectNext();
+      renderStack();
+      isLongClickInsert = true;
+
+    }, longClickTime);
+  });
+
+  insertButton.addEventListener(keyUp, function () {
+
+    clearTimeout(clickTimerInsert);
+
+    if (!isLongClickInsert) {
+      stack.splice(selectedSlot, 0, ''); // Inserta un elemento vacío en el slot seleccionado
+      saveState();
+      changeNumberMode(false);
+      renderStack();
+    }
+
+    isLongClickInsert = false;
   });
 
   const fnModeButton = $('fnMode');
   const keyboardElem = $('keyboard');
 
-  fnModeButton.addEventListener('click', function() {
+  fnModeButton.addEventListener('click', function () {
 
     fnMode = !fnMode
 
@@ -524,20 +550,21 @@ async function main() {
 
   const holdModeButton = $('holdMode');
 
-  holdModeButton.addEventListener('click', function() {
+  holdModeButton.addEventListener('click', function () {
 
     holdMode = !holdMode
 
     holdModeButton.classList.toggle('active')
-    if(!holdMode) {
+    if (!holdMode) {
 
+      if (stack.length == 1 && stack[0] == '') compile('0')
       renderStack()
     }
 
   })
 
   const undoButton = $('undo');
-  undoButton.addEventListener('click', function() {
+  undoButton.addEventListener('click', function () {
 
     if (undoStack.length > 0) {
       redoStack.push({ stack: [...stack], selectedSlot });
@@ -550,7 +577,7 @@ async function main() {
   })
 
   const redoButton = $('redo');
-  redoButton.addEventListener('click', function() {
+  redoButton.addEventListener('click', function () {
     if (redoStack.length > 0) {
       undoStack.push({ stack: [...stack], selectedSlot });
       const nextState = redoStack.pop();
@@ -560,22 +587,22 @@ async function main() {
     }
   })
 
-  function saveState(){
+  function saveState() {
 
-    if(holdMode) return
+    if (holdMode) return
     redoStack = [];
     undoStack.push({ stack: [...stack], selectedSlot });
 
   }
 
   function addOption(textContent, selected) {
-      return el('option', {
-        textContent,
-        ...(selected && {selected}),
-      });
+    return el('option', {
+      textContent,
+      ...(selected && { selected }),
+    });
   }
 
-  window.addEventListener('hashchange', function() {
+  window.addEventListener('hashchange', function () {
     if (g_ignoreHashChange) {
       g_ignoreHashChange = false;
       return;
@@ -594,7 +621,7 @@ async function main() {
     requestAnimationFrame(render)
     if (playing) updateTimeDisplay()
   }
-  
+
   render()
 
   function readURL(hash) {
@@ -615,132 +642,69 @@ async function main() {
 
     const bytes = convertHexToBytes(data.bb);
 
-    compressor.decompress(bytes, function(text) {
-      
-        doNotSetURL = true;
-        compile(text, true);
+    compressor.decompress(bytes, function (text) {
 
-        stack = [...text.split(' ')]
-        selectedSlot = stack.length - 1
-        saveState()
-        renderStack()
-        
-      },
+      doNotSetURL = true;
+      compile(text, true);
+
+      stack = [...text.split(' ')]
+      selectedSlot = stack.length - 1
+      saveState()
+      renderStack()
+
+    },
       dummyFunction);
 
   }
 
 }
-
-function startSave() {
-  if (!g_saving) {
-    g_saving = true;
-    showSaveDialog();
-  }
-}
-
-async function showSaveDialog() {
-  function close() {
-    $('savedialog').classList.remove('active')
-    g_saving = false;
-  }
-
-  const saveData = (function() {
-    const a = el('a', {style: {display: 'none'}});
-    document.body.appendChild(a);
-    return function saveData(blob, fileName) {
-      const url = window.URL.createObjectURL(blob);
-      a.href = url;
-      a.download = fileName;
-      a.click();
-    };
-  }());
-
-  function wait(ms = 0) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-
-  function save() {
-    async function realSave() {
-      const numSeconds = parseFloat($('seconds').value);
-      if (numSeconds > 0) {
-        const wasPlaying = playing;
-        if (playing) {
-          pause();
-        }
-        // there are issues where. The stack should be
-        // reset if nothing else.
-        const sampleRate = g_byteBeat.getDesiredSampleRate();
-        const numSamplesNeeded = sampleRate * numSeconds | 0;
-        const numChannels = 2;
-        const wavMaker = new WavMaker(sampleRate, numChannels);
-        const context = ByteBeatNode.createContext();
-        const stack = ByteBeatNode.createStack();
-        for (let i = 0; i < numSamplesNeeded; i += sampleRate) {
-          const start = i;
-          const end = Math.min(i + sampleRate, numSamplesNeeded);
-          const output = [
-            new Float32Array(end - start),
-            new Float32Array(end - start),
-          ];
-          for (let j = start; j < end; ++j) {
-            for (let ch = 0; ch < numChannels; ++ch) {
-              const s = g_byteBeat.getSampleForTime(j, context, stack, ch);
-              output[ch][j - i] = s;
-            }
-          }
-          wavMaker.addData(output);
-          await wait();
-        }
-        const blob = wavMaker.getWavBlob();
-        saveData(blob, 'touchbit.wav');
-
-        if (wasPlaying) play();
-      }
-      close();
-    }
-    realSave();
-  }
-
-  if (!g_saveDialogInitialized) {
-    g_saveDialogInitialized = true;
-    $('saveWav').addEventListener('click', save);
-    $('cancelSave').addEventListener('click', close);
-  }
-  const saveDialogElem = $('savedialog');
-  saveDialogElem.classList.add('active')
-}
-
-
-function showSettingsDialog(){
+function showSettingsDialog() {
 
   const themeSelector = $('selectTheme');
-  
+  const settingseDialogElem = $('settingsdialog');
+  const keyHeight = $('keyHeight');
+  const expFontSize = $('expFontSize');
+
   if (!g_settingsDialogInitialized) {
     g_settingsDialogInitialized = true;
-    $('saveSettings').addEventListener('click', save);
     $('cancelSettings').addEventListener('click', close);
+    themeSelector.addEventListener('change', save);
+    settingseDialogElem.addEventListener('click', close)
+    settingseDialogElem.querySelector('.dialog').addEventListener('click', function (event) {
+      event.stopPropagation();
+    })
+    keyHeight.addEventListener('change', save);
+    expFontSize.addEventListener('change', save);
   }
-  
-  const settingseDialogElem = $('settingsdialog');
+
   settingseDialogElem.classList.add('active')
 
-  function save() {
 
+  function save() {
     document.documentElement.dataset.theme = themeSelector.value
     localStorage.setItem('theme', themeSelector.value);
-    close()
+
+    $('main').style.setProperty('--key-height', `${keyHeight.value}px`);
+    localStorage.setItem('key-height', keyHeight.value);
+
+    $('main').style.setProperty('--exp-font-size', `${expFontSize.value}px`);
+    localStorage.setItem('expFontSize', expFontSize.value);
+
+    if (themeSelector.value == 'randomize') {
+      setRandomTheme()
+    } else {
+      document.documentElement.style = ''
+    }
+
   }
 
   function close() {
     $('settingsdialog').classList.remove('active')
   }
-  
+
 }
 
-const dummyFunction = () => {}
+const dummyFunction = () => { }
 
 const updateTimeDisplay = () => timeElem.innerHTML = g_byteBeat.getTime()
 
@@ -768,7 +732,7 @@ function compile(text, resetToZero) {
     }
 
     setExpressions(expressions, resetToZero);
-    
+
   }
 
 }
@@ -778,7 +742,7 @@ function setURL() {
     doNotSetURL = false;
     return;
   }
-  compressor.compress(stack.join(' '), 1, function(bytes) {
+  compressor.compress(stack.join(' '), 1, function (bytes) {
     const hex = convertBytesToHex(bytes);
     g_ignoreHashChange = true;
     const params = new URLSearchParams({
@@ -788,7 +752,7 @@ function setURL() {
     });
     window.location.replace(`#${params.toString()}`);
   },
-  dummyFunction);
+    dummyFunction);
 }
 
 {
@@ -798,7 +762,23 @@ function setURL() {
   if (theme !== null) {
     document.documentElement.dataset.theme = theme;
     $('selectTheme').value = theme;
-  } 
+
+    if (theme == 'randomize') setRandomTheme()
+  }
+
+  const keyHeight = localStorage.getItem('key-height');
+
+  if (keyHeight !== null) {
+    document.getElementById('main').style.setProperty('--key-height', `${keyHeight}px`);
+    $('keyHeight').value = keyHeight;
+  }
+
+  const expFontSize = localStorage.getItem('expFontSize');
+  if (expFontSize !== null) {
+    document.getElementById('main').style.setProperty('--exp-font-size', `${expFontSize}px`);
+    $('expFontSize').value = expFontSize;
+  }
+
 
   $('loadingContainer').style.display = 'none';
   main();
@@ -808,31 +788,56 @@ function setURL() {
   if (isSafari) {
 
     let drags = new Set() //set of all active drags
-    document.addEventListener("touchmove", function(event){
-      if(!event.isTrusted)return //don't react to fake touches
-      Array.from(event.changedTouches).forEach(function(touch){
+    document.addEventListener("touchmove", function (event) {
+      if (!event.isTrusted) return //don't react to fake touches
+      Array.from(event.changedTouches).forEach(function (touch) {
         drags.add(touch.identifier) //mark this touch as a drag
       })
     })
-    document.addEventListener("touchend", function(event){
-      if(!event.isTrusted)return
+    document.addEventListener("touchend", function (event) {
+      if (!event.isTrusted) return
       let isDrag = false
-      Array.from(event.changedTouches).forEach(function(touch){
-        if(drags.has(touch.identifier)){
+      Array.from(event.changedTouches).forEach(function (touch) {
+        if (drags.has(touch.identifier)) {
           isDrag = true
         }
         drags.delete(touch.identifier) //touch ended, so delete it
       })
-      if(!isDrag && document.activeElement == document.body){
+      if (!isDrag && document.activeElement == document.body) {
         //note that double-tap only happens when the body is active
         event.preventDefault() //don't zoom
         event.stopPropagation() //don't relay event
         event.target.focus() //in case it's an input element
         event.target.click() //in case it has a click handler
-        event.target.dispatchEvent(new TouchEvent("touchend",event))
+        event.target.dispatchEvent(new TouchEvent("touchend", event))
         //dispatch a copy of this event (for other touch handlers)
       }
     })
 
+  }
 }
+
+
+function setRandomTheme() {
+
+  document.documentElement.dataset.theme = "randomize"
+  $('selectTheme').value = "randomize"
+
+  function randomColor() {
+    return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
+
+  function randomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  document.documentElement.style.setProperty('--background', randomColor());
+  document.documentElement.style.setProperty('--text', randomColor());
+  document.documentElement.style.setProperty('--t', randomColor());
+  document.documentElement.style.setProperty('--command', randomColor());
+  document.documentElement.style.setProperty('--number', randomColor());
+  document.documentElement.style.setProperty('--symbol', randomColor());
+  document.documentElement.style.setProperty('--border-radius', randomNumber(0, 10) + 'px');
+
 }
+
