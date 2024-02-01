@@ -1,225 +1,218 @@
 ﻿<!DOCTYPE html>
 <html lang="en" data-theme="default">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-  
-    <meta property="og:title" content="Touchbit" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://dev.eypacha.com/touchbit/touchbit.png" />
-    <meta property="og:image:width" content="600" />
-    <meta property="og:image:height" content="600" />
-    <meta property="og:description" content="Bytebeat for mobile" />
-    <meta property="og:url" content="https://dev.eypacha.com/touchbit" />
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@eypacha">
-    <meta name="twitter:creator" content="@eypacha">
-    <meta name="twitter:domain" content="dev.eypacha.com">
-    <meta name="twitter:title" content="Touchbit">
-    <meta name="twitter:url" content="https://dev.eypacha.com/touchbit">
-    <meta name="twitter:description" content="Bytebeat for mobile">
-    <meta name="twitter:image:src" content="https://dev.eypacha.com/touchbit/touchbit.png">
-  
-    <link href="icon.png" rel="shortcut icon" type="image/png">
-    <link rel="stylesheet" href="styles/main.css">
-  
-    <title>Touchbit</title>
-    <script src="js/lzma.min.js"></script>
 
-  </head>
-  <body>
-      <div id="main">
-        <div id="controls"></div>
-        <div class="stack-container">
-          <div id="stack"></div>
-          <div class="debuggerContainer">
-            <div id="debugger">
-  
-            </div>
-          </div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+
+  <meta property="og:title" content="Touchbit" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://dev.eypacha.com/touchbit/touchbit.png" />
+  <meta property="og:image:width" content="600" />
+  <meta property="og:image:height" content="600" />
+  <meta property="og:description" content="Bytebeat for mobile" />
+  <meta property="og:url" content="https://dev.eypacha.com/touchbit" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@eypacha">
+  <meta name="twitter:creator" content="@eypacha">
+  <meta name="twitter:domain" content="dev.eypacha.com">
+  <meta name="twitter:title" content="Touchbit">
+  <meta name="twitter:url" content="https://dev.eypacha.com/touchbit">
+  <meta name="twitter:description" content="Bytebeat for mobile">
+  <meta name="twitter:image:src" content="https://dev.eypacha.com/touchbit/touchbit.png">
+
+  <link href="icon.png" rel="shortcut icon" type="image/png">
+  <link rel="stylesheet" href="styles/main.css">
+
+  <title>Touchbit</title>
+  <script src="js/lzma.min.js"></script>
+</head>
+
+<body>
+  <div id="main">
+    <div id="controls"></div>
+    <div class="stack-container">
+      <div id="stack"></div>
+      <div class="debuggerContainer">
+        <div id="debugger">
+
         </div>
-        <div id="keyboard">
+      </div>
+    </div>
+    <div id="keyboard">
+      <div class="row">
+        <div class="column">
           <div class="row">
-            <div class="column">
-              <div class="row">
-                <button class="number layer-1" data-insert="7">7</button>
-                <button class="modifier layer-2" data-modifier="+1">+1</button>
-                <button class="number layer-1" data-insert="8">8</button>
-                <button class="modifier layer-2" data-modifier="+5">+5</button>
-                <button class="number layer-1" data-insert="9">9</button>
-                <button class="modifier layer-2" data-modifier="+10">+10</button>
-              </div>
-              <div class="row">
-                <button class="number layer-1" data-insert="4">4</button>
-                <button class="modifier layer-2" data-modifier="-1">-1</button>
-                <button class="number layer-1" data-insert="5">5</button>
-                <button class="modifier layer-2" data-modifier="-5">-5</button>
-                <button class="number layer-1" data-insert="6">6</button>
-                <button class="modifier layer-2" data-modifier="-10">-10</button>
-              </div>
-              <div class="row">
-                <button class="number layer-1" data-insert="1">1</button>
-                <button class="modifier layer-2" data-modifier="+0.1">+.1</button>
-                <button class="number layer-1" data-insert="2">2</button>
-                <button class="modifier layer-2" data-modifier="+0.01">+.01</button>
-                <button class="number layer-1" data-insert="3">3</button>
-                <button class="modifier layer-2" data-modifier="+0.001">+.001</button>
-              </div>
-              <div class="row">
-                <button class="number layer-1" data-insert=".">.</button>
-                <button class="modifier layer-2" data-modifier="-0.1">-.1</button>
-                <button class="number layer-1" data-insert="0">0</button>
-                <button class="modifier layer-2" data-modifier="-0.01">-.01</button>
-                <button class="modifier layer-1" data-modifier="clear">⌫</button>
-                <button class="modifier layer-2" data-modifier="-0.001">-.001</button>
-                
-              </div>
-            </div>
-            <div class="column">
-              <div class="row">
-                <button class="symbol layer-1" data-insert="*">*</button>
-                <button class="button command small layer-2 notranslate" id="undo">UNDO</button>
-                <button class="symbol layer-1" data-insert="/">/</button>
-                <button class="button command small layer-2 notranslate" id="redo">REDO</button>
-                <button class="symbol layer-1" data-insert="&">&</button>
-                <button class="symbol layer-2" data-insert="&&">&&</button>
-              </div>
-              <div class="row">
-                <button class="symbol layer-1" data-insert="+">+</button>
-                <button class="symbol layer-2" data-insert="<">&lt;</button>
-                <button class="symbol layer-1" data-insert="-">-</button>
-                <button class="symbol layer-2" data-insert=">">&gt;</button>
-                <button class="symbol layer-1"  data-insert="|">&vert;</button>
-                <button class="symbol layer-2"  data-insert="=">=</button>
-              </div>
-              <div class="row">
-                <button class="symbol layer-2" data-insert="||">‖</button>
-                <button class="symbol layer-1" data-insert="%">%</button>
-                <button class="symbol layer-2 small notranslate" data-insert="drop">drop</button>
-                <button class="symbol layer-1" data-insert="~">~</button>
-                <button class="symbol layer-2 small notranslate" data-insert="dup">dup</button>
-                <button class="symbol layer-1" data-insert="^">^</button>
-              </div>
-              <div class="row">
-                <button class="symbol t layer-1" data-insert="t">t</button>
-                <button class="symbol layer-2 small notranslate" data-insert="swap">swap</button>
-                <button class="symbol layer-1" data-insert="<<">&laquo;</button>
-                <button class="symbol layer-2 small notranslate" data-insert="pick">pick</button>
-                <button class="symbol layer-1" data-insert=">>">&raquo;</button>
-                <button class="symbol layer-2 small notranslate" data-insert="put">put</button>
-              </div>
-            </div>
+            <button class="number layer-1" data-insert="7">7</button>
+            <button class="modifier layer-2" data-modifier="+1">+1</button>
+            <button class="number layer-1" data-insert="8">8</button>
+            <button class="modifier layer-2" data-modifier="+5">+5</button>
+            <button class="number layer-1" data-insert="9">9</button>
+            <button class="modifier layer-2" data-modifier="+10">+10</button>
           </div>
-
           <div class="row">
-
-          <button class="command small" id="fnMode">FN</button>
-          <button class="command small notranslate" id="holdMode">HOLD</button>
-          <button class="command small notranslate" id="insertSlot">INS</button>
-          <button class="command small notranslate" id="deleteSlot">DEL</button>
-          <button class="command" id="selectPrev">←</button>
-          <button class="command" id="selectNext">→</button>
-        </div>
-        </div>
-      </div>
-    
-      <div id="savedialog" class="modal-backdrop">
-
-          <div class="dialog">
-            <div class="dialog-header">
-              <div class="title">↓ Save audio</div>
-              <button id="cancelSave">&times;</button>
-            </div>
-            <div class="dialog-body">
-              <div> seconds: <input id="seconds" type="number" inputmode="numeric"  value="30" min="0" max="10000"></div>
-            </div>
-            <div class="dialog-footer">
-              <button id="saveWav">save</button>
-            </div>
+            <button class="number layer-1" data-insert="4">4</button>
+            <button class="modifier layer-2" data-modifier="-1">-1</button>
+            <button class="number layer-1" data-insert="5">5</button>
+            <button class="modifier layer-2" data-modifier="-5">-5</button>
+            <button class="number layer-1" data-insert="6">6</button>
+            <button class="modifier layer-2" data-modifier="-10">-10</button>
           </div>
-
-      </div>
-
-      <div id="settingsdialog" class="modal-backdrop">
-        <div class="dialog">
-          <div class="dialog-header">
-            <div class="title">⚙ Settings</div>
-            <button id="cancelSettings">&times;</button>
+          <div class="row">
+            <button class="number layer-1" data-insert="1">1</button>
+            <button class="modifier layer-2" data-modifier="+0.1">+.1</button>
+            <button class="number layer-1" data-insert="2">2</button>
+            <button class="modifier layer-2" data-modifier="+0.01">+.01</button>
+            <button class="number layer-1" data-insert="3">3</button>
+            <button class="modifier layer-2" data-modifier="+0.001">+.001</button>
           </div>
-          <div class="dialog-body">
-            <div>
-              <label>
-                <span>Theme </span>
-                <select id="selectTheme">
-                  <option>default</option>
-                  <option>tropical</option>
-                  <option>lavander</option>
-                  <option>monochrome-dark</option>
-                  <option>monochrome-light</option>
-                  <option>randomize</option>
-                </select>
-              </label>
-              <span><button id="randomizeBtn">?</button></span>
-            </div>
-            <div>
-              <div>
-                <label>
-                  <span>Expresion font size:</span>
-                  <input id="expFontSize" type="number" inputmode="numeric"  value="22" min="8" max="100">
-                  <span class="notranslate">px</span>
-                </label>
-              </div>
-            </div>
-            <div>
-              <div>
-                <label>
-                  <span>Key height:</span>
-                  <input id="keyHeight" type="number" inputmode="numeric"  value="40" min="20" max="100">
-                  <span class="notranslate">px</span>
-                </label>
-              </div>
-            </div>
-            <div>
-              <label>
-                <span>Debug mode</span>
-                <label class="switch">
-                  <input type="checkbox" id="debugMode">
-                  <span class="slider round"></span>
-                </label>
-              </label>
-            </div>
-            <div style="margin-top: 1em; text-align: center;">
-              <a href="#" id="restoreSettings">Restore default settings</a>
-            </div>
-          </div> 
+          <div class="row">
+            <button class="number layer-1" data-insert=".">.</button>
+            <button class="modifier layer-2" data-modifier="-0.1">-.1</button>
+            <button class="number layer-1" data-insert="0">0</button>
+            <button class="modifier layer-2" data-modifier="-0.01">-.01</button>
+            <button class="modifier layer-1" data-modifier="clear" aria-label="clear">⌫</button>
+            <button class="modifier layer-2" data-modifier="-0.001">-.001</button>
+          </div>
+        </div>
+        <div class="column">
+          <div class="row">
+            <button class="symbol layer-1" data-insert="*" aria-label="multiplication">*</button>
+            <button class="button command small layer-2 notranslate" id="undo">UNDO</button>
+            <button class="symbol layer-1" data-insert="/" aria-label="division">/</button>
+            <button class="button command small layer-2 notranslate" id="redo">REDO</button>
+            <button class="symbol layer-1" data-insert="&" aria-label="bitwise AND">&</button>
+            <button class="symbol layer-2" data-insert="&&" aria-label="logical AND">&&</button>
+          </div>
+          <div class="row">
+            <button class="symbol layer-1" data-insert="+" aria-label="addition">+</button>
+            <button class="symbol layer-2" data-insert="<" aria-label="less than">&lt;</button>
+            <button class="symbol layer-1" data-insert="-" aria-label="substraction">-</button>
+            <button class="symbol layer-2" data-insert=">" aria-label="greater than">&gt;</button>
+            <button class="symbol layer-1" data-insert="|" aria-label="bitwise OR">&vert;</button>
+            <button class="symbol layer-2" data-insert="=" aria-label="equal">=</button>
+          </div>
+          <div class="row">
+            <button class="symbol layer-2" data-insert="||" aria-label="logical OR">‖</button>
+            <button class="symbol layer-1" data-insert="%" aria-label="modulus">%</button>
+            <button class="symbol layer-2 small notranslate" data-insert="drop">drop</button>
+            <button class="symbol layer-1" data-insert="~" aria-label="bitwise NOT">~</button>
+            <button class="symbol layer-2 small notranslate" data-insert="dup">dup</button>
+            <button class="symbol layer-1" data-insert="^" aria-label="bitwise XOR">^</button>
+          </div>
+          <div class="row">
+            <button class="symbol t layer-1" data-insert="t">t</button>
+            <button class="symbol layer-2 small notranslate" data-insert="swap">swap</button>
+            <button class="symbol layer-1" data-insert="<<" aria-label="left shift">&laquo;</button>
+            <button class="symbol layer-2 small notranslate" data-insert="pick">pick</button>
+            <button class="symbol layer-1" data-insert=">>" aria-label="right shift">&raquo;</button>
+            <button class="symbol layer-2 small notranslate" data-insert="put">put</button>
+          </div>
         </div>
       </div>
+      <div class="row">
+        <button class="command small notranslate" id="fnMode" aria-label="function">FN</button>
+        <button class="command small notranslate" id="holdMode" aria-label="hold">HOLD</button>
+        <button class="command small notranslate" id="insertSlot" aria-label="insert">INS</button>
+        <button class="command small notranslate" id="deleteSlot" aria-label="delete">DEL</button>
+        <button class="command" id="selectPrev" aria-label="previous">←</button>
+        <button class="command" id="selectNext" aria-label="next">→</button>
+      </div>
+    </div>
+  </div>
 
-      <div id="helpdialog" class="modal-backdrop">
-        <div class="dialog">
-          <div class="dialog-header">
-            <div class="title">♥ About Touchbit</div>
-            <button id="cancelhelp">&times;</button>
-          </div>
-          <div class="dialog-body">
-          <div>Touchbit is a 'mobile-friendly' interface for composing bytebeat music using postfix expressions.</div>
+  <div id="savedialog" class="modal-backdrop">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="title">↓ Save audio</div>
+        <button id="cancelSave" aria-label="close">&times;</button>
+      </div>
+      <div class="dialog-body">
+        <div> seconds: <input id="seconds" type="number" inputmode="numeric" value="30" min="0" max="10000"></div>
+      </div>
+      <div class="dialog-footer">
+        <button id="saveWav">save</button>
+      </div>
+    </div>
+  </div>
 
-          <div><b>More info: </b><br/>
-            <a href="https://github.com/eypacha/touchbit" target="_blank">github.com/eypacha/touchbit</a>
+  <div id="settingsdialog" class="modal-backdrop">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="title">⚙ Settings</div>
+        <button id="cancelSettings" aria-label="close">&times;</button>
+      </div>
+      <div class="dialog-body">
+        <div>
+          <label>
+            <span>Theme </span>
+            <select id="selectTheme">
+              <option>default</option>
+              <option>tropical</option>
+              <option>lavander</option>
+              <option>monochrome-dark</option>
+              <option>monochrome-light</option>
+              <option>randomize</option>
+            </select>
+            <button id="randomizeBtn">?</button>
+          </label>
+        </div>
+        <div>
+          <div>
+            <label>
+              <span>Expresion font size:</span>
+              <input id="expFontSize" type="number" inputmode="numeric" value="22" min="8" max="100">
+              <span class="notranslate">px</span>
+            </label>
           </div>
-          
-          </div> 
+        </div>
+        <div>
+          <div>
+            <label>
+              <span>Key height:</span>
+              <input id="keyHeight" type="number" inputmode="numeric" value="40" min="20" max="100">
+              <span class="notranslate">px</span>
+            </label>
+          </div>
+        </div>
+        <div>
+          <label>
+            <span>Debug mode</span>
+            <label class="switch">
+              <input type="checkbox" id="debugMode">
+              <span class="slider round"></span>
+            </label>
+          </label>
+        </div>
+        <div style="margin-top: 1em; text-align: center;">
+          <a href="#" id="restoreSettings">Restore default settings</a>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div id="loadingContainer">
-        <div>loading...</div>
+  <div id="helpdialog" class="modal-backdrop">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="title">♥ About Touchbit</div>
+        <button id="cancelhelp" aria-label="close">&times;</button>
       </div>
-      
-     <script type="module" src="editor/index.js"></script>
-    </body>
-    
-  
+      <div class="dialog-body">
+        <div>Touchbit is a 'mobile-friendly' interface for composing bytebeat music using postfix expressions.</div>
+        <div><b>More info: </b><br />
+          <a href="https://github.com/eypacha/touchbit" target="_blank">github.com/eypacha/touchbit</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingContainer">
+    <div>loading...</div>
+  </div>
+
+  <script type="module" src="editor/index.js"></script>
+</body>
+
 </html>
