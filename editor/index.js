@@ -41,6 +41,7 @@ let fnMode = false;
 let stack = [''];
 let undoStack = [];
 let redoStack = [];
+let debugMode = false;
 const longClickTime = 1000;
 
 let clickTimerDelete;
@@ -177,7 +178,7 @@ async function main() {
 
   compileStatusElem = el('div', {
     className: 'status',
-    textContent: '',
+    textContent: '●',
   });
   controls.appendChild(compileStatusElem);
 
@@ -447,7 +448,7 @@ async function main() {
         }
 
       }
-      console.log(evaluated)
+
       stack[selectedSlot] = evaluated
       saveState()
       changeNumberMode(true)
@@ -665,11 +666,13 @@ function showSettingsDialog() {
   const settingseDialogElem = $('settingsdialog');
   const keyHeight = $('keyHeight');
   const expFontSize = $('expFontSize');
+  const debugModeSwitch = $('debugMode'); 
 
   if (!g_settingsDialogInitialized) {
     g_settingsDialogInitialized = true;
     $('cancelSettings').addEventListener('click', close);
     themeSelector.addEventListener('change', save);
+    debugModeSwitch.addEventListener('change', save);
     settingseDialogElem.addEventListener('click', close)
     settingseDialogElem.querySelector('.dialog').addEventListener('click', (e) => {
       e.stopPropagation()
@@ -678,6 +681,7 @@ function showSettingsDialog() {
     $('randomizeBtn').addEventListener('click', setRandomTheme)
     keyHeight.addEventListener('change', save);
     expFontSize.addEventListener('change', save);
+    $('restoreSettings').addEventListener('click', restoreSettings)
   }
 
   settingseDialogElem.classList.add('active')
@@ -694,6 +698,9 @@ function showSettingsDialog() {
     $('main').style.setProperty('--exp-font-size', `${expFontSize.value}px`);
     localStorage.setItem('expFontSize', expFontSize.value);
 
+    debugMode = debugModeSwitch.checked;
+    localStorage.setItem('debugMode', debugMode);
+
     if (themeSelector.value == 'randomize') {
       setRandomTheme()
     } else {
@@ -702,6 +709,17 @@ function showSettingsDialog() {
 
   }
 
+  function restoreSettings() {
+    document.documentElement.style = ''
+    $('main').style = ''
+    themeSelector.value = 'default'
+    document.documentElement.dataset.theme = 'default'
+    expFontSize.value = 22
+    keyHeight.value = 40
+    $('keyHeight').value = keyHeight;
+    debugModeSwitch.checked = false
+    localStorage.clear()
+  }
   function close() {
     settingseDialogElem.classList.remove('active')
   }
@@ -709,8 +727,6 @@ function showSettingsDialog() {
 }
 
 function showHelpDialog() {
-
-  console.log('showhelp')
 
   const helpDialogElem = $('helpdialog');
 
@@ -737,15 +753,27 @@ const updateTimeDisplay = () => timeElem.innerHTML = g_byteBeat.getTime()
 
 async function setExpressions(expressions, resetToZero) {
 
-  let error;
-  try {
-    await g_byteBeat.setExpressions(expressions, resetToZero);
-  } catch (e) {
-    error = e;
+  compileStatusElem.classList.remove('error');
+
+  if(debugMode) {
+    $('debugger').classList.remove('error');
+    $('debugger').textContent = ''
   }
 
-  compileStatusElem.textContent = error ? error : '●';
-  compileStatusElem.classList.toggle('error', error);
+  let error;
+  try {
+    await g_byteBeat.setExpressions(expressions, resetToZero)
+  } catch (e) {
+    error = e;
+    compileStatusElem.classList.add('error');
+
+    if(debugMode) {
+      $('debugger').classList.add('error');
+      $('debugger').textContent = error
+    }
+  }
+
+
   setURL();
 }
 
@@ -796,17 +824,22 @@ function setURL() {
   const keyHeight = localStorage.getItem('key-height');
 
   if (keyHeight !== null) {
-    document.getElementById('main').style.setProperty('--key-height', `${keyHeight}px`);
+    $('main').style.setProperty('--key-height', `${keyHeight}px`);
     $('main').style.setProperty('--key-active-height', `${parseInt(keyHeight)-2}px`);
     $('keyHeight').value = keyHeight;
   }
 
   const expFontSize = localStorage.getItem('expFontSize');
   if (expFontSize !== null) {
-    document.getElementById('main').style.setProperty('--exp-font-size', `${expFontSize}px`);
+    $('main').style.setProperty('--exp-font-size', `${expFontSize}px`);
     $('expFontSize').value = expFontSize;
   }
 
+  const debugM = localStorage.getItem('debugMode');
+  if (debugM !== null) {
+    debugMode = JSON.parse(debugM)
+    $('debugMode').checked = debugMode;
+  }
 
   $('loadingContainer').style.display = 'none';
   main();

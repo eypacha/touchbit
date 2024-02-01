@@ -34,6 +34,11 @@
         <div id="controls"></div>
         <div class="stack-container">
           <div id="stack"></div>
+          <div class="debuggerContainer">
+            <div id="debugger">
+  
+            </div>
+          </div>
         </div>
         <div id="keyboard">
           <div class="row">
@@ -159,20 +164,35 @@
               <span><button id="randomizeBtn">?</button></span>
             </div>
             <div>
-              <div>Expresion font size: <input id="expFontSize" type="number" inputmode="numeric"  value="22" min="8" max="100">px</div>
+              <div>
+                <label>
+                  <span>Expresion font size:</span>
+                  <input id="expFontSize" type="number" inputmode="numeric"  value="22" min="8" max="100">
+                  <span class="notranslate">px</span>
+                </label>
+              </div>
             </div>
             <div>
-              <div>Key height: <input id="keyHeight" type="number" inputmode="numeric"  value="40" min="20" max="100">px</div>
+              <div>
+                <label>
+                  <span>Key height:</span>
+                  <input id="keyHeight" type="number" inputmode="numeric"  value="40" min="20" max="100">
+                  <span class="notranslate">px</span>
+                </label>
+              </div>
             </div>
-            <!-- <div class="row">
-              <span>Switch &nbsp;</span>
+            <div>
               <label>
+                <span>Debug mode</span>
                 <label class="switch">
-                  <input type="checkbox">
+                  <input type="checkbox" id="debugMode">
                   <span class="slider round"></span>
                 </label>
               </label>
-            </div>-->
+            </div>
+            <div style="margin-top: 1em; text-align: center;">
+              <a href="#" id="restoreSettings">Restore default settings</a>
+            </div>
           </div> 
         </div>
       </div>
@@ -180,7 +200,7 @@
       <div id="helpdialog" class="modal-backdrop">
         <div class="dialog">
           <div class="dialog-header">
-            <div class="title">About Touchbit</div>
+            <div class="title">♥ About Touchbit</div>
             <button id="cancelhelp">&times;</button>
           </div>
           <div class="dialog-body">
