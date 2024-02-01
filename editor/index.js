@@ -139,12 +139,17 @@ async function main() {
       updateTimeDisplay();
     }
   }
-  playElem = el('button', { className: 'play', onClick: playPause });
+  playElem = el('button', {
+    className: 'play',
+    ariaLabel: 'play/pause',
+    onClick: playPause
+  });
 
   controls.appendChild(playElem);
   timeElem = el('button', {
     onClick: resetToZero,
     className: 'timer',
+    ariaLabel: 'reset to zero',
     innerHTML: '0',
   });
 
@@ -185,6 +190,7 @@ async function main() {
   settingsElem = el('button', {
     onClick: showSettingsDialog,
     className: 'settings',
+    ariaLabel: 'settings'
   });
 
   controls.appendChild(settingsElem);
@@ -192,6 +198,7 @@ async function main() {
   helpBtn = el('button', {
     onclick: showHelpDialog,
     textContent: '?',
+    ariaLabel: 'help'
   })
 
   controls.appendChild(helpBtn);
