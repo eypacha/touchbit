@@ -892,7 +892,8 @@ function setRandomTheme() {
   $('selectTheme').value = "randomize"
 
   function randomColor() {
-    return "#" + Math.floor(Math.random() * 16777215).toString(16);
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    return '#' + '0'.repeat(6 - randomColor.length) + randomColor;
   }
 
   function randomNumber(min, max) {
