@@ -311,8 +311,11 @@ async function main() {
 
   selectNextBtn.addEventListener(keyDown, function (event) {
 
+    selectNextBtn.classList.add('pressed')
+
     event.preventDefault()
     clickTimerSelectNext = setTimeout(function () {
+
 
       selectedSlot = stack.length - 1
       renderStack();
@@ -322,6 +325,7 @@ async function main() {
 
   selectNextBtn.addEventListener(keyUp, function () {
 
+    selectNextBtn.classList.remove('pressed')
     clearTimeout(clickTimerSelectNext);
     if (!isLongClickSelectNext) {
 
@@ -334,6 +338,8 @@ async function main() {
   const selectPrev = $('selectPrev');
 
   selectPrev.addEventListener(keyDown, function (event) {
+
+    selectPrev.classList.add('pressed')
 
     event.preventDefault()
     clickTimerSelectPrev = setTimeout(function () {
@@ -348,6 +354,7 @@ async function main() {
 
   selectPrev.addEventListener(keyUp, function () {
 
+    selectPrev.classList.remove('pressed')
     clearTimeout(clickTimerSelectPrev);
 
     if (!isLongClickSelectPrev) {
@@ -480,6 +487,8 @@ async function main() {
 
   deleteButton.addEventListener(keyDown, function (event) {
 
+    deleteButton.classList.add('pressed')
+
     event.preventDefault()
     clickTimerDelete = setTimeout(function () {
 
@@ -497,6 +506,7 @@ async function main() {
 
   deleteButton.addEventListener(keyUp, function () {
 
+    deleteButton.classList.remove('pressed')
     clearTimeout(clickTimerDelete);
 
     if (!isDeleteLongClick) {
@@ -520,6 +530,8 @@ async function main() {
 
   insertButton.addEventListener(keyDown, function (event) {
 
+    insertButton.classList.add('pressed')
+
     event.preventDefault()
     clickTimerInsert = setTimeout(function () {
 
@@ -534,6 +546,7 @@ async function main() {
 
   insertButton.addEventListener(keyUp, function () {
 
+    insertButton.classList.remove('pressed')
     clearTimeout(clickTimerInsert);
 
     if (!isLongClickInsert) {

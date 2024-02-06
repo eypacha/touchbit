@@ -674,7 +674,8 @@ option {
     padding: 0;
     transition: all 50ms;
 
-    &:active {
+    &:active,
+    &.pressed{
       border-width: var(--key-active-border-width);
       margin: var(--key-active-margin);
       height: var(--key-active-height);
@@ -684,28 +685,32 @@ option {
     &.number {
       --button-color: var(--key-number);
      
-      &:active {
+      &:active,
+      &.pressed {
           background: var(--key-number-bg-active);
       }
     }
 
     &.command {
       --button-color: var(--key-command);
-      &:active {
+      &:active,
+      &.pressed {
           background: var(--key-command-bg-active);
       }
     }
 
     &.symbol {
       --button-color: var(--key-symbol);
-      &:active {
+      &:active,
+      &.pressed {
           background: var(--key-symbol-bg-active);
       }
     }
 
     &.t {
       --button-color: var(--t);
-     &:active {
+     &:active,
+     &.pressed {
           background: var(--key-t-bg-active);
       }
     }
