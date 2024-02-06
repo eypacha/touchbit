@@ -546,6 +546,19 @@ option:checked {
   gap: var(--key-gap);
   width: 100%;
 }
+#keyboard .row .double-button {
+  flex: 2;
+  flex-basis: calc(var(--key-gap) * 2);
+  display: flex;
+}
+#keyboard .row .double-button :first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+#keyboard .row .double-button :last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
 #keyboard .row:not(:last-child) {
   margin-bottom: var(--key-gap);
 }
