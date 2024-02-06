@@ -740,7 +740,8 @@ function showHelpDialog() {
   if (!g_helpDialogInitialized) {
     g_helpDialogInitialized = true;
     $('cancelhelp').addEventListener('click', close);
-  
+    helpDialogElem.addEventListener('click', close);
+
     helpDialogElem.querySelector('.dialog').addEventListener('click', (e) => {
       e.stopPropagation()
     })
