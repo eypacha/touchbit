@@ -209,6 +209,10 @@ select:hover,
   opacity: 1;
 }
 
+textarea, select, input, button {
+  outline: none;
+}
+
 option {
   color: var(--option-text);
   background-color: var(--option-background);
@@ -546,6 +550,9 @@ option:checked {
   gap: var(--key-gap);
   width: 100%;
 }
+#keyboard .row > * {
+  flex: 1;
+}
 #keyboard .row .double-button {
   flex: 2;
   flex-basis: calc(var(--key-gap) * 2);
@@ -572,7 +579,6 @@ option:checked {
   border-width: var(--key-border-width);
   border-radius: var(--key-border-radius);
   background: var(--key-background);
-  flex: 1;
   padding: 0;
   transition: all 50ms;
 }
