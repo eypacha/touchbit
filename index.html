@@ -43,74 +43,60 @@
     </div>
     <div id="keyboard">
       <div class="row">
-        <div class="column">
-          <div class="row">
-            <button class="number layer-1" data-insert="7">7</button>
-            <button class="modifier layer-2" data-modifier="+1">+1</button>
-            <button class="number layer-1" data-insert="8">8</button>
-            <button class="modifier layer-2" data-modifier="+5">+5</button>
-            <button class="number layer-1" data-insert="9">9</button>
-            <button class="modifier layer-2" data-modifier="+10">+10</button>
-          </div>
-          <div class="row">
-            <button class="number layer-1" data-insert="4">4</button>
-            <button class="modifier layer-2" data-modifier="-1">-1</button>
-            <button class="number layer-1" data-insert="5">5</button>
-            <button class="modifier layer-2" data-modifier="-5">-5</button>
-            <button class="number layer-1" data-insert="6">6</button>
-            <button class="modifier layer-2" data-modifier="-10">-10</button>
-          </div>
-          <div class="row">
-            <button class="number layer-1" data-insert="1">1</button>
-            <button class="modifier layer-2" data-modifier="+0.1">+.1</button>
-            <button class="number layer-1" data-insert="2">2</button>
-            <button class="modifier layer-2" data-modifier="+0.01">+.01</button>
-            <button class="number layer-1" data-insert="3">3</button>
-            <button class="modifier layer-2" data-modifier="+0.001">+.001</button>
-          </div>
-          <div class="row">
-            <button class="number layer-1" data-insert=".">.</button>
-            <button class="modifier layer-2" data-modifier="-0.1">-.1</button>
-            <button class="number layer-1" data-insert="0">0</button>
-            <button class="modifier layer-2" data-modifier="-0.01">-.01</button>
-            <button class="modifier layer-1" data-modifier="clear" aria-label="clear">⌫</button>
-            <button class="modifier layer-2" data-modifier="-0.001">-.001</button>
-          </div>
-        </div>
-        <div class="column">
-          <div class="row">
-            <button class="symbol layer-1" data-insert="*" aria-label="multiplication">*</button>
-            <button class="button command small layer-2 notranslate" id="undo">UNDO</button>
-            <button class="symbol layer-1" data-insert="/" aria-label="division">/</button>
-            <button class="button command small layer-2 notranslate" id="redo">REDO</button>
-            <button class="symbol layer-1" data-insert="&" aria-label="bitwise AND">&</button>
-            <button class="symbol layer-2" data-insert="&&" aria-label="logical AND">&&</button>
-          </div>
-          <div class="row">
-            <button class="symbol layer-1" data-insert="+" aria-label="addition">+</button>
-            <button class="symbol layer-2" data-insert="<" aria-label="less than">&lt;</button>
-            <button class="symbol layer-1" data-insert="-" aria-label="substraction">-</button>
-            <button class="symbol layer-2" data-insert=">" aria-label="greater than">&gt;</button>
-            <button class="symbol layer-1" data-insert="|" aria-label="bitwise OR">&vert;</button>
-            <button class="symbol layer-2" data-insert="=" aria-label="equal">=</button>
-          </div>
-          <div class="row">
-            <button class="symbol layer-2" data-insert="||" aria-label="logical OR">‖</button>
-            <button class="symbol layer-1" data-insert="%" aria-label="modulus">%</button>
-            <button class="symbol layer-2 small notranslate" data-insert="drop">drop</button>
-            <button class="symbol layer-1" data-insert="~" aria-label="bitwise NOT">~</button>
-            <button class="symbol layer-2 small notranslate" data-insert="dup">dup</button>
-            <button class="symbol layer-1" data-insert="^" aria-label="bitwise XOR">^</button>
-          </div>
-          <div class="row">
-            <button class="symbol t layer-1" data-insert="t">t</button>
-            <button class="symbol layer-2 small notranslate" data-insert="swap">swap</button>
-            <button class="symbol layer-1" data-insert="<<" aria-label="left shift">&laquo;</button>
-            <button class="symbol layer-2 small notranslate" data-insert="pick">pick</button>
-            <button class="symbol layer-1" data-insert=">>" aria-label="right shift">&raquo;</button>
-            <button class="symbol layer-2 small notranslate" data-insert="put">put</button>
-          </div>
-        </div>
+        <button class="number layer-1" data-insert="7">7</button>
+        <button class="modifier layer-2" data-modifier="+1">+1</button>
+        <button class="number layer-1" data-insert="8">8</button>
+        <button class="modifier layer-2" data-modifier="+5">+5</button>
+        <button class="number layer-1" data-insert="9">9</button>
+        <button class="modifier layer-2" data-modifier="+10">+10</button>
+        <button class="symbol layer-1" data-insert="*" aria-label="multiplication">*</button>
+        <button class="button command small layer-2 notranslate" id="undo">UNDO</button>
+        <button class="symbol layer-1" data-insert="/" aria-label="division">/</button>
+        <button class="button command small layer-2 notranslate" id="redo">REDO</button>
+        <button class="symbol layer-1" data-insert="&" aria-label="bitwise AND">&</button>
+        <button class="symbol layer-2" data-insert="&&" aria-label="logical AND">&&</button>
+      </div>
+      <div class="row">
+        <button class="number layer-1" data-insert="4">4</button>
+        <button class="modifier layer-2" data-modifier="-1">-1</button>
+        <button class="number layer-1" data-insert="5">5</button>
+        <button class="modifier layer-2" data-modifier="-5">-5</button>
+        <button class="number layer-1" data-insert="6">6</button>
+        <button class="modifier layer-2" data-modifier="-10">-10</button>
+        <button class="symbol layer-1" data-insert="+" aria-label="addition">+</button>
+        <button class="symbol layer-2" data-insert="<" aria-label="less than">&lt;</button>
+        <button class="symbol layer-1" data-insert="-" aria-label="substraction">-</button>
+        <button class="symbol layer-2" data-insert=">" aria-label="greater than">&gt;</button>
+        <button class="symbol layer-1" data-insert="|" aria-label="bitwise OR">&vert;</button>
+        <button class="symbol layer-2" data-insert="=" aria-label="equal">=</button>
+      </div>
+      <div class="row">
+        <button class="number layer-1" data-insert="1">1</button>
+        <button class="modifier layer-2" data-modifier="+0.1">+.1</button>
+        <button class="number layer-1" data-insert="2">2</button>
+        <button class="modifier layer-2" data-modifier="+0.01">+.01</button>
+        <button class="number layer-1" data-insert="3">3</button>
+        <button class="modifier layer-2" data-modifier="+0.001">+.001</button>
+        <button class="symbol layer-2" data-insert="||" aria-label="logical OR">‖</button>
+        <button class="symbol layer-1" data-insert="%" aria-label="modulus">%</button>
+        <button class="symbol layer-2 small notranslate" data-insert="drop">drop</button>
+        <button class="symbol layer-1" data-insert="~" aria-label="bitwise NOT">~</button>
+        <button class="symbol layer-2 small notranslate" data-insert="dup">dup</button>
+        <button class="symbol layer-1" data-insert="^" aria-label="bitwise XOR">^</button>
+      </div>
+      <div class="row">
+        <button class="number layer-1" data-insert=".">.</button>
+        <button class="modifier layer-2" data-modifier="-0.1">-.1</button>
+        <button class="number layer-1" data-insert="0">0</button>
+        <button class="modifier layer-2" data-modifier="-0.01">-.01</button>
+        <button class="modifier layer-1" data-modifier="clear" aria-label="clear">⌫</button>
+        <button class="modifier layer-2" data-modifier="-0.001">-.001</button>
+        <button class="symbol t layer-1" data-insert="t">t</button>
+        <button class="symbol layer-2 small notranslate" data-insert="swap">swap</button>
+        <button class="symbol layer-1" data-insert="<<" aria-label="left shift">&laquo;</button>
+        <button class="symbol layer-2 small notranslate" data-insert="pick">pick</button>
+        <button class="symbol layer-1" data-insert=">>" aria-label="right shift">&raquo;</button>
+        <button class="symbol layer-2 small notranslate" data-insert="put">put</button>
       </div>
       <div class="row">
         <button class="command small notranslate" id="fnMode" aria-label="function">FN</button>
