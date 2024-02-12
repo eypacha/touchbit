@@ -53,7 +53,7 @@ class BeatWorkletProcessor extends AudioWorkletProcessor {
   }
 
   process(inputs, outputs, parameters) {
-    this.byteBeat.process(outputs[0][0].length, outputs[0][0], outputs[0][1]);
+    this.byteBeat.process(outputs[0][0]?.length, outputs[0][0], outputs[0][1]);
     return true;
   }
 }
