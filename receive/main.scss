@@ -17,7 +17,7 @@ $red: red;
   --app-background: var(--background);
 
   --selected: white;
-  --exp-font-size: 22px;
+  --exp-font-size: 50px;
 
   --symbol: #eeeeee;
   --text: silver;
@@ -36,32 +36,6 @@ $red: red;
   
   --inline-button-color: color-mix(in srgb, var(--background), transparent 20%);
 
-  --keyboard-background: transparent;
-  --key-gap: 5px;
-  --key-height: 40px;
-  --key-background: var(--button-color);
-  --key-border-radius: var(--button-border-radius);
-  --key-border-style: var(--button-border-style);
-  --key-border-width: 1px 1px 3px;
-
-  --key-active-height: calc(var(--key-height) - 2px);
-  --key-active-border-width: 1px 1px 1px !important;
-  --key-active-margin: 2px 0 0;
-  --key-active-background: var(--button-color);
-
-  --key-symbol: var(--symbol);
-  --key-t: var(--t);
-  --key-number: var(--number);
-  --key-command: var(--command);
-  
-  --key-symbol-bg-active: color-mix(in srgb, var(--symbol), transparent 50%);
-  --key-t-bg-active: color-mix(in srgb, var(--t), transparent 50%);
-  --key-number-bg-active: color-mix(in srgb, var(--number), transparent 50%);
-  --key-command-bg-active: color-mix(in srgb, var(--command), transparent 50%);
-
-  --key-font: var(--button-font);
-  --key-font-size: 17px;
-
   --link-color: var(--t);
   --option-color: var(--text);
   --option-background: var(--background);
@@ -75,14 +49,7 @@ $red: red;
 
   --background: #023047ff;
   --button-color: #012232;
-  --key-symbol-bg-active: var(--button-color);
-  --key-t-bg-active: var(--button-color);
-  --key-number-bg-active: var(--button-color);
-  --key-command-bg-active: var(--button-color);
-
-
-  --key-border-radius: 20px;
-  --key-border-width: 1px 1px 10px;
+ 
   --selected:  #8ecae6ff;
   --symbol: #b4d9d6;
   --text: #c9c3c3;
@@ -120,15 +87,6 @@ $red: red;
   #randomizeBtn {
     display: none;
   }
-}
-
-* {
-  -webkit-user-select: none;
-  /* Safari */
-  -ms-user-select: none;
-  /* IE 10 and IE 11 */
-  user-select: none;
-  /* Standard syntax */
 }
 
 html,
@@ -265,7 +223,7 @@ option {
 }
 
 .settings:before {
-  content: "☰";
+  content: "settings ⚙";
 }
 
 .modal-backdrop {
@@ -291,9 +249,6 @@ option {
 }
 
 .dialog {
-  width: 400px;
-  max-width: calc(100svw - 40px);
-  max-height: calc(100svh - 40px);
   background-color: var(--modal-background);
   border-radius: var(--border-radius);
 
@@ -309,98 +264,8 @@ option {
 }
 
 .dialog-body {
-  
-  padding: 0 1em;
-  min-height: 205px;
-
-  .tab-wrap {
-    -webkit-transition: 0.3s box-shadow ease;
-    transition: 0.3s box-shadow ease;
-    border-radius: 6px;
-    max-width: 100%;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-        flex-wrap: wrap;
-    position: relative;
-    list-style: none;
-
-  }
-
-  .tab:checked:nth-of-type(1) ~ .tab__content:nth-of-type(1),
-  .tab:checked:nth-of-type(2) ~ .tab__content:nth-of-type(2),
-  .tab:checked:nth-of-type(3) ~ .tab__content:nth-of-type(3),
-  .tab:checked:nth-of-type(4) ~ .tab__content:nth-of-type(4){
-    opacity: 1;
-
-    position: relative;
-    top: 0;
-    z-index: 100;
-    -webkit-transform: translateY(0px);
-            transform: translateY(0px);
-    text-shadow: 0 0 0;
-
-  }
-
-  input.tab {
-    display: none;
-  }
-
-  #receiver-id {
-    width: -webkit-fill-available;
-  }
-
-  .help-text {
-    font-size: 0.85em;
-    font-style: italic;
-    color: color-mix(in srgb, var(--text), transparent 60%);
-  }
-
-  .tab + label {
-
-    cursor: pointer;
-    display: block;
-    text-decoration: none;
-    color: var(--text);
-    -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
-    box-sizing: border-box;
-    padding: .6em;
-
-  }
-
-  .tab:checked + label {
-    color: var(--number);
-    border: solid 1px;
-    margin-bottom: -1px;
-    z-index: 999;
-    border-color: var(--button-color) var(--button-color) var(--app-background)
-  }
-
-  .tab__content {
-    padding: .6em;
-    background-color: transparent;
-    position: absolute;
-    width: 100%;
-    z-index: -1;
-    opacity: 0;
-    left: 0;
-    -webkit-transform: translateY(-3px);
-            transform: translateY(-3px);
-    border-top: solid 1px var(--button-color);
-
-    & > div {
-      margin-bottom: .6em;
-    }
-  } 
-
-  #reset {
-    width: min-content;
-    max-width: min-content;
-  }
+  padding: 1em 2em;
+  border-top: solid 1px var(--button-color);
   
   label {
     display: flex;
@@ -416,47 +281,45 @@ option {
 
   }
 
-}
-
-
-  .row {
-    display: flex;
-    align-items: center;
-    margin-bottom: .5em;
-  }
-
   input {
     background: var(--button-color);
     color: var(--number);
     border: none;
     padding: 8px;
     border-radius: var(--border-radius);
-    
-    &[type="number"] {
-        text-align: right;
+  }
+
+}
+
+
+  #qrcode {
+    width: 148px;
+    height: 148px;
+    background: var(--button-color);
+    margin-bottom: .6em;
+
+    img {
+      border: solid 10px white;
     }
-
   }
 
-  select {
-    width: min-content;
+  #receiver-id {
+    box-sizing: border-box;
+    padding: 5px;
+    color: var(--number);
+    width: 148px;
+    height: 55px;
+    text-align: center;
   }
+
 
   .title {
-    font-size: 17px;
+    text-align: center;
+    width: 100%;
     line-height: 32px;
-    margin-left: .5em;
   }
 
-  .dialog-footer {
-    border-top: solid 1px var(--button-color);
-    text-align: right;
-    padding: .5em;
-    button {
-      margin: 0;
-      width: 6.7em;
-    }
-  }
+
 }
 
 .hide {
@@ -469,6 +332,7 @@ option {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  text-align: center;
   gap: 1em;
   z-index: 1000;
   position: absolute;
@@ -510,7 +374,7 @@ option {
   }
 
   .settings:before {
-    content: "☰";
+    content: "⚙";
   }
 
   button:not(.timer),
@@ -526,28 +390,14 @@ option {
 
 }
 
-@media screen and (max-height: 350px) {
-
-  #keyboard {
-    button {
-      height: 35px !important;
-
-      &:active {
-        height: 33px !important;
-      }
-    } 
-  }
-
-}
-
 .stack-container {
   flex: 1;
-  border-top: solid 1px var(--text);
-  border-bottom: solid 1px var(--text);
   overflow-y: auto;
   font-size: var(--exp-font-size);
-  padding-top: 1em;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   .debuggerContainer {
     position: absolute;
@@ -599,18 +449,16 @@ option {
 
 #stack {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 0 2px;
-  padding: 5px 10px;
+  padding: 1em;
+  
 }
 
 .slot {
   position: relative;
   text-align: center;
-  border-style: solid;
-  border-width: 1px;
-  border-color: transparent;
-  border-bottom-color: color-mix(in srgb, var(--text), transparent 80%);
   height: 1.3em;
   min-width: .8em;
   line-height: 1.3em;
@@ -634,11 +482,6 @@ option {
 
   &.special {
     color: var(--command);
-  }
-
-  &.selected {
-    border-color: var(--selected);
-    border-inline: solid 1px;
   }
 
   &.break {
@@ -706,152 +549,6 @@ option {
     border-right: 1px solid transparent;
     /* Borde derecho transparente al final */
   }
-}
-#keyboard {
-  display: flex;
-  flex-direction: column;
-  padding: var(--key-gap);
-  max-width: 550px;
-  position: relative;
-  left: 50%;
-  background: var(--keyboard-background);
-  transform: translateX(-50%);
-
-  .column {
-    flex: 1;
-  }
-
-  .row {
-    display: flex;
-    justify-content: center;
-    gap: var(--key-gap);
-    width: 100%;
-
-    & > * {
-      flex: 1;
-    }
-
-    .double-button {
-      flex: 2;
-      flex-basis: calc(var(--key-gap) * 2);
-      display: flex;
-
-      :first-child {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-
-      :last-child {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-      }
-
-    }
-
-    &:not(:last-child) {
-      margin-bottom: var(--key-gap);
-    }
-  }
-
-  button {
-
-    color: var(--button-color);
-    width: -webkit-fill-available;
-    margin: 0;
-    height: var(--key-height);
-    font-size: var(--key-font-size);
-    border-style: var(--key-border-style);
-    border-width: var(--key-border-width);
-    border-radius: var(--key-border-radius);
-    background: var(--key-background);
-    padding: 0;
-    transition: all 50ms;
-
-    &:active,
-    &.pressed{
-      border-width: var(--key-active-border-width);
-      margin: var(--key-active-margin);
-      height: var(--key-active-height);
-      background: var(--key-active-background);
-    }
-    
-    &.number {
-      --button-color: var(--key-number);
-     
-      &:active,
-      &.pressed {
-          background: var(--key-number-bg-active);
-      }
-    }
-
-    &.command {
-      --button-color: var(--key-command);
-      &:active,
-      &.pressed {
-          background: var(--key-command-bg-active);
-      }
-    }
-
-    &.symbol {
-      --button-color: var(--key-symbol);
-      &:active,
-      &.pressed {
-          background: var(--key-symbol-bg-active);
-      }
-    }
-
-    &.t {
-      --button-color: var(--t);
-     &:active,
-     &.pressed {
-          background: var(--key-t-bg-active);
-      }
-    }
-
-    &.small {
-      font-size: 13px !important;
-    }
-
-    &.modifier {
-      --button-color: var(--number);
-      font-variant: all-petite-caps;  
-    }
-  }
-
-  #signalBtn {
-    position: absolute;
-    right: var(--key-gap);
-    transform: translateY(-100%);
-    margin-top: -12px;
-    width: 5em;
-    height: 5em;
-}
-
-  &:not(.fn-mode) .layer-2 {
-    display: none;
-  }
-
-  &.fn-mode {
-
-    .layer-1 {
-      display: none;
-    }
-
-    #fnMode {
-      color: var(--selected);
-      background: var(--key-command-bg-active);
-    }
-
-  }
-
-  #holdMode {
-    &.active {
-      color: var(--selected);
-      background: var(--key-command-bg-active);
-      
-    }
-  }
-
 }
 
 .switch {

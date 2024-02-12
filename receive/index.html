@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+
+  <meta property="og:title" content="Touchbit" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://dev.eypacha.com/touchbit/touchbit.png" />
+  <meta property="og:image:width" content="600" />
+  <meta property="og:image:height" content="600" />
+  <meta property="og:description" content="Bytebeat for mobile" />
+  <meta property="og:url" content="https://dev.eypacha.com/touchbit" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@eypacha">
+  <meta name="twitter:creator" content="@eypacha">
+  <meta name="twitter:domain" content="dev.eypacha.com">
+  <meta name="twitter:title" content="Touchbit">
+  <meta name="twitter:url" content="https://dev.eypacha.com/touchbit">
+  <meta name="twitter:description" content="Bytebeat for mobile">
+  <meta name="twitter:image:src" content="https://dev.eypacha.com/touchbit/touchbit.png">
+
+  <link href="../icon.png" rel="shortcut icon" type="image/png">
+  <link rel="stylesheet" href="main.css">
+
+  <title>Touchbit</title>
+  <script src="qrcode.min.js"></script>
+  <script src="../js/peerjs.min.js"></script>
+</head>
+
+<body>
+  <div id="main">
+    <div id="controls"></div>
+    <div class="stack-container">
+      <div id="stack"></div>
+      <div class="debuggerContainer">
+        <div id="debugger">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsdialog" class="modal-backdrop">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="title">⚙ Settings</div>
+        <button id="cancelSettings" aria-label="close">&times;</button>
+      </div>
+      <div class="dialog-body">
+        <div>
+          <label>
+            <span>Theme </span>
+            <select id="selectTheme">
+              <option>default</option>
+              <option>tropical</option>
+              <option>lavander</option>
+              <option>monochrome-dark</option>
+              <option>monochrome-light</option>
+              <option>randomize</option>
+            </select>
+            <button id="randomizeBtn">?</button>
+          </label>
+        </div>
+        <div>
+          <div>
+            <label>
+              <span>Expresion font size:</span>
+              <input id="expFontSize" type="number" inputmode="numeric" value="50" min="8" max="100">
+              <span class="notranslate">px</span>
+            </label>
+          </div>
+        </div>
+        <div>
+          <label>
+            <span>Debug mode</span>
+            <label class="switch">
+              <input type="checkbox" id="debugMode">
+              <span class="slider round"></span>
+            </label>
+          </label>
+        </div>
+        <div style="margin-top: 1em; text-align: center;">
+          <a href="#" id="restoreSettings">Restore default settings</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="receiverDialog" class="modal-backdrop active">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="title">Scan me...</div>
+      </div>
+      <div class="dialog-body">
+        <div id="qrcode"></div>
+        <div id="receiver-id" class="notranslate">.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="startTouchbitContainer">
+    <div>Touchbit<br>
+    <small>receiver</small></div>
+    <button id="startTouchbit">start</button>
+  </div>
+
+  <div id="loadingContainer">
+    <div>loading...</div>
+  </div>
+
+  <script type="module" src="../editor/receive.js"></script>
+</body>
+
+</html>

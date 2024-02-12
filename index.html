@@ -28,6 +28,7 @@
 
   <title>Touchbit</title>
   <script src="js/lzma.min.js"></script>
+  <script src="js/peerjs.min.js"></script>
 </head>
 
 <body>
@@ -42,6 +43,8 @@
       </div>
     </div>
     <div id="keyboard">
+      <button class="command small notranslate hide" id="signalBtn" aria-label="function">SEND</button>
+
       <div class="row">
         <button class="number layer-1" data-insert="7">7</button>
         <button class="modifier layer-2" data-modifier="+1">+1</button>
@@ -129,55 +132,100 @@
   <div id="settingsdialog" class="modal-backdrop">
     <div class="dialog">
       <div class="dialog-header">
-        <div class="title">⚙ Settings</div>
+        <div class="title">♥ Touchbit</div>
         <button id="cancelSettings" aria-label="close">&times;</button>
       </div>
+
       <div class="dialog-body">
-        <div>
-          <label>
-            <span>Theme </span>
-            <select id="selectTheme">
-              <option>default</option>
-              <option>tropical</option>
-              <option>lavander</option>
-              <option>monochrome-dark</option>
-              <option>monochrome-light</option>
-              <option>randomize</option>
-            </select>
-            <button id="randomizeBtn">?</button>
-          </label>
-        </div>
-        <div>
-          <div>
-            <label>
-              <span>Expresion font size:</span>
-              <input id="expFontSize" type="number" inputmode="numeric" value="22" min="8" max="100">
-              <span class="notranslate">px</span>
-            </label>
+        <div class="tab-wrap">
+          <input type="radio" id="tab1" name="tabGroup1" class="tab" checked>
+          <label for="tab1">Styles</label>
+          
+          <input type="radio" id="tab2" name="tabGroup1" class="tab">
+          <label for="tab2">Remote</label>
+
+          <input type="radio" id="tab3" name="tabGroup1" class="tab">
+          <label for="tab3">More</label>
+          
+          <input type="radio" id="tab4" name="tabGroup1" class="tab">
+          <label for="tab4">About</label>
+          
+          <div class="tab__content">
+            <div>
+              <label>
+                <span>Theme </span>
+                <select id="selectTheme">
+                  <option>default</option>
+                  <option>tropical</option>
+                  <option>lavander</option>
+                  <option>monochrome-dark</option>
+                  <option>monochrome-light</option>
+                  <option>randomize</option>
+                </select>
+                <button id="randomizeBtn">?</button>
+              </label>
+            </div>
+            <div>
+              <div>
+                <label>
+                  <span>Expresion font size:</span>
+                  <input id="expFontSize" type="number" inputmode="numeric" value="22" min="8" max="100">
+                  <span class="notranslate">px</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <div>
+                <label>
+                  <span>Key height:</span>
+                  <input id="keyHeight" type="number" inputmode="numeric" value="40" min="20" max="100">
+                  <span class="notranslate">px</span>
+                </label>
+              </div>
+            </div>
+            <div style="margin-top: 1em; text-align: center;">
+              <a href="#" id="restoreSettings">Restore default settings</a>
+            </div>
           </div>
-        </div>
-        <div>
-          <div>
-            <label>
-              <span>Key height:</span>
-              <input id="keyHeight" type="number" inputmode="numeric" value="40" min="20" max="100">
-              <span class="notranslate">px</span>
-            </label>
+
+          <div class="tab__content">
+            <div>Experimental mode</div>
+            <div class="help-text">Open <a href="receive/" target="_blank">this url</a> in another screen and scan the qr code or paste here the receiver id</div>
+            <div>
+              <input type="text" id="receiver-id" placeholder="id">
+            </div>
+            <div>
+              <button id="connect-button">Connect</button>
+              <button id="disconnect-button" class="hide">Disconect</button>
+            </div>
+            <div id="peerStatus"></div>
+           
           </div>
-        </div>
-        <div>
-          <label>
-            <span>Debug mode</span>
-            <label class="switch">
-              <input type="checkbox" id="debugMode">
-              <span class="slider round"></span>
-            </label>
-          </label>
-        </div>
-        <div style="margin-top: 1em; text-align: center;">
-          <a href="#" id="restoreSettings">Restore default settings</a>
+
+          <div class="tab__content">
+            <div>Export expression to:</div>
+            <div class="help-text">
+              <a href="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html" id="toGreggman" target="_blank">Greggman editor</a> or <a href="#" id="copyToClipboard">Clipboard</a> <span id="clipStatus"></span></div>
+            <div>
+              <label>
+                <span>Debug mode</span>
+                <label class="switch">
+                  <input type="checkbox" id="debugMode">
+                  <span class="slider round"></span>
+                </label>
+              </label>
+            </div>
+          </div>
+
+          <div class="tab__content">
+            <div class="mb-6">Touchbit is a 'mobile-friendly' interface for composing bytebeat music using postfix expressions.</div>
+            <div><b>More info: </b><br />
+              <a href="https://github.com/eypacha/touchbit" target="_blank">github.com/eypacha/touchbit</a>
+            </div>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -194,6 +242,11 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="startTouchbitContainer">
+    <div>Touchbit</div>
+    <button id="startTouchbit">start</button>
   </div>
 
   <div id="loadingContainer">

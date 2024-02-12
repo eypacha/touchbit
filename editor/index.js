@@ -21,15 +21,14 @@ const g_analyzers = [];
 let g_splitter;
 let g_merger;
 let g_settingsDialogInitialized = false;
-let g_helpDialogInitialized = false;
 let g_ignoreHashChange;
 let playing = false;
 let timeElem;
 let playElem;
-let beatTypeElem;
+// let beatTypeElem;
+const sampleRates = [8000, 11000, 22000, 32000, 44100, 48000];
 let sampleRateElem;
 let settingsElem;
-let helpBtn;
 let compileStatusElem;
 let compressor;
 let controls;
@@ -60,6 +59,159 @@ const touchable = 'ontouchstart' in window;
 const keyDown = touchable ? 'touchstart' : 'mousedown';
 const keyUp = touchable ? 'touchend' : 'mouseup';
 
+//Peerjs
+let lastPeerId = null;
+let peer = null; // own peer object
+let conn = null;
+// const peerStatus = $('peerStatus')
+function initializePeer() {
+  // Create own peer object with connection to shared PeerJS server
+  peer = new Peer(null, {
+      debug: 2
+  });
+
+  peer.on('open', function (id) {
+      // Workaround for peer.reconnect deleting previous id
+      if (peer.id === null) {
+          console.log('Received null id from peer open');
+          peer.id = lastPeerId;
+      } else {
+          lastPeerId = peer.id;
+      }
+
+      console.log('ID: ' + peer.id);
+
+      var url = new URL(window.location.href);
+      var valorR = url.searchParams.get('r');
+
+      if (valorR !== null) {
+        console.log('El valor de la variable "r" es:', valorR);
+        $('receiver-id').value = valorR;
+        joinPeer();
+      } else if(localStorage.getItem('peerId')) {
+        $('receiver-id').value = localStorage.getItem('peerId');
+        joinPeer();
+      }
+
+      localStorage.removeItem('peerId');
+     
+      
+  });
+
+  peer.on('connection', function (c) {
+      // Disallow incoming connections
+      c.on('open', function() {
+          c.send("Sender does not accept incoming connections");
+          setTimeout(function() { c.close(); }, 500);
+      });
+  });
+  peer.on('disconnected', function () {
+      console.log('Connection lost. Please reconnect');
+      // Workaround for peer.reconnect deleting previous id
+      peer.id = lastPeerId;
+      peer._lastServerId = lastPeerId;
+      peer.reconnect();
+  });
+  peer.on('close', function() {
+      conn = null;
+      // peerStatus.innerText = 'Connection destroyed Please refresh';
+      console.log('Connection destroyed Please refresh');
+
+  });
+  peer.on('error', function (err) {
+      console.log(err);
+      // peerStatus.innerText = err;
+  });
+};
+
+function joinPeer() {
+  // Close old connection
+  if (conn) conn.close();
+
+  // Create connection to destination peer specified in the input field
+  conn = peer.connect($('receiver-id').value, {
+      reliable: true
+  });
+
+  conn.on('open', function () {
+      // peerStatus.innerText = 'Conected to receiveer';
+      console.log("Connected to: " + conn.peer);
+      
+      signal('hello')
+
+      $('signalBtn').classList.remove('hide')
+      $('connect-button').classList.add('hide')
+      $('disconnect-button').classList.remove('hide')
+  });
+
+  // Handle incoming data (messages only since this is the signal sender)
+  conn.on('data', function (data) {
+      console.log("DATA" + data);
+
+      switch (data.sigName) {
+        case 'restore':
+          console.log('restore',data);
+
+          stack = [...data.stack];
+          g_byteBeat.setDesiredSampleRate(data.sampleRate);
+          setSelectOption(sampleRateElem, sampleRates.indexOf(data.sampleRate));
+
+          document.querySelectorAll('.slot')[0].click();
+          break;
+        case 'requestSampleRate':
+          console.log('SampleRate requested');
+          signal('sampleRate', g_byteBeat.getDesiredSampleRate());
+          break;
+        default:
+          console.log("data:", data);
+          break;
+      }
+  });
+
+  conn.on('close', function () {
+      console.log("Connection closed")
+      // peerStatus.innerText = 'Connection closed';
+      $('receiver-id').value = ''
+      $('signalBtn').classList.add('hide')
+      $('connect-button').classList.remove('hide')
+      $('disconnect-button').classList.add('hide')
+  });
+
+};
+
+function signal(sigName,arg) {
+
+  const data = {
+    sigName: sigName,
+    arg: arg
+  }
+  if (isPeerOpen()) {
+      conn.send(data);
+      console.log(data.sigName,data.arg + " signal sent");
+  } else {
+      console.log('Connection closed');
+      // peerStatus.innerText = 'Connection closed';
+      $('receiver-id').value = ''
+      $('signalBtn').classList.add('hide')
+  }
+}
+
+$('signalBtn').addEventListener('click', function () {
+  if(!isPeerOpen()) return
+
+  signal('process', stack)
+})
+
+
+$('connect-button').addEventListener('click', joinPeer);
+$('disconnect-button').addEventListener('click',  () => {
+  conn.close()
+});
+
+function isPeerOpen() {
+  return conn && conn.open;
+}
+
 function connectFor2Channels() {
   g_byteBeat.disconnect();
   g_byteBeat.connect(g_splitter);
@@ -82,7 +234,10 @@ function reconnect() {
 }
 
 function play() {
+  
   if (playing) return
+
+  if(isPeerOpen()) signal('play')
 
   playing = true
   reconnect()
@@ -90,6 +245,8 @@ function play() {
 
 function pause() {
   if (!playing) return
+
+  if(isPeerOpen()) signal('pause')
 
   playing = false;
   g_byteBeat.disconnect()
@@ -104,6 +261,7 @@ function setSelectOption(select, selectedIndex) {
   setSelected(select.options[select.selectedIndex], false);
   setSelected(select.options[selectedIndex], true);
 }
+
 
 async function main() {
   compressor = new LZMA('js/lzma_worker.js');
@@ -121,11 +279,6 @@ async function main() {
 
   g_splitter = g_context.createChannelSplitter(2);
   g_merger = g_context.createChannelMerger(2);
-
-  function resetToZero() {
-    g_byteBeat.reset();
-    updateTimeDisplay();
-  }
 
   function playPause() {
     if (!playing) {
@@ -145,7 +298,13 @@ async function main() {
     onClick: playPause
   });
 
+  function resetToZero() {
+    g_byteBeat.reset();
+    updateTimeDisplay();
+  }
+
   controls.appendChild(playElem);
+
   timeElem = el('button', {
     onClick: resetToZero,
     className: 'timer',
@@ -162,19 +321,23 @@ async function main() {
     return select;
   }
 
-  beatTypeElem = addSelection(s_beatTypes, 0, {
-    onChange(event) {
-      g_byteBeat.setType(event.target.selectedIndex);
-      setURL();
-    },
-  });
-  beatTypeElem.classList.add('byte-type')
-  controls.appendChild(beatTypeElem);
+  // beatTypeElem = addSelection(s_beatTypes, 0, {
+  //   onChange(event) {
+  //     g_byteBeat.setType(event.target.selectedIndex);
+  //     setURL();
+  //   },
+  // });
+  // beatTypeElem.classList.add('byte-type')
+  
+  // controls.appendChild(beatTypeElem);
 
-  const sampleRates = [8000, 11000, 22000, 32000, 44100, 48000];
   sampleRateElem = addSelection(['8kHz', '11kHz', '22kHz', '32kHz', '44kHz', '48kHz'], 0, {
+
     onChange(event) {
-      g_byteBeat.setDesiredSampleRate(sampleRates[event.target.selectedIndex]);
+      const sampleData = sampleRates[event.target.selectedIndex]
+      g_byteBeat.setDesiredSampleRate(sampleData);
+      if(isPeerOpen()) signal('sampleRate', sampleData)
+
       setURL();
     },
   });
@@ -195,17 +358,11 @@ async function main() {
 
   controls.appendChild(settingsElem);
 
-  helpBtn = el('button', {
-    onclick: showHelpDialog,
-    textContent: '?',
-    ariaLabel: 'help'
-  })
-
-  controls.appendChild(helpBtn);
-
   g_byteBeat.setExpressionType(1);
   // Stack
   const stackContainer = $('stack');
+
+  initializePeer();
 
   function renderStack() {
     stackContainer.innerHTML = ''
@@ -232,10 +389,10 @@ async function main() {
         if (ndx === selectedSlot) {
           const plusOneDiv = document.createElement('button')
           plusOneDiv.className = 'modifier plus-one'
-          plusOneDiv.textContent = '+1'
+          plusOneDiv.textContent = '+'
           const minusOneDiv = document.createElement('button')
           minusOneDiv.className = 'modifier minus-one'
-          minusOneDiv.textContent = '-1'
+          minusOneDiv.textContent = '-'
 
           plusOneDiv.addEventListener('click', () => {
             modifySlotValue(selectedSlot, 1)
@@ -257,8 +414,6 @@ async function main() {
       if (s === "<<") slotDiv.textContent = "«"
       if (s === ">>") slotDiv.textContent = "»"
       if (s === "||") slotDiv.textContent = "‖"
-
-
 
       slotDiv.addEventListener('click', () => {
 
@@ -310,6 +465,7 @@ async function main() {
   }
 
   selectNextBtn.addEventListener(keyDown, function (event) {
+
 
     selectNextBtn.classList.add('pressed')
 
@@ -438,8 +594,6 @@ async function main() {
         // Si es un número, agrega el nuevo número a continuación del existente en el slot
 
         if (newModifier === "clear") {
-
-
 
           evaluated = stack[selectedSlot].slice(0, -1)
           if (evaluated === '') evaluated = "0"
@@ -649,8 +803,9 @@ async function main() {
   function readURL(hash) {
 
     const data = Object.fromEntries(new URLSearchParams(hash).entries());
-    const t = data.t !== undefined ? parseFloat(data.t) : 1;
+    // const t = data.t !== undefined ? parseFloat(data.t) : 1;
     const s = data.s !== undefined ? parseFloat(data.s) : 8000;
+
     let rateNdx = sampleRates.indexOf(s);
     if (rateNdx < 0) {
       rateNdx = sampleRates.length;
@@ -658,8 +813,8 @@ async function main() {
       sampleRates.push(s);
     }
     setSelectOption(sampleRateElem, rateNdx);
-    setSelectOption(beatTypeElem, t);
-    g_byteBeat.setType(parseInt(t));
+    // setSelectOption(beatTypeElem, t);
+    // g_byteBeat.setType(parseInt(t));
     g_byteBeat.setDesiredSampleRate(parseInt(s));
 
     const bytes = convertHexToBytes(data.bb);
@@ -678,6 +833,8 @@ async function main() {
       dummyFunction);
 
   }
+
+  $('startTouchbitContainer').style.display = 'none';
 
 }
 function showSettingsDialog() {
@@ -745,29 +902,6 @@ function showSettingsDialog() {
   }
 
 }
-
-function showHelpDialog() {
-
-  const helpDialogElem = $('helpdialog');
-
-  if (!g_helpDialogInitialized) {
-    g_helpDialogInitialized = true;
-    $('cancelhelp').addEventListener('click', close);
-    helpDialogElem.addEventListener('click', close);
-
-    helpDialogElem.querySelector('.dialog').addEventListener('click', (e) => {
-      e.stopPropagation()
-    })
-  }
-
-  helpDialogElem.classList.add('active')
-
-  function close() {
-    helpDialogElem.classList.remove('active')
-  }
-
-}
-
 const dummyFunction = () => { }
 
 const updateTimeDisplay = () => timeElem.innerHTML = g_byteBeat.getTime()
@@ -824,9 +958,11 @@ function setURL() {
     const params = new URLSearchParams({
       t: g_byteBeat.getType(),
       s: g_byteBeat.getDesiredSampleRate(),
+      e: g_byteBeat.getExpressionType(),
       bb: hex,
     });
     window.location.replace(`#${params.toString()}`);
+    $('toGreggman').href= `https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html#${params.toString()}`
   },
     dummyFunction);
 }
@@ -863,7 +999,28 @@ function setURL() {
   }
 
   $('loadingContainer').style.display = 'none';
-  main();
+
+  $('startTouchbit').addEventListener('click',main)
+
+  $('copyToClipboard').addEventListener('click', (event) => {
+    event.preventDefault();
+    navigator.clipboard.writeText(stack.join(' '))
+      .then(() => {
+          $('clipStatus').innerText = "✓"
+
+          setTimeout(() => {
+            $('clipStatus').innerText = ""
+          }, 1000)
+      })
+      .catch(() => {
+        $('clipStatus').innerText = "𐄂"
+
+        setTimeout(() => {
+          $('clipStatus').innerText = ""
+        }, 1000)
+
+      })
+  })
 
   const isSafari = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1
 
@@ -924,3 +1081,11 @@ function setRandomTheme() {
 
 }
 
+window.addEventListener('beforeunload', () => {
+
+  if(isPeerOpen()) {
+    localStorage.setItem('peerId', conn.peer);
+    conn.close();
+  }
+
+})
