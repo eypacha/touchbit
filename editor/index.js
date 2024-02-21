@@ -37,6 +37,9 @@ let selectedSlot = 0;
 let numberMode = false;
 let holdMode = false;
 let fnMode = false;
+let insertMode = false;
+let saveLogs = false;
+let logs = "";
 let stack = [''];
 let undoStack = [];
 let redoStack = [];
@@ -44,6 +47,9 @@ let debugMode = false;
 const longClickTime = 1000;
 
 let clickTimerDelete;
+
+let deletingInterval = null;
+
 let isDeleteLongClick = false;
 
 let clickTimerSelectPrev;
@@ -54,6 +60,9 @@ let isLongClickSelectNext = false;
 
 let clickTimerInsert;
 let isLongClickInsert = false;
+let lastCompiled = '';
+
+let editedNumber = null
 
 const touchable = 'ontouchstart' in window;
 const keyDown = touchable ? 'touchstart' : 'mousedown';
@@ -67,60 +76,60 @@ let conn = null;
 function initializePeer() {
   // Create own peer object with connection to shared PeerJS server
   peer = new Peer(null, {
-      debug: 2
+    debug: 2
   });
 
   peer.on('open', function (id) {
-      // Workaround for peer.reconnect deleting previous id
-      if (peer.id === null) {
-          console.log('Received null id from peer open');
-          peer.id = lastPeerId;
-      } else {
-          lastPeerId = peer.id;
-      }
+    // Workaround for peer.reconnect deleting previous id
+    if (peer.id === null) {
+      console.log('Received null id from peer open');
+      peer.id = lastPeerId;
+    } else {
+      lastPeerId = peer.id;
+    }
 
-      console.log('ID: ' + peer.id);
+    console.log('ID: ' + peer.id);
 
-      var url = new URL(window.location.href);
-      var valorR = url.searchParams.get('r');
+    var url = new URL(window.location.href);
+    var valorR = url.searchParams.get('r');
 
-      if (valorR !== null) {
-        console.log('El valor de la variable "r" es:', valorR);
-        $('receiver-id').value = valorR;
-        joinPeer();
-      } else if(localStorage.getItem('peerId')) {
-        $('receiver-id').value = localStorage.getItem('peerId');
-        joinPeer();
-      }
+    if (valorR !== null) {
+      console.log('El valor de la variable "r" es:', valorR);
+      $('receiver-id').value = valorR;
+      joinPeer();
+    } else if (localStorage.getItem('peerId')) {
+      $('receiver-id').value = localStorage.getItem('peerId');
+      joinPeer();
+    }
 
-      localStorage.removeItem('peerId');
-     
-      
+    localStorage.removeItem('peerId');
+
+
   });
 
   peer.on('connection', function (c) {
-      // Disallow incoming connections
-      c.on('open', function() {
-          c.send("Sender does not accept incoming connections");
-          setTimeout(function() { c.close(); }, 500);
-      });
+    // Disallow incoming connections
+    c.on('open', function () {
+      c.send("Sender does not accept incoming connections");
+      setTimeout(function () { c.close(); }, 500);
+    });
   });
   peer.on('disconnected', function () {
-      console.log('Connection lost. Please reconnect');
-      // Workaround for peer.reconnect deleting previous id
-      peer.id = lastPeerId;
-      peer._lastServerId = lastPeerId;
-      peer.reconnect();
+    console.log('Connection lost. Please reconnect');
+    // Workaround for peer.reconnect deleting previous id
+    peer.id = lastPeerId;
+    peer._lastServerId = lastPeerId;
+    peer.reconnect();
   });
-  peer.on('close', function() {
-      conn = null;
-      // peerStatus.innerText = 'Connection destroyed Please refresh';
-      console.log('Connection destroyed Please refresh');
+  peer.on('close', function () {
+    conn = null;
+    // peerStatus.innerText = 'Connection destroyed Please refresh';
+    console.log('Connection destroyed Please refresh');
 
   });
   peer.on('error', function (err) {
-      console.log(err);
-      // peerStatus.innerText = err;
+    console.log(err);
+    // peerStatus.innerText = err;
   });
 };
 
@@ -130,81 +139,82 @@ function joinPeer() {
 
   // Create connection to destination peer specified in the input field
   conn = peer.connect($('receiver-id').value, {
-      reliable: true
+    reliable: true
   });
 
   conn.on('open', function () {
-      // peerStatus.innerText = 'Conected to receiveer';
-      console.log("Connected to: " + conn.peer);
-      
-      signal('hello')
+    // peerStatus.innerText = 'Conected to receiveer';
+    console.log("Connected to: " + conn.peer);
 
-      $('signalBtn').classList.remove('hide')
-      $('connect-button').classList.add('hide')
-      $('disconnect-button').classList.remove('hide')
+    signal('hello')
+
+    $('signalBtn').classList.remove('hide')
+    $('connect-button').classList.add('hide')
+    $('settingsdialog').classList.remove('active')
+    $('disconnect-button').classList.remove('hide')
   });
 
   // Handle incoming data (messages only since this is the signal sender)
   conn.on('data', function (data) {
-      console.log("DATA" + data);
+    console.log("DATA" + data);
 
-      switch (data.sigName) {
-        case 'restore':
-          console.log('restore',data);
+    switch (data.sigName) {
+      case 'restore':
+        console.log('restore', data);
 
-          stack = [...data.stack];
-          g_byteBeat.setDesiredSampleRate(data.sampleRate);
-          setSelectOption(sampleRateElem, sampleRates.indexOf(data.sampleRate));
+        stack = [...data.stack];
+        g_byteBeat.setDesiredSampleRate(data.sampleRate);
+        setSelectOption(sampleRateElem, sampleRates.indexOf(data.sampleRate));
 
-          document.querySelectorAll('.slot')[0].click();
-          break;
-        case 'requestSampleRate':
-          console.log('SampleRate requested');
-          signal('sampleRate', g_byteBeat.getDesiredSampleRate());
-          break;
-        default:
-          console.log("data:", data);
-          break;
-      }
+        document.querySelectorAll('.slot')[0].click();
+        break;
+      case 'requestSampleRate':
+        console.log('SampleRate requested');
+        signal('sampleRate', g_byteBeat.getDesiredSampleRate());
+        break;
+      default:
+        console.log("data:", data);
+        break;
+    }
   });
 
   conn.on('close', function () {
-      console.log("Connection closed")
-      // peerStatus.innerText = 'Connection closed';
-      $('receiver-id').value = ''
-      $('signalBtn').classList.add('hide')
-      $('connect-button').classList.remove('hide')
-      $('disconnect-button').classList.add('hide')
+    console.log("Connection closed")
+    // peerStatus.innerText = 'Connection closed';
+    $('receiver-id').value = ''
+    $('signalBtn').classList.add('hide')
+    $('connect-button').classList.remove('hide')
+    $('disconnect-button').classList.add('hide')
   });
 
 };
 
-function signal(sigName,arg) {
+function signal(sigName, arg) {
 
   const data = {
     sigName: sigName,
     arg: arg
   }
   if (isPeerOpen()) {
-      conn.send(data);
-      console.log(data.sigName,data.arg + " signal sent");
+    conn.send(data);
+    console.log(data.sigName, data.arg + " signal sent");
   } else {
-      console.log('Connection closed');
-      // peerStatus.innerText = 'Connection closed';
-      $('receiver-id').value = ''
-      $('signalBtn').classList.add('hide')
+    console.log('Connection closed');
+    // peerStatus.innerText = 'Connection closed';
+    $('receiver-id').value = ''
+    $('signalBtn').classList.add('hide')
   }
 }
 
 $('signalBtn').addEventListener('click', function () {
-  if(!isPeerOpen()) return
+  if (!isPeerOpen()) return
 
   signal('process', stack)
 })
 
 
 $('connect-button').addEventListener('click', joinPeer);
-$('disconnect-button').addEventListener('click',  () => {
+$('disconnect-button').addEventListener('click', () => {
   conn.close()
 });
 
@@ -223,7 +233,9 @@ function connectFor2Channels() {
 }
 
 function reconnect() {
+
   const lastNode = connectFor2Channels();
+
   if (g_filter) {
     lastNode.connect(g_filter);
     g_filter.connect(g_context.destination);
@@ -234,23 +246,24 @@ function reconnect() {
 }
 
 function play() {
-  
   if (playing) return
-
-  if(isPeerOpen()) signal('play')
-
   playing = true
+
   reconnect()
+  g_byteBeat.reset();
+  if (saveLogs) saveLog(`PLAY`)
+
+  if (isPeerOpen()) signal('play')
 }
 
 function pause() {
   if (!playing) return
-
-  if(isPeerOpen()) signal('pause')
-
   playing = false;
-  g_byteBeat.disconnect()
 
+  g_byteBeat.disconnect();
+  if (saveLogs) saveLog(`PAUSE`)
+
+  if (isPeerOpen()) signal('pause')
 }
 
 function setSelected(element, selected) {
@@ -301,6 +314,7 @@ async function main() {
   function resetToZero() {
     g_byteBeat.reset();
     updateTimeDisplay();
+    if (saveLogs && playing) saveLog(`RESET`)
   }
 
   controls.appendChild(playElem);
@@ -328,7 +342,7 @@ async function main() {
   //   },
   // });
   // beatTypeElem.classList.add('byte-type')
-  
+
   // controls.appendChild(beatTypeElem);
 
   sampleRateElem = addSelection(['8kHz', '11kHz', '22kHz', '32kHz', '44kHz', '48kHz'], 0, {
@@ -336,7 +350,9 @@ async function main() {
     onChange(event) {
       const sampleData = sampleRates[event.target.selectedIndex]
       g_byteBeat.setDesiredSampleRate(sampleData);
-      if(isPeerOpen()) signal('sampleRate', sampleData)
+      if (saveLogs && playing) saveLog(`SAMPLERATE ${sampleData}`)
+
+      if (isPeerOpen()) signal('sampleRate', sampleData)
 
       setURL();
     },
@@ -386,7 +402,7 @@ async function main() {
             ? '.' + slotDiv.textContent.slice(2)
             : slotDiv.textContent;
 
-        if (ndx === selectedSlot) {
+        if (ndx === selectedSlot && numberMode) {
           const plusOneDiv = document.createElement('button')
           plusOneDiv.className = 'modifier plus-one'
           plusOneDiv.textContent = '+'
@@ -394,11 +410,14 @@ async function main() {
           minusOneDiv.className = 'modifier minus-one'
           minusOneDiv.textContent = '-'
 
-          plusOneDiv.addEventListener('click', () => {
+          plusOneDiv.addEventListener('click', (event) => {
+            event.stopPropagation()
             modifySlotValue(selectedSlot, 1)
           })
-          minusOneDiv.addEventListener('click', () => {
+          minusOneDiv.addEventListener('click', (event) => {
+            event.stopPropagation()
             modifySlotValue(selectedSlot, -1)
+            
           })
           slotDiv.appendChild(plusOneDiv)
           slotDiv.appendChild(minusOneDiv)
@@ -415,28 +434,45 @@ async function main() {
       if (s === ">>") slotDiv.textContent = "»"
       if (s === "||") slotDiv.textContent = "‖"
 
-      slotDiv.addEventListener('click', () => {
+      if (s.endsWith("000")) slotDiv.textContent = s.replace(/000$/, "k")
 
-        changeNumberMode(selectedSlot == ndx && slotDiv.classList.contains('number'));
-        selectedSlot = ndx
-        renderStack()
+      slotDiv.addEventListener('click', (event) => {
+
+        event.preventDefault()
+
+        const thisIsNumber = selectedSlot == ndx && slotDiv.classList.contains('number');
+        if(numberMode && thisIsNumber) {
+
+          window.seleccionado = slotDiv
+          showNumberEditor()
+        } else {
+       
+          changeNumberMode(selectedSlot == ndx && slotDiv.classList.contains('number'));
+          selectedSlot = ndx
+          renderStack()
+
+        }
 
       })
+
 
       stackContainer.appendChild(slotDiv)
     })
 
-    stackContainer.children[selectedSlot].classList.add('selected')
+    stackContainer.children[selectedSlot].classList.add(insertMode ? 'caret' : 'selected')
+    
+    if(editedNumber?.wholeNumber) renderNumberEditor()
+  
   }
 
   renderStack();
 
   function selectSlot(index) {
-    stackContainer.children[selectedSlot].classList.remove('selected');
+    stackContainer.children[selectedSlot].classList.remove(insertMode ? 'caret' : 'selected');
 
     selectedSlot = index;
     const slot = stackContainer.children[index];
-    slot.classList.add('selected');
+    slot.classList.add(insertMode ? 'caret' : 'selected');
 
   }
 
@@ -529,7 +565,13 @@ async function main() {
   function changeNumberMode(toValue) {
 
     numberMode = toValue
-    numberMode ? stackContainer.classList.add("number-mode-on") : stackContainer.classList.remove("number-mode-on")
+
+    if(numberMode) {
+      stackContainer.classList.add("number-mode-on")
+    } else {
+      stackContainer.classList.remove("number-mode-on")
+      closeNumberEditor()
+    }
 
   }
 
@@ -544,7 +586,15 @@ async function main() {
       }
 
       const newSymbol = this.getAttribute('data-insert')
-      stack[selectedSlot] = newSymbol
+
+      if (insertMode) {
+        // Modo de inserción: Agrega un nuevo elemento en la posición seleccionada
+        stack.splice(selectedSlot, 0, newSymbol);
+      } else {
+        // Modo de reemplazo: Reemplaza el elemento en la posición seleccionada
+        stack[selectedSlot] = newSymbol;
+      }
+
       saveState()
       selectNext()
 
@@ -558,6 +608,8 @@ async function main() {
 
       const newNumber = this.getAttribute('data-insert')
 
+
+      if(stack[selectedSlot].length > 15) return
       // Verifica si el contenido del slot actual cumple con la condición numérica
       if (
         ((!isNaN(parseFloat(stack[selectedSlot])) && isFinite(stack[selectedSlot]) || stack[selectedSlot] == '.') && numberMode) &&
@@ -565,10 +617,20 @@ async function main() {
       ) {
         // Si es un número, agrega el nuevo número a continuación del existente en el slot
         stack[selectedSlot] += newNumber
+        editedNumber = floatToFraction(stack[selectedSlot])
 
       } else {
-        // Si no es un número, reemplaza el contenido del slot con el nuevo número
-        stack[selectedSlot] = newNumber
+
+
+        if (insertMode) {
+          // Modo de inserción: Agrega un nuevo elemento en la posición seleccionada
+          stack.splice(selectedSlot, 0, newNumber);
+        } else {
+          // Modo de reemplazo: Reemplaza el elemento en la posición seleccionada
+          // Si no es un número, reemplaza el contenido del slot con el nuevo número
+          stack[selectedSlot] = newNumber
+        }
+
       }
 
       saveState()
@@ -597,6 +659,7 @@ async function main() {
 
           evaluated = stack[selectedSlot].slice(0, -1)
           if (evaluated === '') evaluated = "0"
+          
 
         } else {
 
@@ -619,6 +682,7 @@ async function main() {
 
       stack[selectedSlot] = evaluated
       saveState()
+      editedNumber = floatToFraction(stack[selectedSlot])
       changeNumberMode(true)
       renderStack()
 
@@ -629,6 +693,7 @@ async function main() {
   function modifySlotValue(index, increment) {
     const currentValue = parseFloat(stack[index]);
 
+
     // Verifica si el valor actual es un número
     if (!isNaN(currentValue) && isFinite(currentValue)) {
       stack[index] = (currentValue + increment).toString();
@@ -637,6 +702,134 @@ async function main() {
     }
   }
 
+
+function floatToFraction(float) {
+
+
+  const floatStr = float.toString();
+
+  // Find the position of the decimal point
+  const decimalPosition = floatStr.indexOf('.');
+
+  // If there's no decimal point, the number is already an integer, return it directly
+  if (decimalPosition === -1) {
+    return {
+      wholeNumber: parseInt(floatStr),
+      decimalPlaces: 0, // Since it's an integer, there are no decimal places
+    };
+  }
+
+  // Calculate the length of the decimal part to determine the decimal places
+  const decimalPlaces = floatStr.length - decimalPosition - 1;
+
+  // Multiply the number by 10 to the power of decimal places to get the whole number
+  const wholeNumber = Math.round(float * Math.pow(10, decimalPlaces));
+
+
+  return {
+    wholeNumber: wholeNumber,
+    decimalPlaces: decimalPlaces,
+  };
+}
+
+function fractionToFloat(fract) {
+  return fract.wholeNumber / Math.pow(10,fract.decimalPlaces)
+}
+
+function showNumberEditor() {
+  const numberEditor = $('number-editor');
+
+  editedNumber = floatToFraction(stack[selectedSlot])
+
+  renderNumberEditor()
+
+  numberEditor.classList.add('active');
+}
+
+$('number-editor').addEventListener('click', closeNumberEditor)
+$('number-container').addEventListener('click', (event)=>{
+  event.stopPropagation()
+})
+
+function closeNumberEditor() { 
+  editedNumber = null
+  const numberEditor = $('number-editor');
+  numberEditor.classList.remove('active');
+}
+
+
+function renderNumberEditor() {
+
+  const numberContainer = $('number-container');
+  numberContainer.innerHTML = ''
+
+  let digits = Math.abs(editedNumber.wholeNumber).toString().split('').map(Number);
+
+  while (digits.length <= editedNumber.decimalPlaces) {
+    digits.unshift(0); 
+  }
+
+
+  digits.forEach((digit, i) => {
+
+    const digitElem = document.createElement('div')
+    digitElem.className = 'digit'
+    digitElem.textContent = digit
+    
+    const plus = document.createElement('div')
+    plus.className = 'modifier'
+    plus.classList.add('plus')
+
+    plus.textContent = '^'
+
+    plus.addEventListener('click', () => {
+      editedNumber.wholeNumber += Math.pow(10,digits.length - i - 1)
+      stack[selectedSlot] = fractionToFloat(editedNumber).toString()
+      renderStack()
+    })
+    
+    if(editedNumber.decimalPlaces == digits.length - i) digitElem.classList.add('dot')
+    digitElem.appendChild(plus)
+
+    const minus = document.createElement('div')
+    minus.className = 'modifier'
+    minus.classList.add('minus')
+    minus.textContent = '^'
+
+    minus.addEventListener('click', () => {
+      editedNumber.wholeNumber -= Math.pow(10,digits.length - i - 1)
+      console.log(editedNumber)
+      console.log(fractionToFloat(editedNumber))
+      stack[selectedSlot] = fractionToFloat(editedNumber).toString()
+      renderStack()
+    })
+
+    digitElem.appendChild(minus)
+
+    numberContainer.appendChild(digitElem)
+
+  })
+
+  if(stack[selectedSlot].charAt(stack[selectedSlot].length - 1) === '.') {
+    numberContainer.lastChild.classList.add('finaldot')
+  }
+
+  if(editedNumber.wholeNumber < 0) {
+    numberContainer.firstChild.classList.add('negative')
+  }
+
+  const chars = digits.length + (editedNumber.wholeNumber < 0 ? 1 : 0)
+
+  let fontSize = 3;
+  if(chars > 6) fontSize = 2.5
+  if(chars > 10) fontSize = 2.2
+  if(chars > 13) fontSize = 2
+
+  numberContainer.style.setProperty('--font-size', `${fontSize}rem`);
+  numberContainer.dataset.chars = chars;
+
+}
+
   const deleteButton = $('deleteSlot');
 
   deleteButton.addEventListener(keyDown, function (event) {
@@ -644,17 +837,39 @@ async function main() {
     deleteButton.classList.add('pressed')
 
     event.preventDefault()
+
     clickTimerDelete = setTimeout(function () {
 
-      stack = [''];
-      selectedSlot = 0;
+      if (insertMode) {
 
-      if (!holdMode) compile('0')
+        deletingInterval = setInterval(() => {
 
-      saveState();
-      changeNumberMode(false);
-      renderStack();
-      isDeleteLongClick = true;
+          if (insertMode && selectedSlot > 0) {
+
+            stack.splice(selectedSlot - 1, 1);
+            selectedSlot--;  // Ajusta la posición seleccionada después del borrado
+            saveState();
+            changeNumberMode(false);
+            renderStack();
+
+          } else {
+            clearInterval(deletingInterval)
+          }
+
+        }, 150)
+
+      } else {
+        stack = [''];
+        selectedSlot = 0;
+
+        if (!holdMode) compile('0')
+
+        saveState();
+        changeNumberMode(false);
+        renderStack();
+        isDeleteLongClick = true;
+      }
+
     }, longClickTime);
   });
 
@@ -662,19 +877,27 @@ async function main() {
 
     deleteButton.classList.remove('pressed')
     clearTimeout(clickTimerDelete);
+    clearInterval(deletingInterval)
 
     if (!isDeleteLongClick) {
-      if (stack.length == 1) {
-        stack[0] = '';
+
+      if (insertMode && selectedSlot > 0) {
+        // Modo de inserción: Borra el elemento en la posición seleccionada - 1
+        stack.splice(selectedSlot - 1, 1);
+        selectedSlot--;  // Ajusta la posición seleccionada después del borrado
         saveState();
-      }
-      if (stack.length > 1) {
+        changeNumberMode(false);
+        renderStack();
+
+      } else if (!insertMode && stack.length > 1) {
+        // Modo de reemplazo: Borra el elemento en la posición seleccionada
         stack.splice(selectedSlot, 1);
+        saveState();
         if (selectedSlot >= stack.length) selectedSlot = stack.length - 1;
+        changeNumberMode(false);
+        renderStack();
       }
 
-      changeNumberMode(false);
-      renderStack();
     }
 
     isDeleteLongClick = false;
@@ -685,32 +908,49 @@ async function main() {
   insertButton.addEventListener(keyDown, function (event) {
 
     insertButton.classList.add('pressed')
+    isLongClickInsert = false;
 
     event.preventDefault()
+
+    if(insertMode) return
     clickTimerInsert = setTimeout(function () {
 
-      stack.splice(selectedSlot, 0, '\n'); // Inserta un elemento vacío en el slot seleccionado
-      saveState()
-      selectNext();
-      renderStack();
+      insertMode = true
+      insertButton.classList.add('active')
+      document.documentElement.dataset.editionMode = 'insert'
+      $('stack').querySelectorAll('.slot')[selectedSlot].click()
+
       isLongClickInsert = true;
 
     }, longClickTime);
+    
   });
 
   insertButton.addEventListener(keyUp, function () {
 
     insertButton.classList.remove('pressed')
+
     clearTimeout(clickTimerInsert);
 
-    if (!isLongClickInsert) {
+    if(isLongClickInsert) return
+
+    if(insertMode) {
+      insertMode = false
+      insertButton.classList.remove('active')
+      document.documentElement.dataset.editionMode = 'replace'
+      $('stack').querySelectorAll('.slot')[selectedSlot].click()
+    } else {
+
       stack.splice(selectedSlot, 0, ''); // Inserta un elemento vacío en el slot seleccionado
+
+      if (insertMode) selectNext()
+
       saveState();
       changeNumberMode(false);
       renderStack();
     }
 
-    isLongClickInsert = false;
+    
   });
 
   const fnModeButton = $('fnMode');
@@ -734,6 +974,7 @@ async function main() {
     if (!holdMode) {
 
       if (stack.length == 1 && stack[0] == '') compile('0')
+      
       renderStack()
     }
 
@@ -837,23 +1078,43 @@ async function main() {
   $('startTouchbitContainer').style.display = 'none';
 
 }
+
+
 function showSettingsDialog() {
 
   const themeSelector = $('selectTheme');
   const settingseDialogElem = $('settingsdialog');
   const keyHeight = $('keyHeight');
   const expFontSize = $('expFontSize');
-  const debugModeSwitch = $('debugMode'); 
+  const debugModeSwitch = $('debugMode');
+  const saveLogsSwitch = $('saveLogs');
+  const viewLogs = $('viewLogs');
+  const clearLogs = $('clearLogs');
 
   if (!g_settingsDialogInitialized) {
     g_settingsDialogInitialized = true;
     $('cancelSettings').addEventListener('click', close);
     themeSelector.addEventListener('change', save);
     debugModeSwitch.addEventListener('change', save);
+    saveLogsSwitch.addEventListener('change', save);
     settingseDialogElem.addEventListener('click', close)
     settingseDialogElem.querySelector('.dialog').addEventListener('click', (e) => {
       e.stopPropagation()
     })
+
+    viewLogs.addEventListener('click', () => {
+      $('logs').innerHTML = logs
+      $('logsDialog').classList.add('active')
+    })
+
+    clearLogs.addEventListener('click', () => {
+      logs = ""
+    })
+
+    $('cancelLogs').addEventListener('click', () => {
+      $('logsDialog').classList.remove('active')
+    })
+
 
     $('randomizeBtn').addEventListener('click', setRandomTheme)
     keyHeight.addEventListener('change', save);
@@ -866,10 +1127,11 @@ function showSettingsDialog() {
 
   function save() {
     document.documentElement.dataset.theme = themeSelector.value
+
     localStorage.setItem('theme', themeSelector.value);
 
     $('main').style.setProperty('--key-height', `${keyHeight.value}px`);
-    $('main').style.setProperty('--key-active-height', `${keyHeight.value-2}px`);
+    $('main').style.setProperty('--key-active-height', `${keyHeight.value - 2}px`);
     localStorage.setItem('key-height', keyHeight.value);
 
     $('main').style.setProperty('--exp-font-size', `${expFontSize.value}px`);
@@ -877,6 +1139,14 @@ function showSettingsDialog() {
 
     debugMode = debugModeSwitch.checked;
     localStorage.setItem('debugMode', debugMode);
+
+    saveLogs = saveLogsSwitch.checked;
+    localStorage.setItem('saveLogs', saveLogs);
+
+    viewLogs.disabled = !saveLogs
+    clearLogs.disabled = !saveLogs
+
+    $('main').style.setProperty('--key-active-height', `${keyHeight.value - 2}px`);
 
     if (themeSelector.value == 'randomize') {
       setRandomTheme()
@@ -893,8 +1163,8 @@ function showSettingsDialog() {
     document.documentElement.dataset.theme = 'default'
     expFontSize.value = 22
     keyHeight.value = 40
-    $('keyHeight').value = keyHeight;
     debugModeSwitch.checked = false
+    document.documentElement.dataset.editionMode = 'replace';
     localStorage.clear()
   }
   function close() {
@@ -909,23 +1179,31 @@ const updateTimeDisplay = () => timeElem.innerHTML = g_byteBeat.getTime()
 async function setExpressions(expressions, resetToZero) {
 
   compileStatusElem.classList.remove('error');
-
-  if(debugMode) {
-    $('debugger').classList.remove('error');
-    $('debugger').textContent = ''
-  }
+  $('debugger').classList.remove('error');
+  $('debugger').textContent = ''
 
   let error;
   try {
+
     await g_byteBeat.setExpressions(expressions, resetToZero)
   } catch (e) {
     error = e;
+
+  }
+
+  if (error) {
     compileStatusElem.classList.add('error');
 
-    if(debugMode) {
+
+    if (debugMode) {
       $('debugger').classList.add('error');
       $('debugger').textContent = error
     }
+
+  } else {
+
+    if (saveLogs) saveLog(`COMPILE ${expressions}`)
+
   }
 
 
@@ -934,9 +1212,17 @@ async function setExpressions(expressions, resetToZero) {
 
 function compile(text, resetToZero) {
 
+  text = text.trim()
+  if (text == '') text = "0"
+
+  if (lastCompiled == text) return
+  lastCompiled = text;
+
   const sections = splitBySections(text);
+
   if (sections.default || sections.channel1) {
     const expressions = [sections.default?.body || sections.channel1?.body];
+
     if (sections.channel2) {
       expressions.push(sections.channel2.body);
     }
@@ -962,7 +1248,7 @@ function setURL() {
       bb: hex,
     });
     window.location.replace(`#${params.toString()}`);
-    $('toGreggman').href= `https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html#${params.toString()}`
+    $('toGreggman').href = `https://bytebeat.demozoo.org#${params.toString()}`
   },
     dummyFunction);
 }
@@ -982,7 +1268,7 @@ function setURL() {
 
   if (keyHeight !== null) {
     $('main').style.setProperty('--key-height', `${keyHeight}px`);
-    $('main').style.setProperty('--key-active-height', `${parseInt(keyHeight)-2}px`);
+    $('main').style.setProperty('--key-active-height', `${parseInt(keyHeight) - 2}px`);
     $('keyHeight').value = keyHeight;
   }
 
@@ -998,19 +1284,27 @@ function setURL() {
     $('debugMode').checked = debugMode;
   }
 
+  const saveL = localStorage.getItem('saveLogs');
+  if (saveL !== null) {
+    saveLogs = JSON.parse(saveL)
+    $('saveLogs').checked = saveLogs;
+    $('viewLogs').disabled = !saveLogs;
+    $('clearLogs').disabled = !saveLogs;
+  }
+
   $('loadingContainer').style.display = 'none';
 
-  $('startTouchbit').addEventListener('click',main)
+  $('startTouchbit').addEventListener('click', main)
 
   $('copyToClipboard').addEventListener('click', (event) => {
     event.preventDefault();
     navigator.clipboard.writeText(stack.join(' '))
       .then(() => {
-          $('clipStatus').innerText = "✓"
+        $('clipStatus').innerText = "✓"
 
-          setTimeout(() => {
-            $('clipStatus').innerText = ""
-          }, 1000)
+        setTimeout(() => {
+          $('clipStatus').innerText = ""
+        }, 1000)
       })
       .catch(() => {
         $('clipStatus').innerText = "𐄂"
@@ -1083,9 +1377,34 @@ function setRandomTheme() {
 
 window.addEventListener('beforeunload', () => {
 
-  if(isPeerOpen()) {
+  if (isPeerOpen()) {
     localStorage.setItem('peerId', conn.peer);
     conn.close();
   }
 
 })
+
+function saveLog(event) {
+
+  const time = new Date().toLocaleString('en-us', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false 
+    }
+  ).replace(/\//g, '-').replace(/,/g, '');
+
+
+  if(event == "PLAY") {
+    logs += `${time} SAMPLERATE ${g_byteBeat.getDesiredSampleRate()}` + '\n'
+    console.log('✍🏻',time, `SAMPLERATE ${g_byteBeat.getDesiredSampleRate()}`)
+    logs += `${time} COMPILE ${lastCompiled}` + '\n'
+    console.log('✍🏻',time, `COMPILE ${lastCompiled}`)
+  }
+
+  logs += `${time} ${event}` + '\n'
+  console.log('✍🏻',time, event)
+}

@@ -34,7 +34,13 @@
 <body>
   <div id="main">
     <div id="controls"></div>
+
     <div class="stack-container">
+      <div id="number-editor" class="modal-backdrop">
+        <div id="number-container" class="modal-body">
+        </div>
+      </div>
+
       <div id="stack"></div>
       <div class="debuggerContainer">
         <div id="debugger">
@@ -140,16 +146,16 @@
         <div class="tab-wrap">
           <input type="radio" id="tab1" name="tabGroup1" class="tab" checked>
           <label for="tab1">Styles</label>
-          
+
           <input type="radio" id="tab2" name="tabGroup1" class="tab">
           <label for="tab2">Remote</label>
 
           <input type="radio" id="tab3" name="tabGroup1" class="tab">
           <label for="tab3">More</label>
-          
+
           <input type="radio" id="tab4" name="tabGroup1" class="tab">
           <label for="tab4">About</label>
-          
+
           <div class="tab__content">
             <div>
               <label>
@@ -190,7 +196,8 @@
 
           <div class="tab__content">
             <div>Experimental mode</div>
-            <div class="help-text">Open <a href="receive/" target="_blank">this url</a> in another screen and scan the qr code or paste here the receiver id</div>
+            <div class="help-text">Open <a href="receive/" target="_blank">this url</a> in another screen and scan the
+              qr code or paste here the receiver id</div>
             <div>
               <input type="text" id="receiver-id" placeholder="id">
             </div>
@@ -199,13 +206,10 @@
               <button id="disconnect-button" class="hide">Disconect</button>
             </div>
             <div id="peerStatus"></div>
-           
+
           </div>
 
           <div class="tab__content">
-            <div>Export expression to:</div>
-            <div class="help-text">
-              <a href="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html" id="toGreggman" target="_blank">Greggman editor</a> or <a href="#" id="copyToClipboard">Clipboard</a> <span id="clipStatus"></span></div>
             <div>
               <label>
                 <span>Debug mode</span>
@@ -215,10 +219,30 @@
                 </label>
               </label>
             </div>
+            <div>
+              <label>
+                <span>Save logs</span>
+                <label class="switch">
+                  <input type="checkbox" id="saveLogs">
+                  <span class="slider round"></span>
+                </label>
+                <button id="viewLogs" disabled>View</button>
+                <button id="clearLogs" disabled>Clear</button>
+              </label>
+            </div>
+            <div>
+              <div>Export expression to:</div>
+              <div class="help-text">
+                <a href="https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.html" id="toGreggman"
+                  target="_blank">Greggman editor</a> or <a href="#" id="copyToClipboard">Clipboard</a> <span
+                  id="clipStatus"></span>
+              </div>
+            </div>
           </div>
 
           <div class="tab__content">
-            <div class="mb-6">Touchbit is a 'mobile-friendly' interface for composing bytebeat music using postfix expressions.</div>
+            <div class="mb-6">Touchbit is a 'mobile-friendly' interface for composing bytebeat music using postfix
+              expressions.</div>
             <div><b>More info: </b><br />
               <a href="https://github.com/eypacha/touchbit" target="_blank">github.com/eypacha/touchbit</a>
             </div>
@@ -240,6 +264,18 @@
         <div><b>More info: </b><br />
           <a href="https://github.com/eypacha/touchbit" target="_blank">github.com/eypacha/touchbit</a>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="logsDialog" class="modal-backdrop">
+    <div class="dialog">
+      <div class="dialog-header">
+        <div class="title">Logs</div>
+        <button id="cancelLogs" aria-label="close">&times;</button>
+      </div>
+      <div class="dialog-body">
+        <textarea id="logs" readonly></textarea>
       </div>
     </div>
   </div>

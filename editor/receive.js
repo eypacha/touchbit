@@ -26,9 +26,8 @@ let settingsElem;
 let compileStatusElem;
 let controls;
 let holdMode = false;
-let stack = [''];
-
 let debugMode = false;
+let stack = [''];
 
 //Peerjs
 let lastPeerId = null;
@@ -36,6 +35,8 @@ let peer = null; // own peer object
 let conn = null;
 
 function connectFor2Channels() {
+  console.log('connect',g_analyzers[0])
+
   g_byteBeat.disconnect();
   g_byteBeat.connect(g_splitter);
   g_splitter.connect(g_analyzers[0], 0);
@@ -58,9 +59,9 @@ function reconnect() {
 
 function play() {
   if (playing) return
-
   playing = true
   reconnect()
+  g_byteBeat.reset();
 }
 
 function pause() {
@@ -77,6 +78,7 @@ async function main() {
   g_context = new AudioContext();
   g_context.resume();  // needed for safari
   await ByteBeatNode.setup(g_context);
+
   g_byteBeat = new ByteBeatNode(g_context);
 
   g_analyzers.push(g_context.createAnalyser(), g_context.createAnalyser());
