@@ -40,16 +40,31 @@ export default class ByteBeatCompiler {
         steps.push('var v2 = stack.pop();');
         steps.push('stack.push((v1 < v2) ? 0xFFFFFFFF : 0);');
         break;
+      case '>=':
+          steps.push('var v1 = stack.pop();');
+          steps.push('var v2 = stack.pop();');
+          steps.push('stack.push((v1 <= v2) ? 0xFFFFFFFF : 0);');
+          break;
       case '<':
         steps.push('var v1 = stack.pop();');
         steps.push('var v2 = stack.pop();');
         steps.push('stack.push((v1 > v2) ? 0xFFFFFFFF : 0);');
         break;
+      case '<=':
+          steps.push('var v1 = stack.pop();');
+          steps.push('var v2 = stack.pop();');
+          steps.push('stack.push((v1 >= v2) ? 0xFFFFFFFF : 0);');
+          break;
       case '=':
         steps.push('var v1 = stack.pop();');
         steps.push('var v2 = stack.pop();');
         steps.push('stack.push((v2 == v1) ? 0xFFFFFFFF : 0);');
         break;
+      case '!=':
+          steps.push('var v1 = stack.pop();');
+          steps.push('var v2 = stack.pop();');
+          steps.push('stack.push((v2 !== v1) ? 0xFFFFFFFF : 0);');
+          break;
       case 'drop':
         steps.push('stack.pop();');
         break;

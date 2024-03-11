@@ -38,11 +38,12 @@ $red: red;
 
   --keyboard-background: transparent;
   --key-gap: 5px;
-  --key-height: 40px;
+  --key-height: 45px;
   --key-background: var(--button-color);
   --key-border-radius: var(--button-border-radius);
   --key-border-style: var(--button-border-style);
   --key-border-width: 1px 1px 3px;
+  --expandable-button: var(--black);
 
   --key-active-height: calc(var(--key-height) - 2px);
   --key-active-border-width: 1px 1px 1px !important;
@@ -79,7 +80,7 @@ $red: red;
   --key-t-bg-active: var(--button-color);
   --key-number-bg-active: var(--button-color);
   --key-command-bg-active: var(--button-color);
-
+  --expandable-button: var(--button-color);
 
   --key-border-radius: 20px;
   --key-border-width: 1px 1px 10px;
@@ -107,6 +108,7 @@ $red: red;
   --border-radius: 20px;
   --background: #ffe9f4;
   --button-color: #f9f5f7;
+  --expandable-button: var(--button-color);
   --selected: white;
   --symbol: #c0a9bd;
   --text: #a36b9c;
@@ -199,7 +201,15 @@ a:active {
 .timer {
   flex: 1;
   text-align: right;
-  color: var(--number);
+  
+
+  .t{
+    color: var(--t);
+  } 
+
+  .s {
+    color: var(--number);
+  }
 }
 
 .byte-type,
@@ -562,7 +572,7 @@ option {
 
   button:not(.timer),
   .buttonstyle {
-    max-width: 6.7em;
+    max-width: 11em;
   }
 
   .controls {
@@ -616,112 +626,113 @@ option {
     }
   }
 
-#number-editor {
-  pointer-events: none;
-  opacity: 0;
-  background-color: transparent !important;
-  backdrop-filter: blur(1px);
+  #number-editor {
+    pointer-events: none;
+    opacity: 0;
+    background-color: transparent !important;
+    backdrop-filter: blur(1px);
 
-  &.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  & > div {
-    --font-size: 2.5em;
-    position: absolute;
-    display: flex;
-    background-color: var(--button-color);
-    border-radius: var(--border-radius);
-    width: calc(100vw - 20px);
-    max-width: 530px;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 10px;
-    z-index: 2;
-    
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 5px;
-    font-size: var(--font-size);
-    height: 10rem;
-    border: solid 1px var(--number);
-
-    .sign {
-      color: var(--number);
+    &.active {
+      opacity: 1;
+      pointer-events: auto;
     }
-    
-    .digit {
-      position: relative;
-      color: var(--number);
-      width: 0.7em;
-      text-align: center;
 
-      &.negative:before {
-        content: '-';
-        position: absolute;
-        font-size: .5em;
-        right: 1.5em;
-        top: 0.5em;
-      }
-      
-      &.dot:after {
-        content: ".";
-        display: block;
-        position: absolute;
-        font-size: .5em;
-        left: -0.35em;
-        bottom: 0em;
-      }
+    &>div {
+      --font-size: 2.5em;
+      position: absolute;
+      display: flex;
+      background-color: var(--button-color);
+      border-radius: var(--border-radius);
+      width: calc(100vw - 20px);
+      max-width: 530px;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 10px;
+      z-index: 2;
 
-      &.finaldot:after {
-        content: ".";
-        display: block;
-        position: absolute;
-        font-size: .5em;
-        right: -0.25em;
-        bottom: 0em;
-      }
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 5px;
+      font-size: var(--font-size);
+      height: 10rem;
+      border: solid 1px var(--number);
 
-      .modifier {
-        z-index: 9;
-        position: absolute;
-        width: 1.2em;
-        height: 1.2em;
-        display: block;
-        font-size: .4em;
+      .sign {
         color: var(--number);
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 0;
-        transform-origin: left;
-        background: transparent;
-        opacity: .7;
-
-        &.plus {
-          top: -1.4em;
-    
-          &:active {
-            background: rgba($white, .2);
-          }
-    
-        }
-    
-        &.minus {
-          margin-top: 2px;
-          scale: -1;
-    
-          &:active {
-            background: rgba($white, .2);
-          }
-        }
       }
 
+      .digit {
+        position: relative;
+        color: var(--number);
+        width: 0.7em;
+        text-align: center;
+
+        &.negative:before {
+          content: '-';
+          position: absolute;
+          font-size: .5em;
+          right: 1.5em;
+          top: 0.5em;
+        }
+
+        &.dot:after {
+          content: ".";
+          display: block;
+          position: absolute;
+          font-size: .5em;
+          left: -0.35em;
+          bottom: 0em;
+        }
+
+        &.finaldot:after {
+          content: ".";
+          display: block;
+          position: absolute;
+          font-size: .5em;
+          right: -0.25em;
+          bottom: 0em;
+        }
+
+        .modifier {
+          z-index: 9;
+          position: absolute;
+          width: 1.2em;
+          height: 1.2em;
+          display: block;
+          font-size: .4em;
+          color: var(--number);
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 0;
+          transform-origin: left;
+          background: transparent;
+          opacity: .7;
+
+          &.plus {
+            top: -1.4em;
+
+            &:active {
+              background: rgba($white, .2);
+            }
+
+          }
+
+          &.minus {
+            margin-top: 2px;
+            scale: -1;
+
+            &:active {
+              background: rgba($white, .2);
+            }
+          }
+        }
+
+      }
     }
+
   }
 
-}
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -936,6 +947,10 @@ option {
     gap: var(--key-gap);
     width: 100%;
 
+    &>.row {
+      margin-bottom: 0 !important;
+    }
+
     &>* {
       flex: 1;
     }
@@ -964,8 +979,88 @@ option {
     }
   }
 
-  button {
+  .expandable {
 
+    position: relative;
+
+    &.open {
+
+      &>button {
+        position: relative;
+        background: var(--expandable-button) !important;
+        color: transparent !important;
+        border-width: var(--key-active-border-width);
+        border-color: var(--key-symbol);
+        margin: var(--key-active-margin);
+        height: var(--key-active-height);
+        border-top: none;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+
+        &:after {
+            content: '';
+            display: block;
+            background: var(--expandable-button);
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            top: -3px;
+            z-index: 2;
+            touch-action: none;
+        }
+      }
+
+      .expanded {
+        display: flex;
+      }
+    }
+
+    .expanded {
+      display: none;
+      align-items: flex-start;
+      position: absolute;
+      background: var(--expandable-button);
+      border-width: 1px;
+      border-style: var(--key-border-style);
+      border-color: var(--key-symbol);
+      padding-inline: calc(var(--key-gap) / 2);
+      top: calc(2px - var(--key-height));
+      height: var(--key-height);
+      z-index: 1;
+
+      &.left {
+        left: 0;
+        border-radius: var(--key-border-radius) var(--key-border-radius) var(--key-border-radius) 0;
+      }
+
+      &.centered {
+        transform: translateX(-50%);
+        left: 50%;
+        border-radius: var(--key-border-radius);
+      }
+
+      &.right {
+        right: 0;
+        border-radius: var(--key-border-radius) var(--key-border-radius) 0 var(--key-border-radius);
+      }
+
+      & > div {
+        height: calc(var(--key-height) * 2);
+        line-height: var(--key-height);
+        padding-inline: calc(var(--key-gap) / 2);
+        color: var(--key-symbol);
+        min-width: 2em;
+        text-align: center;
+
+        &.active {
+          color: var(--t);
+        }
+      }
+    }
+
+  }
+
+  button {
     color: var(--button-color);
     width: -webkit-fill-available;
     margin: 0;

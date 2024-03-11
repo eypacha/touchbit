@@ -11,6 +11,7 @@ import {
 
 const $ = id => document.getElementById(id);
 
+const specials = ['drop', 'dup', 'swap', 'pick', 'put','log','exp','abs','sqrt','pow','floor','ceil','min','max','sin','cos','tan'];
 let g_context;
 let g_byteBeat;
 let g_filter;
@@ -183,12 +184,14 @@ async function main() {
       if (s === "t") slotDiv.classList.add('t')
       if (s === "\n") slotDiv.classList.add('break')
 
-      if (['drop', 'dup', 'swap', 'pick', 'put'].includes(slotDiv.textContent.toLocaleLowerCase())) slotDiv.classList.add('special')
+      if (specials.includes(slotDiv.textContent.toLocaleLowerCase())) slotDiv.classList.add('special')
 
       if (s === "<<") slotDiv.textContent = "«"
       if (s === ">>") slotDiv.textContent = "»"
       if (s === "||") slotDiv.textContent = "‖"
-
+      if (s === "!=") slotDiv.textContent = "≠"
+      if (s === ">=") slotDiv.textContent = "≥"
+      if (s === "<=") slotDiv.textContent = "≤"
 
       stackContainer.appendChild(slotDiv)
     })
@@ -234,8 +237,8 @@ async function main() {
 
       new QRCode($('qrcode'), {
         text: `${path}?r=${peer.id}`,
-        width: 128,
-        height: 128,
+        width: 256,
+        height: 256,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.L
@@ -301,7 +304,7 @@ async function main() {
           } else {
             console.log('no expression. requesting SampleRate...')
             conn.send({
-              sigName: 'requestSampleRate'
+              sigName: 'requestSetup'
             })
           }
           break;
@@ -319,6 +322,8 @@ async function main() {
         case 'sampleRate':
           g_byteBeat.setDesiredSampleRate(data.arg);
           break;
+        case 'mode':
+          g_byteBeat.setType(data.arg);
         default:
           console.log("data:", data);
           break;

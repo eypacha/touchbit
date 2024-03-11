@@ -264,8 +264,8 @@ option:checked {
   border-radius: var(--border-radius);
 }
 .dialog #qrcode {
-  width: 148px;
-  height: 148px;
+  width: 276px;
+  height: 276px;
   background: var(--button-color);
   margin-bottom: 0.6em;
 }
@@ -276,14 +276,16 @@ option:checked {
   box-sizing: border-box;
   padding: 5px;
   color: var(--number);
-  width: 148px;
+  width: 276px;
   height: 55px;
   text-align: center;
+  font-size: 1.5em;
 }
 .dialog .title {
   text-align: center;
   width: 100%;
-  line-height: 32px;
+  font-size: 1.5em;
+  line-height: 1.5em;
 }
 
 .hide {
@@ -394,17 +396,14 @@ option:checked {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 0 2px;
-  padding: 1em;
+  gap: 0 0.5em;
 }
 
 .slot {
   position: relative;
   text-align: center;
-  height: 1.3em;
-  min-width: 0.8em;
-  line-height: 1.3em;
-  margin-bottom: 0.4em;
+  height: 1em;
+  line-height: 1em;
   transition: all 200ms;
   font-weight: bold;
   cursor: pointer;

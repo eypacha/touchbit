@@ -24,11 +24,12 @@
   --inline-button-color: color-mix(in srgb, var(--background), transparent 20%);
   --keyboard-background: transparent;
   --key-gap: 5px;
-  --key-height: 40px;
+  --key-height: 45px;
   --key-background: var(--button-color);
   --key-border-radius: var(--button-border-radius);
   --key-border-style: var(--button-border-style);
   --key-border-width: 1px 1px 3px;
+  --expandable-button: var(--black);
   --key-active-height: calc(var(--key-height) - 2px);
   --key-active-border-width: 1px 1px 1px !important;
   --key-active-margin: 2px 0 0;
@@ -57,6 +58,7 @@
   --key-t-bg-active: var(--button-color);
   --key-number-bg-active: var(--button-color);
   --key-command-bg-active: var(--button-color);
+  --expandable-button: var(--button-color);
   --key-border-radius: 20px;
   --key-border-width: 1px 1px 10px;
   --selected: #8ecae6ff;
@@ -83,6 +85,7 @@
   --border-radius: 20px;
   --background: #ffe9f4;
   --button-color: #f9f5f7;
+  --expandable-button: var(--button-color);
   --selected: white;
   --symbol: #c0a9bd;
   --text: #a36b9c;
@@ -162,6 +165,11 @@ a:active {
 .timer {
   flex: 1;
   text-align: right;
+}
+.timer .t {
+  color: var(--t);
+}
+.timer .s {
   color: var(--number);
 }
 
@@ -481,7 +489,7 @@ option:checked {
   }
   button:not(.timer),
   .buttonstyle {
-    max-width: 6.7em;
+    max-width: 11em;
   }
   .controls select {
     max-width: 6.7em;
@@ -791,6 +799,9 @@ option:checked {
   gap: var(--key-gap);
   width: 100%;
 }
+#keyboard .row > .row {
+  margin-bottom: 0 !important;
+}
 #keyboard .row > * {
   flex: 1;
 }
@@ -811,6 +822,72 @@ option:checked {
 }
 #keyboard .row:not(:last-child) {
   margin-bottom: var(--key-gap);
+}
+#keyboard .expandable {
+  position: relative;
+}
+#keyboard .expandable.open > button {
+  position: relative;
+  background: var(--expandable-button) !important;
+  color: transparent !important;
+  border-width: var(--key-active-border-width);
+  border-color: var(--key-symbol);
+  margin: var(--key-active-margin);
+  height: var(--key-active-height);
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+#keyboard .expandable.open > button:after {
+  content: "";
+  display: block;
+  background: var(--expandable-button);
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  top: -3px;
+  z-index: 2;
+  touch-action: none;
+}
+#keyboard .expandable.open .expanded {
+  display: flex;
+}
+#keyboard .expandable .expanded {
+  display: none;
+  align-items: flex-start;
+  position: absolute;
+  background: var(--expandable-button);
+  border-width: 1px;
+  border-style: var(--key-border-style);
+  border-color: var(--key-symbol);
+  padding-inline: calc(var(--key-gap) / 2);
+  top: calc(2px - var(--key-height));
+  height: var(--key-height);
+  z-index: 1;
+}
+#keyboard .expandable .expanded.left {
+  left: 0;
+  border-radius: var(--key-border-radius) var(--key-border-radius) var(--key-border-radius) 0;
+}
+#keyboard .expandable .expanded.centered {
+  transform: translateX(-50%);
+  left: 50%;
+  border-radius: var(--key-border-radius);
+}
+#keyboard .expandable .expanded.right {
+  right: 0;
+  border-radius: var(--key-border-radius) var(--key-border-radius) 0 var(--key-border-radius);
+}
+#keyboard .expandable .expanded > div {
+  height: calc(var(--key-height) * 2);
+  line-height: var(--key-height);
+  padding-inline: calc(var(--key-gap) / 2);
+  color: var(--key-symbol);
+  min-width: 2em;
+  text-align: center;
+}
+#keyboard .expandable .expanded > div.active {
+  color: var(--t);
 }
 #keyboard button {
   color: var(--button-color);

@@ -13,7 +13,7 @@ import {
 } from './utils.min.js';
 
 const $ = id => document.getElementById(id);
-
+const specials = ['drop', 'dup', 'swap', 'pick', 'put','log','exp','abs','sqrt','pow','floor','ceil','min','max','sin','cos','tan'];
 let g_context;
 let g_byteBeat;
 let g_filter;
@@ -24,6 +24,7 @@ let g_settingsDialogInitialized = false;
 let g_ignoreHashChange;
 let playing = false;
 let timeElem;
+let evalElem;
 let playElem;
 // let beatTypeElem;
 const sampleRates = [8000, 11000, 22000, 32000, 44100, 48000];
@@ -36,7 +37,7 @@ let doNotSetURL = true;
 let selectedSlot = 0;
 let numberMode = false;
 let holdMode = false;
-let fnMode = false;
+// let fnMode = false;
 let insertMode = false;
 let saveLogs = false;
 let logs = "";
@@ -62,7 +63,9 @@ let clickTimerInsert;
 let isLongClickInsert = false;
 let lastCompiled = '';
 
+let clickTimerExpandable;
 let editedNumber = null
+let numberEditorActive = false
 
 const touchable = 'ontouchstart' in window;
 const keyDown = touchable ? 'touchstart' : 'mousedown';
@@ -168,9 +171,10 @@ function joinPeer() {
 
         document.querySelectorAll('.slot')[0].click();
         break;
-      case 'requestSampleRate':
+      case 'requestSetup':
         console.log('SampleRate requested');
         signal('sampleRate', g_byteBeat.getDesiredSampleRate());
+        signal('mode', g_byteBeat.getType());
         break;
       default:
         console.log("data:", data);
@@ -285,6 +289,7 @@ async function main() {
   await ByteBeatNode.setup(g_context);
   g_byteBeat = new ByteBeatNode(g_context);
 
+
   g_analyzers.push(g_context.createAnalyser(), g_context.createAnalyser());
   g_analyzers.forEach(a => {
     a.maxDecibels = -1;
@@ -292,6 +297,8 @@ async function main() {
 
   g_splitter = g_context.createChannelSplitter(2);
   g_merger = g_context.createChannelMerger(2);
+
+  // g_filter = g_context.createBiquadFilter();
 
   function playPause() {
     if (!playing) {
@@ -335,16 +342,6 @@ async function main() {
     return select;
   }
 
-  // beatTypeElem = addSelection(s_beatTypes, 0, {
-  //   onChange(event) {
-  //     g_byteBeat.setType(event.target.selectedIndex);
-  //     setURL();
-  //   },
-  // });
-  // beatTypeElem.classList.add('byte-type')
-
-  // controls.appendChild(beatTypeElem);
-
   sampleRateElem = addSelection(['8kHz', '11kHz', '22kHz', '32kHz', '44kHz', '48kHz'], 0, {
 
     onChange(event) {
@@ -375,6 +372,9 @@ async function main() {
   controls.appendChild(settingsElem);
 
   g_byteBeat.setExpressionType(1);
+
+  g_byteBeat.setType($('selectMode').selectedIndex);
+
   // Stack
   const stackContainer = $('stack');
 
@@ -428,13 +428,14 @@ async function main() {
       if (s === "t") slotDiv.classList.add('t')
       if (s === "\n") slotDiv.classList.add('break')
 
-      if (['drop', 'dup', 'swap', 'pick', 'put'].includes(slotDiv.textContent.toLocaleLowerCase())) slotDiv.classList.add('special')
+      if (specials.includes(slotDiv.textContent.toLocaleLowerCase())) slotDiv.classList.add('special')
 
       if (s === "<<") slotDiv.textContent = "«"
       if (s === ">>") slotDiv.textContent = "»"
       if (s === "||") slotDiv.textContent = "‖"
-
-      if (s.endsWith("000")) slotDiv.textContent = s.replace(/000$/, "k")
+      if (s === "!=") slotDiv.textContent = "≠"
+      if (s === ">=") slotDiv.textContent = "≥"
+      if (s === "<=") slotDiv.textContent = "≤"
 
       slotDiv.addEventListener('click', (event) => {
 
@@ -461,7 +462,9 @@ async function main() {
 
     stackContainer.children[selectedSlot].classList.add(insertMode ? 'caret' : 'selected')
     
-    if(editedNumber?.wholeNumber) renderNumberEditor()
+    if(numberEditorActive) renderNumberEditor()
+
+    updateTimeDisplay()
   
   }
 
@@ -575,30 +578,115 @@ async function main() {
 
   }
 
-  const symbols = document.querySelectorAll('.symbol');
+  const symbols = document.querySelectorAll('button.symbol[data-insert]');
 
   symbols.forEach(symbol => {
-    symbol.addEventListener('click', function () {
 
-      if (numberMode) {
-        changeNumberMode(false)
-        selectNext()
-      }
+    symbol.addEventListener('click', function() {
 
-      const newSymbol = this.getAttribute('data-insert')
-
-      if (insertMode) {
-        // Modo de inserción: Agrega un nuevo elemento en la posición seleccionada
-        stack.splice(selectedSlot, 0, newSymbol);
-      } else {
-        // Modo de reemplazo: Reemplaza el elemento en la posición seleccionada
-        stack[selectedSlot] = newSymbol;
-      }
-
-      saveState()
-      selectNext()
+      insertSymbol(this.getAttribute('data-insert'))
 
     })
+  })
+
+  const expandables = document.querySelectorAll('.expandable');
+
+  function insertSymbol(newSymbol){
+
+    if (numberMode) {
+      changeNumberMode(false)
+      selectNext()
+    }
+
+    if (insertMode) {
+      // Modo de inserción: Agrega un nuevo elemento en la posición seleccionada
+      stack.splice(selectedSlot, 0, newSymbol);
+    } else {
+      // Modo de reemplazo: Reemplaza el elemento en la posición seleccionada
+      stack[selectedSlot] = newSymbol;
+    }
+
+    saveState()
+    selectNext()
+
+  }
+
+  expandables.forEach(expandable => {
+    
+    const symbols = expandable.querySelectorAll('.expanded div')
+    const button = expandable.querySelector('button')
+    let selectedSymbol = null
+    let isLongClickExpandable = false;
+    let lastSelectedId = parseInt(expandable.dataset.default) || 0
+
+    symbols.forEach((symbol,n) => symbol.dataset.id = n) 
+    
+    expandable.addEventListener(keyDown, function (event) {
+
+      event.preventDefault()
+      button.classList.add('pressed')
+
+      isLongClickExpandable = false;
+      selectedSymbol = symbols[lastSelectedId]
+  
+      clickTimerExpandable = setTimeout(() => {
+  
+        isLongClickExpandable = true;
+        symbols.forEach((symbol) => symbol.classList.remove('active'))
+        selectedSymbol.classList.add('active')
+        expandable.classList.add('open')
+
+      }, longClickTime);
+    });
+
+
+    expandable.addEventListener(touchable ? 'touchmove' : 'mousemove', function(event) {
+      
+      const x = touchable ? event.touches[0].clientX : event.clientX;
+      const y = touchable? event.touches[0].clientY : event.clientY;
+      let elem = document.elementFromPoint(x,y);
+      
+      if(expandable.contains(elem) && elem.dataset.insert) {
+
+        if(elem == selectedSymbol) return
+        selectedSymbol = elem
+        symbols.forEach((symbol) => symbol.classList.remove('active'))
+        selectedSymbol.classList.add('active');
+
+      } else if(selectedSymbol && elem !== button) {
+        
+        if(expandable.classList.contains('open')) selectedSymbol = null
+        closeExpandable()
+      }
+
+    });
+
+    expandable.addEventListener(keyUp, closeExpandable)
+
+    if(!touchable) expandable.addEventListener('mouseleave', ()=> {
+      selectedSymbol = null
+      closeExpandable()
+    })
+
+    function closeExpandable() {
+      
+      clearTimeout(clickTimerExpandable);
+      isLongClickExpandable = false;
+      expandable.classList.remove('open')
+      button.classList.remove('pressed')
+
+      if(selectedSymbol) {
+        
+        insertSymbol(selectedSymbol.dataset.insert)
+        button.innerText = selectedSymbol.innerText
+        lastSelectedId = selectedSymbol.dataset.id
+        selectedSymbol = null
+  
+        
+      }
+      
+    }
+
   })
 
   const numbers = document.querySelectorAll('.number');
@@ -607,7 +695,6 @@ async function main() {
     number.addEventListener('click', function () {
 
       const newNumber = this.getAttribute('data-insert')
-
 
       if(stack[selectedSlot].length > 15) return
       // Verifica si el contenido del slot actual cumple con la condición numérica
@@ -642,69 +729,31 @@ async function main() {
 
   })
 
-  const modifiers = document.querySelectorAll('.modifier');
+  $('clear').addEventListener('click', ()=> {
 
-  modifiers.forEach(modifier => {
-    modifier.addEventListener('click', function () {
-
-      const newModifier = this.getAttribute('data-modifier')
-
-      let evaluated = null
-      // Verifica si el contenido del slot actual cumple con la condición numérica
-
-      if (!isNaN(parseFloat(stack[selectedSlot])) && isFinite(stack[selectedSlot])) {
-        // Si es un número, agrega el nuevo número a continuación del existente en el slot
-
-        if (newModifier === "clear") {
-
-          evaluated = stack[selectedSlot].slice(0, -1)
-          if (evaluated === '') evaluated = "0"
-          
-
-        } else {
-
-          evaluated = eval(stack[selectedSlot] + newModifier)
-          evaluated = Math.round(evaluated * 100000) / 100000
-
-        }
-
-
-      } else {
-        // Si no es un número, reemplaza el contenido del slot con el nuevo número
-        if (newModifier === "clear") {
-          evaluated = "0"
-        } else {
-          evaluated = eval(0 + newModifier)
-          evaluated = Math.round(evaluated * 100000) / 100000
-        }
-
-      }
-
-      stack[selectedSlot] = evaluated
-      saveState()
-      editedNumber = floatToFraction(stack[selectedSlot])
-      changeNumberMode(true)
-      renderStack()
-
-    })
+    let evaluated = !isNaN(parseFloat(stack[selectedSlot])) && isFinite(stack[selectedSlot]) ? stack[selectedSlot].slice(0, -1) : "0";
+    stack[selectedSlot] = evaluated === '' ? "0" : evaluated;
+    saveState();
+    editedNumber = floatToFraction(stack[selectedSlot]);
+    
+    changeNumberMode(true)
+    renderStack();
 
   })
 
   function modifySlotValue(index, increment) {
-    const currentValue = parseFloat(stack[index]);
 
+    let fraction = floatToFraction(parseFloat(stack[index]))
+    fraction.wholeNumber += increment
+    stack[index] = fractionToFloat(fraction).toString()
+    
+    saveState()
+    renderStack();
 
-    // Verifica si el valor actual es un número
-    if (!isNaN(currentValue) && isFinite(currentValue)) {
-      stack[index] = (currentValue + increment).toString();
-      saveState()
-      renderStack();
-    }
   }
 
 
 function floatToFraction(float) {
-
 
   const floatStr = float.toString();
 
@@ -738,11 +787,9 @@ function fractionToFloat(fract) {
 
 function showNumberEditor() {
   const numberEditor = $('number-editor');
-
   editedNumber = floatToFraction(stack[selectedSlot])
-
   renderNumberEditor()
-
+  numberEditorActive = true
   numberEditor.classList.add('active');
 }
 
@@ -755,6 +802,7 @@ function closeNumberEditor() {
   editedNumber = null
   const numberEditor = $('number-editor');
   numberEditor.classList.remove('active');
+  numberEditorActive = false
 }
 
 
@@ -785,6 +833,7 @@ function renderNumberEditor() {
     plus.addEventListener('click', () => {
       editedNumber.wholeNumber += Math.pow(10,digits.length - i - 1)
       stack[selectedSlot] = fractionToFloat(editedNumber).toString()
+      console.log('plus',editedNumber)
       renderStack()
     })
     
@@ -798,7 +847,7 @@ function renderNumberEditor() {
 
     minus.addEventListener('click', () => {
       editedNumber.wholeNumber -= Math.pow(10,digits.length - i - 1)
-      console.log(editedNumber)
+      console.log('minus',editedNumber)
       console.log(fractionToFloat(editedNumber))
       stack[selectedSlot] = fractionToFloat(editedNumber).toString()
       renderStack()
@@ -909,7 +958,6 @@ function renderNumberEditor() {
 
     insertButton.classList.add('pressed')
     isLongClickInsert = false;
-
     event.preventDefault()
 
     if(insertMode) return
@@ -953,16 +1001,16 @@ function renderNumberEditor() {
     
   });
 
-  const fnModeButton = $('fnMode');
-  const keyboardElem = $('keyboard');
+  // const fnModeButton = $('fnMode');
+  // const keyboardElem = $('keyboard');
 
-  fnModeButton.addEventListener('click', function () {
+  // fnModeButton.addEventListener('click', function () {
 
-    fnMode = !fnMode
+  //   fnMode = !fnMode
 
-    keyboardElem.classList.toggle('fn-mode')
+  //   keyboardElem.classList.toggle('fn-mode')
 
-  })
+  // })
 
   const holdModeButton = $('holdMode');
 
@@ -1044,7 +1092,7 @@ function renderNumberEditor() {
   function readURL(hash) {
 
     const data = Object.fromEntries(new URLSearchParams(hash).entries());
-    // const t = data.t !== undefined ? parseFloat(data.t) : 1;
+    const t = data.t !== undefined ? parseFloat(data.t) : 0;
     const s = data.s !== undefined ? parseFloat(data.s) : 8000;
 
     let rateNdx = sampleRates.indexOf(s);
@@ -1055,7 +1103,7 @@ function renderNumberEditor() {
     }
     setSelectOption(sampleRateElem, rateNdx);
     // setSelectOption(beatTypeElem, t);
-    // g_byteBeat.setType(parseInt(t));
+    g_byteBeat.setType(parseInt(t));
     g_byteBeat.setDesiredSampleRate(parseInt(s));
 
     const bytes = convertHexToBytes(data.bb);
@@ -1083,6 +1131,7 @@ function renderNumberEditor() {
 function showSettingsDialog() {
 
   const themeSelector = $('selectTheme');
+  const modeSelector = $('selectMode');
   const settingseDialogElem = $('settingsdialog');
   const keyHeight = $('keyHeight');
   const expFontSize = $('expFontSize');
@@ -1120,6 +1169,10 @@ function showSettingsDialog() {
     keyHeight.addEventListener('change', save);
     expFontSize.addEventListener('change', save);
     $('restoreSettings').addEventListener('click', restoreSettings)
+
+
+    modeSelector.addEventListener('change', save)
+
   }
 
   settingseDialogElem.classList.add('active')
@@ -1129,6 +1182,13 @@ function showSettingsDialog() {
     document.documentElement.dataset.theme = themeSelector.value
 
     localStorage.setItem('theme', themeSelector.value);
+
+    localStorage.setItem('mode', modeSelector.selectedIndex);
+
+    g_byteBeat.setType(modeSelector.selectedIndex);
+
+    if (isPeerOpen()) signal('mode', modeSelector.selectedIndex)
+    setURL()
 
     $('main').style.setProperty('--key-height', `${keyHeight.value}px`);
     $('main').style.setProperty('--key-active-height', `${keyHeight.value - 2}px`);
@@ -1160,9 +1220,12 @@ function showSettingsDialog() {
     document.documentElement.style = ''
     $('main').style = ''
     themeSelector.value = 'default'
+    modeSelector.selectedIndex = 0
+    g_byteBeat.setType(0);
+
     document.documentElement.dataset.theme = 'default'
     expFontSize.value = 22
-    keyHeight.value = 40
+    keyHeight.value = 45
     debugModeSwitch.checked = false
     document.documentElement.dataset.editionMode = 'replace';
     localStorage.clear()
@@ -1174,7 +1237,26 @@ function showSettingsDialog() {
 }
 const dummyFunction = () => { }
 
-const updateTimeDisplay = () => timeElem.innerHTML = g_byteBeat.getTime()
+const pad = (num,pos) => String(num).slice(-pos).padStart(pos, '0')
+
+const updateTimeDisplay = () => {
+
+  const g_time = g_byteBeat.getTime();
+  const g_type = g_byteBeat.getType();
+
+  const stack = ByteBeatNode.createStack();
+  let sample = g_byteBeat.getSampleForTime(g_time, g_context, stack);
+
+  if(g_type == 0) {
+    sample = pad(sample & 255,3)
+  } else {
+    sample = sample.toFixed(2)
+    if(sample >= 0) sample = ` ${sample}`
+  }
+
+  timeElem.innerHTML = `<span class="t">${g_time}</span> → <span class="s">${sample}</span>`
+
+}
 
 async function setExpressions(expressions, resetToZero) {
 
@@ -1263,6 +1345,14 @@ function setURL() {
 
     if (theme == 'randomize') setRandomTheme()
   }
+
+
+  let mode = localStorage.getItem('mode');
+
+  if(mode !== null){
+    $('selectMode').selectedIndex = mode
+  }
+
 
   const keyHeight = localStorage.getItem('key-height');
 

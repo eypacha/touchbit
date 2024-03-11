@@ -52,85 +52,105 @@
       <button class="command small notranslate hide" id="signalBtn" aria-label="function">SEND</button>
 
       <div class="row">
-        <button class="number layer-1" data-insert="7">7</button>
-        <button class="modifier layer-2" data-modifier="+1">+1</button>
-        <button class="number layer-1" data-insert="8">8</button>
-        <button class="modifier layer-2" data-modifier="+5">+5</button>
-        <button class="number layer-1" data-insert="9">9</button>
-        <button class="modifier layer-2" data-modifier="+10">+10</button>
-        <button class="symbol layer-1" data-insert="*" aria-label="multiplication">*</button>
-        <button class="button command small layer-2 notranslate" id="undo">UNDO</button>
-        <button class="symbol layer-1" data-insert="/" aria-label="division">/</button>
-        <button class="button command small layer-2 notranslate" id="redo">REDO</button>
-        <button class="symbol layer-1" data-insert="&" aria-label="bitwise AND">&</button>
-        <button class="symbol layer-2" data-insert="&&" aria-label="logical AND">&&</button>
-      </div>
-      <div class="row">
-        <button class="number layer-1" data-insert="4">4</button>
-        <button class="modifier layer-2" data-modifier="-1">-1</button>
-        <button class="number layer-1" data-insert="5">5</button>
-        <button class="modifier layer-2" data-modifier="-5">-5</button>
-        <button class="number layer-1" data-insert="6">6</button>
-        <button class="modifier layer-2" data-modifier="-10">-10</button>
-        <button class="symbol layer-1" data-insert="+" aria-label="addition">+</button>
-        <button class="symbol layer-2" data-insert="<" aria-label="less than">&lt;</button>
-        <button class="symbol layer-1" data-insert="-" aria-label="substraction">-</button>
-        <button class="symbol layer-2" data-insert=">" aria-label="greater than">&gt;</button>
-        <button class="symbol layer-1" data-insert="|" aria-label="bitwise OR">&vert;</button>
-        <button class="symbol layer-2" data-insert="=" aria-label="equal">=</button>
-      </div>
-      <div class="row">
-        <button class="number layer-1" data-insert="1">1</button>
-        <button class="modifier layer-2" data-modifier="+0.1">+.1</button>
-        <button class="number layer-1" data-insert="2">2</button>
-        <button class="modifier layer-2" data-modifier="+0.01">+.01</button>
-        <button class="number layer-1" data-insert="3">3</button>
-        <button class="modifier layer-2" data-modifier="+0.001">+.001</button>
-        <button class="symbol layer-2" data-insert="||" aria-label="logical OR">‖</button>
-        <button class="symbol layer-1" data-insert="%" aria-label="modulus">%</button>
-        <button class="symbol layer-2 small notranslate" data-insert="drop">drop</button>
-        <button class="symbol layer-1" data-insert="~" aria-label="bitwise NOT">~</button>
-        <button class="symbol layer-2 small notranslate" data-insert="dup">dup</button>
-        <button class="symbol layer-1" data-insert="^" aria-label="bitwise XOR">^</button>
-      </div>
-      <div class="row">
-        <button class="number layer-1" data-insert=".">.</button>
-        <button class="modifier layer-2" data-modifier="-0.1">-.1</button>
-        <button class="number layer-1" data-insert="0">0</button>
-        <button class="modifier layer-2" data-modifier="-0.01">-.01</button>
-        <button class="modifier layer-1" data-modifier="clear" aria-label="clear">⌫</button>
-        <button class="modifier layer-2" data-modifier="-0.001">-.001</button>
-        <button class="symbol t layer-1" data-insert="t">t</button>
-        <button class="symbol layer-2 small notranslate" data-insert="swap">swap</button>
-        <button class="symbol layer-1" data-insert="<<" aria-label="left shift">&laquo;</button>
-        <button class="symbol layer-2 small notranslate" data-insert="pick">pick</button>
-        <button class="symbol layer-1" data-insert=">>" aria-label="right shift">&raquo;</button>
-        <button class="symbol layer-2 small notranslate" data-insert="put">put</button>
-      </div>
-      <div class="row">
-        <button class="command small notranslate" id="fnMode" aria-label="function">FN</button>
-        <button class="command small notranslate" id="holdMode" aria-label="hold">HOLD</button>
-        <button class="command small notranslate" id="insertSlot" aria-label="insert">INS</button>
-        <button class="command small notranslate" id="deleteSlot" aria-label="delete">DEL</button>
-        <div class="double-button">
-          <button class="command" id="selectPrev" aria-label="previous">←</button>
-          <button class="command" id="selectNext" aria-label="next">→</button>
+        <div class="row">
+          <div class="double-button">
+            <button class="button command small layer-1 notranslate" id="undo">UNDO</button>
+            <button class="button command small layer-1 notranslate" id="redo">REDO</button>
+          </div>
+          <div class="expandable" data-default="0">
+            <button class="symbol small notranslate">sin</button>
+            <div class="expanded left">
+              <div class="notranslate" data-insert="sin" aria-label="sin">sin</div>
+              <div class="notranslate" data-insert="cos" aria-label="con">cos</div>
+              <div class="notranslate" data-insert="tan" aria-label="tan">tan</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="expandable" data-default="4">
+            <button class="symbol small notranslate">pow</button>
+            <div class="expanded centered">
+              <div class="notranslate" data-insert="log" aria-label="log">log</div>
+              <div class="notranslate" data-insert="exp" aria-label="exp">exp</div>
+              <div class="notranslate" data-insert="abs" aria-label="absolute">abs</div>
+              <div class="notranslate" data-insert="sqrt" aria-label="square root">sqrt</div>
+              <div class="notranslate" data-insert="pow" aria-label="pow">pow</div>
+              <div class="notranslate" data-insert="floor" aria-label="floor">floor</div>
+              <div class="notranslate" data-insert="ceil" aria-label="ceil">ceil</div>
+              <div class="notranslate" data-insert="min" aria-label="min">min</div>
+              <div class="notranslate" data-insert="max" aria-label="max">max</div>
+            </div>
+          </div>
+          <div class="expandable" data-default="2">
+            <button class="symbol small notranslate">swap</button>
+            <div class="expanded centered">
+              <div class="notranslate" data-insert="pick">pick</div>
+              <div class="notranslate" data-insert="dup">dup</div>
+              <div class="notranslate" data-insert="swap">swap</div>
+              <div class="notranslate" data-insert="put">put</div>
+              <div class="notranslate" data-insert="drop">drop</div>
+            </div>
+          </div>
+          <div class="expandable" data-default="7">
+            <button class="symbol small notranslate" aria-label="equal">=</button>
+            <div class="expanded right">
+              <div data-insert="&&" aria-label="logical AND">&&</div>
+              <div data-insert="||" aria-label="logical OR">‖</div>
+              <div data-insert="<" aria-label="less than">&lt;</div>
+              <div data-insert="<=" aria-label="less or equal than">&le;</div>
+              <div data-insert=">" aria-label="greater than">&gt;</div>
+              <div data-insert=">=" aria-label="greater or equal than">&ge;</div>
+              <div data-insert="!=" aria-label="equal">&ne;</div>
+              <div data-insert="=" aria-label="equal">=</div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div id="savedialog" class="modal-backdrop">
-    <div class="dialog">
-      <div class="dialog-header">
-        <div class="title">↓ Save audio</div>
-        <button id="cancelSave" aria-label="close">&times;</button>
+      <div class="row">
+        <button class="number" data-insert="7">7</button>
+        <button class="number" data-insert="8">8</button>
+        <button class="number" data-insert="9">9</button>
+        <button class="symbol" data-insert="*" aria-label="multiplication">*</button>
+        <button class="symbol" data-insert="/" aria-label="division">/</button>
+        <button class="symbol" data-insert="&" aria-label="bitwise AND">&</button>  
       </div>
-      <div class="dialog-body">
-        <div> seconds: <input id="seconds" type="number" inputmode="numeric" value="30" min="0" max="10000"></div>
+      <div class="row">
+        <button class="number" data-insert="4">4</button>
+        <button class="number" data-insert="5">5</button>
+        <button class="number" data-insert="6">6</button>
+        <button class="symbol" data-insert="+" aria-label="addition">+</button>
+        <button class="symbol" data-insert="-" aria-label="substraction">-</button>
+        <button class="symbol" data-insert="|" aria-label="bitwise OR">&vert;</button>
       </div>
-      <div class="dialog-footer">
-        <button id="saveWav">save</button>
+      <div class="row">
+        <button class="number" data-insert="1">1</button>
+        <button class="number" data-insert="2">2</button>
+        <button class="number" data-insert="3">3</button>
+        <button class="symbol" data-insert="%" aria-label="modulus">%</button>
+        <button class="symbol" data-insert="~" aria-label="bitwise NOT">~</button>
+        <button class="symbol" data-insert="^" aria-label="bitwise XOR">^</button>
+      </div>
+      <div class="row">
+        <button class="number" data-insert=".">.</button>
+        <button class="number" data-insert="0">0</button>
+        <button class="modifier" id="clear" aria-label="clear">⌫</button>
+        <button class="symbol t" data-insert="t">t</button>
+        <button class="symbol" data-insert="<<" aria-label="left shift">&laquo;</button>
+        <button class="symbol" data-insert=">>" aria-label="right shift">&raquo;</button>
+      </div>
+      <div class="row">
+        <div class="row">
+          <!-- <button class="command small notranslate" id="fnMode" aria-label="function">FN</button> -->
+          <button class="command small notranslate" id="holdMode" aria-label="hold">HOLD</button>
+          <button class="command small notranslate" id="insertSlot" aria-label="insert">INS</button>
+          <button class="command small notranslate" id="deleteSlot" aria-label="delete">DEL</button>
+        </div>
+        <div class="row">
+          <div class="double-button">
+            <button class="command" id="selectPrev" aria-label="previous">←</button>
+            <button class="command" id="selectNext" aria-label="next">→</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -155,6 +175,9 @@
 
           <input type="radio" id="tab4" name="tabGroup1" class="tab">
           <label for="tab4">About</label>
+
+          <!-- <input type="radio" id="tab5" name="tabGroup1" class="tab">
+          <label for="tab4">Eq</label> -->
 
           <div class="tab__content">
             <div>
@@ -209,7 +232,22 @@
 
           </div>
 
+          <!-- <div class="tab__content">
+            <div></div>
+            Multiband
+
+          </div> -->
+
           <div class="tab__content">
+            <div>
+              <label>
+                <span>Mode</span>
+                <select id="selectMode">
+                  <option>bytebeat</option>
+                  <option>floatbeat</option>
+                </select>
+              </label>
+            </div>
             <div>
               <label>
                 <span>Debug mode</span>
@@ -250,21 +288,6 @@
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <div id="helpdialog" class="modal-backdrop">
-    <div class="dialog">
-      <div class="dialog-header">
-        <div class="title">♥ About Touchbit</div>
-        <button id="cancelhelp" aria-label="close">&times;</button>
-      </div>
-      <div class="dialog-body">
-        <div>Touchbit is a 'mobile-friendly' interface for composing bytebeat music using postfix expressions.</div>
-        <div><b>More info: </b><br />
-          <a href="https://github.com/eypacha/touchbit" target="_blank">github.com/eypacha/touchbit</a>
-        </div>
-      </div>
     </div>
   </div>
 

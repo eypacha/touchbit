@@ -301,6 +301,7 @@ export default class ByteBeatProcessor {
       }
       switch (this.type) {
         case 0:
+          return s 
           return (s & 255) / 127 - 1;
         case 1:
           return s;
