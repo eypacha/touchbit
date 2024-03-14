@@ -8,8 +8,10 @@
   - [Postfix](#postfix)
   - [Operators](#operators)
 - [Features](#features)
+  - [Remote mode](#remote)
 - [Some demos](some-demos)
 - [More info](#for-more-info)
+- [Credits](#credits)
 - [Licence](#licence)
 
 
@@ -146,10 +148,12 @@ Click any expression for listen and edit:
 Check out <http://canonical.org/~kragen/bytebeat/> and be sure follow the many links.
 
 
-## 💜 Special thanks to:
+## 💜 Credits
 
+* [Gabriel Vinazza](https://github.com/gabochi) main user, tester, teacher and driving force of this project.
 * [Greggman](https://github.com/greggman) for build the library and bring postfix to online bytebeat.
-* [Gabriel Vinazza](https://github.com/gabochi), friend, teacher and driving force of this project.
+* [Macronodes](https://github.com/g200kg/webaudio-macronodes) library used as equalizer.
+* [Peer.js](https://peerjs.com) WEBRTC peer-to-peer data library.
 
 ## ⚖️ License
 
