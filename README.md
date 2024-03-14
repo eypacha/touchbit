@@ -46,27 +46,38 @@ The postfix operators are
 
   These take the top two things from the stack, do the comparision, then push 255 if the result is true or 0 if the result is false. 
 
-`drop` removes the top thing from the stack
+* `drop`
+Removes the top thing from the stack
 
-`dup` duplicates the top thing on the stack.
+* `dup`
+Duplicates the top thing on the stack.
 
-`swap` swaps the top 2 things on the stack
+* `swap`
+Swaps the top 2 things on the stack
 
-`pick` pops the top thing from the stack and duplicates one item that many items back. In other words if the stack is `1,2,3,4,5,6,7,3` then `pick` pops the top thing `3` and duplicates the 3rd thing back counting from 0, which is no `4`. The stack is then `1,2,3,4,5,6,7,4`.
+* `pick`
+Pops the top thing from the stack and duplicates one item that many items back. In other words if the stack is `1,2,3,4,5,6,7,3` then `pick` pops the top thing `3` and duplicates the 3rd thing back counting from 0, which is no `4`. The stack is then `1,2,3,4,5,6,7,4`.
 
-`put` sets the n'th element from the top of the stack to the current top. In other words if the stack is `1,2,3,4,5,6,7,3,100` then put will pull the top `100` and then set the `3` element back. The stack will then be `1,2,3,4,100,6,7,3`.
+* `put`
 
-`abs`, `sqrt`, `tan`, `log`, `exp`, `sin`, `cos`, `tan`, `floor`, `ceil`, `min`, `max`, `pow`: these operators all pop the top value from the stack, apply the operator, then push the result on the stack
+  Sets the n'th element from the top of the stack to the current top. In other words if the stack is `1,2,3,4,5,6,7,3,100` then put will pull the top `100` and then set the `3` element back. The stack will then be `1,2,3,4,100,6,7,3`.
 
-`/`, `+`, `-`, `*`, `%`, `>>`, `<<`, `|`, `&`, `^`, `&&`, `||` These operators pop the top 2 values from the stack, apply the operator, then push the result. The order is as follows
+* `abs`, `sqrt`, `tan`, `log`, `exp`, `sin`, `cos`, `tan`, `floor`, `ceil`, `min`, `max`, `pow`
 
-    b = pop
-    a = pop
-    push(a op b)
+  These operators all pop the top value from the stack, apply the operator, then push the result on the stack
 
-In other words `4 2 /` is 4 divided by 2.
+* `/`, `+`, `-`, `*`, `%`, `>>`, `<<`, `|`, `&`, `^`, `&&`, `||` 
 
-`~` Pops the top of the stack, applies the binary negate to it, pushes the result.
+  These operators pop the top 2 values from the stack, apply the operator, then push the result. The order is as follows
+
+      b = pop
+      a = pop
+      push(a op b)
+
+  In other words `4 2 /` is 4 divided by 2.
+
+* `~`
+Pops the top of the stack, applies the binary negate to it, pushes the result.
 
 > [!TIP]
 > All operators in the top row display more options when long-pressed.
