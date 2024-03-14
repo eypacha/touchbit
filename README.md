@@ -2,7 +2,7 @@
 
 **Touchbit** is a 'mobile-friendly' interface for live coding bytebeat music using postfix expressions, built on the [html5bytebeat](https://github.com/greggman/html5bytebeat) library by Greggman. This library provides a `ByteBeatNode` which is a WebAudio [`AudioNode`](https://developer.mozilla.org/en-US/docs/Web/API/AudioNode). 
 
-## Table of Contents
+## 📜 Table of Contents
 
 - [Usage](#usage)
   - [Postfix](#postfix)
@@ -13,7 +13,7 @@
 - [Licence](#licence)
 
 
-## Usage
+## 📋 Usage
 
 You provide a function whose only input is time *t* and from that write some code to generate a sound. The output of your function is expected to be 0 to 255. 
 
@@ -27,7 +27,7 @@ Then, then touch the `▶`  button for listen your beat.
 > Touchbit only performs with [postfix notation](#postfix) expressions.
 
 
-### Postfix
+### ➡️ Postfix
 Postfix in this case I guess can be described as [forth](http://en.wikipedia.org/wiki/Forth_(programming_language)) like. It works with a stack. Each command either adds things to the stack or uses what's on the stack to do something. For example
 
     123       // pushes 123 on the stack               stack = 123
@@ -38,7 +38,7 @@ Postfix in this case I guess can be described as [forth](http://en.wikipedia.org
 
 Note the stack is only 256 elements deep. If you push 257 elements it wraps around. Similarly if you use `pick` with a large value your pick will wrap around. The stack is neither cleared nor reset on each iteration of your function. Some postfix based bytebeat songs take advantage of this where each iteration leaves things on the stack for the next iteration.
 
-## Operators
+## ➗ Operators
 
 The postfix operators are
 
@@ -82,7 +82,7 @@ Pops the top of the stack, applies the binary negate to it, pushes the result.
 > [!TIP]
 > All operators in the top row display more options when long-pressed.
 
-## Features
+## 🌟 Features
 Touchbit comes with a series of features specific to this interface.
 
 #### `←` `→`  Arrow keys
@@ -108,7 +108,17 @@ Deletes the selected token. (If in insert mode, deletes the character before the
 #### `UNDO` `REDO`  keys
 Reverse and reapply the most recent action or change.
 
-## Some demos
+## 💻 Remote mode
+
+You can use your mobile device to remotely control another device. Open the [receiver](https://dev.eypacha.com/touchbit/receive/) in a web browser. Scan the QR code with your phone or paste the ID into the `Settings > More > Remote` input. Now you can use the key interface as a controller, and the expression will be evaluated on the secondary device.
+
+A new `SEND` button will appear, which will be used to synchronize the expression between devices.
+
+> [!TIP]
+> The expression will be played back on both devices, with the mobile device serving as the monitor and the screen acting as the output master. Ideal for live performances.
+
+
+## 🎵 Some demos
 
 Click any expression for listen and edit:
 
@@ -131,16 +141,16 @@ Click any expression for listen and edit:
 
 *quiddit from Glitch Machine*
 
-## For more info
+## ℹ️ For more info
 
 Check out <http://canonical.org/~kragen/bytebeat/> and be sure follow the many links.
 
 
-## Special thanks to:
+## 💜 Special thanks to:
 
 * [Greggman](https://github.com/greggman) for build the library and bring postfix to online bytebeat.
 * [Gabriel Vinazza](https://github.com/gabochi), friend, teacher and driving force of this project.
 
-## License
+## ⚖️ License
 
 [MIT](LICENSE.md)
