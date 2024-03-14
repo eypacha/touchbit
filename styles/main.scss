@@ -299,6 +299,26 @@ button {
   outline: none;
 }
 
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  padding: 5px !important;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    background-color: var(--command);
+    height: 1.5rem;
+    width: 1.5rem;
+    border-radius: var(--border-radius)
+ }
+
+ &[disabled]::-webkit-slider-thumb {
+    opacity: 0.5;
+ }
+}
+
 option {
   color: var(--option-text);
   background-color: var(--option-background);
@@ -373,7 +393,6 @@ option {
   .dialog-body {
 
     padding: 0 1em;
-    min-height: 205px;
 
     .tab-wrap {
       -webkit-transition: 0.3s box-shadow ease;
@@ -444,6 +463,9 @@ option {
     }
 
     .tab__content {
+      display: flex;
+      flex-direction: column;
+      min-height: 340px;
       padding: .6em;
       background-color: transparent;
       position: absolute;
@@ -492,8 +514,7 @@ option {
           }
 
           input {
-            width: 100%;
-            padding: 0px;
+            width: calc(100% - 15px);
           }
 
           output {
@@ -508,6 +529,10 @@ option {
           outline: solid 1px var(--text);
           width: 100%;
           border-radius: var(--border-radius); 
+
+          &.disabled {
+            opacity: 0.5;
+          }
         }
       }
 

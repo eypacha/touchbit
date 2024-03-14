@@ -5,7 +5,7 @@ import { createElem as el } from './elem.min.js';
 
 import ByteBeatNode from '../js/ByteBeatNode.js';
 
-import{ Macro_GraphicEqNode } from '../js/MacroNodes.js';
+import{ Macro_ToneControlNode } from '../js/MacroNodes.js';
 
 import {
   convertBytesToHex,
@@ -303,7 +303,7 @@ async function main() {
   g_merger = g_context.createChannelMerger(2);
 
 
-  g_filter = new Macro_GraphicEqNode(g_context, {eq:[0,0,0,0,0,0,0]});
+  g_filter = new Macro_ToneControlNode(g_context);
 
   // g_filter = g_context.createBiquadFilter();
   // g_filter.type = "lowshelf";
@@ -1085,16 +1085,25 @@ function renderNumberEditor() {
   }
 
   window.addEventListener('hashchange', function () {
+
+    const hash = window.location.hash.substr(1);
+    $('toGreggman').href = `https://bytebeat.demozoo.org#${hash}`
+
     if (g_ignoreHashChange) {
       g_ignoreHashChange = false;
       return;
     }
-    const hash = window.location.hash.substr(1);
+
     readURL(hash);
   });
 
+  
+
   if (window.location.hash) {
-    readURL(window.location.hash.substr(1))
+
+    const hash = window.location.hash.substr(1);
+    $('toGreggman').href = `https://bytebeat.demozoo.org#${hash}`
+    readURL(hash)
   } else {
     saveState()
   }
@@ -1189,13 +1198,14 @@ function showSettingsDialog() {
     $('restoreSettings').addEventListener('click', restoreSettings)
 
     $("eqSwitch").addEventListener("change", (ev) => {
-      g_filter.effect = ev.target.checked
-      if(ev.target.checked) {
-        $('eqOptions').removeAttribute('disabled');
-      } else {
-        $('eqOptions').setAttribute('disabled', 'disabled');
-      }
 
+      g_filter.effect = ev.target.checked
+
+      $('eq-bass').disabled = !ev.target.checked
+      $('eq-mid').disabled = !ev.target.checked
+      $('eq-treble').disabled = !ev.target.checked
+
+     $('eqGraph').setAttribute('class',ev.target.checked ? 'enabled' : 'disabled')
 
     });
 
@@ -1206,22 +1216,21 @@ function showSettingsDialog() {
 
     modeSelector.addEventListener('change', save)
 
-    for(let i=0;i<7;++i){
+    setEq('bass')
+    setEq('mid')
+    setEq('treble')
+
+    $(`eq-bass`).addEventListener('input', () => { setEq('bass') })
+    $(`eq-mid`).addEventListener('input', () => { setEq('mid') })
+    $(`eq-treble`).addEventListener('input', () => { setEq('treble') })
+
+    function setEq(range) {
       
-      setEq(i)
+      const v = $(`eq-${range}`).value;
+      
+      g_filter[range].value = v;
 
-      $(`eq${i}`).addEventListener('input',()=>{
-        setEq(i)
-      })
-    }
-
-    function setEq(i) {
-      const v = $(`eq${i}`).value;
-      g_filter.eq[i].value = v;
-
-      $(`eq${i}-value`).innerHTML = v;
-
-
+      $(`eq-${range}-value`).innerHTML = v;
       DrawEq();
     }
 
@@ -1415,7 +1424,6 @@ function setURL() {
       bb: hex,
     });
     window.location.replace(`#${params.toString()}`);
-    $('toGreggman').href = `https://bytebeat.demozoo.org#${params.toString()}`
   },
     dummyFunction);
 }
