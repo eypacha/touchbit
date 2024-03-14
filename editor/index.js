@@ -5,6 +5,8 @@ import { createElem as el } from './elem.min.js';
 
 import ByteBeatNode from '../js/ByteBeatNode.js';
 
+import{ Macro_GraphicEqNode } from '../js/MacroNodes.js';
+
 import {
   convertBytesToHex,
   convertHexToBytes,
@@ -17,6 +19,8 @@ const specials = ['drop', 'dup', 'swap', 'pick', 'put','log','exp','abs','sqrt',
 let g_context;
 let g_byteBeat;
 let g_filter;
+const freqtab = new Float32Array(256), magtab = new Float32Array(256), phasetab = new Float32Array(256);
+
 const g_analyzers = [];
 let g_splitter;
 let g_merger;
@@ -298,7 +302,20 @@ async function main() {
   g_splitter = g_context.createChannelSplitter(2);
   g_merger = g_context.createChannelMerger(2);
 
+
+  g_filter = new Macro_GraphicEqNode(g_context, {eq:[0,0,0,0,0,0,0]});
+
   // g_filter = g_context.createBiquadFilter();
+  // g_filter.type = "lowshelf";
+	// g_filter.frequency.value = 1000;
+	// g_filter.gain.value = 0;
+
+  // const g_filter_0 = g_context.createBiquadFilter();
+  // // g_filter_0.type = "lowshelf";
+	// // g_filter_0.frequency.value = 320.0;
+	// // g_filter_0.gain.value = 0.0;
+
+  // g_filter.connect(g_filter_0)
 
   function playPause() {
     if (!playing) {
@@ -1139,7 +1156,8 @@ function showSettingsDialog() {
   const saveLogsSwitch = $('saveLogs');
   const viewLogs = $('viewLogs');
   const clearLogs = $('clearLogs');
-
+  const eqGrph = $('eqGraph').getContext('2d');
+    
   if (!g_settingsDialogInitialized) {
     g_settingsDialogInitialized = true;
     $('cancelSettings').addEventListener('click', close);
@@ -1170,8 +1188,75 @@ function showSettingsDialog() {
     expFontSize.addEventListener('change', save);
     $('restoreSettings').addEventListener('click', restoreSettings)
 
+    $("eqSwitch").addEventListener("change", (ev) => {
+      g_filter.effect = ev.target.checked
+      if(ev.target.checked) {
+        $('eqOptions').removeAttribute('disabled');
+      } else {
+        $('eqOptions').setAttribute('disabled', 'disabled');
+      }
+
+
+    });
+
+    for(let i=0;i<256;++i) {
+
+      freqtab[i] = 20 * Math.pow(1000,i/256);
+    }
 
     modeSelector.addEventListener('change', save)
+
+    for(let i=0;i<7;++i){
+      
+      setEq(i)
+
+      $(`eq${i}`).addEventListener('input',()=>{
+        setEq(i)
+      })
+    }
+
+    function setEq(i) {
+      const v = $(`eq${i}`).value;
+      g_filter.eq[i].value = v;
+
+      $(`eq${i}-value`).innerHTML = v;
+
+
+      DrawEq();
+    }
+
+    function getColor(varName) {
+      const rootStyles = getComputedStyle(document.documentElement);
+      return rootStyles.getPropertyValue(`--${varName}`).trim();
+    }
+
+    function DrawEq() {
+
+      g_filter.getFrequencyResponse(freqtab, magtab, phasetab);
+      for (let i = 0; i < 256; ++i) {
+        const db = Math.log10(magtab[i]) * 20;
+        eqGrph.fillStyle = getColor('graph-background')
+        eqGrph.fillRect(i * 2, 0, 2, 300);
+        eqGrph.fillStyle = getColor('graph-fill');
+        eqGrph.fillRect(i * 2, 300, 2, -150 - db * 4);
+      }
+      eqGrph.fillStyle = getColor('graph-lines');
+      for (let i = 10, d = 10; i; i += d) {
+        if (i >= 100) d = 100;
+        if (i >= 1000) d = 1000;
+        if (i >= 10000)
+          break;
+        const x = Math.log10(i / 20) / 3 * 256;
+        eqGrph.fillRect(x * 2 | 0, 0, 1, 300);
+      }
+      eqGrph.fillText("100", 123, 296);
+      eqGrph.fillText("1k", 292, 296);
+      eqGrph.fillText("10k", 456, 296);
+      for (let i = -160; i <= 160; i += 40) {
+        eqGrph.fillRect(0, 150 - i, 512, 1);
+        eqGrph.fillText((i / 4) + "dB", 0, 150 - i);
+      }
+    }
 
   }
 

@@ -28,6 +28,10 @@ $red: red;
   --error: red;
 
   --button-color: rgba(0, 0, 0, 0.5);
+  --graph-background: var(--black);
+  --graph-fill: var(--t);
+  --graph-lines: var(--number);
+
   --button-text: var(--text);
   --button-border-radius: var(--border-radius);
   --button-border-style: solid;
@@ -92,6 +96,10 @@ $red: red;
   --t: #219ebcff;
   --success: #2ecc71;
   --error: #e74c3c;
+
+  --graph-background: var(--button-color);
+  --graph-fill: var(--t);
+  --graph-lines: var(--number);
 }
 
 :root[data-theme="monochrome-dark"] {
@@ -117,6 +125,10 @@ $red: red;
   --t: #b4398b;
   --success: #2ecc71;
   --error: #e74c3c;
+
+  --graph-background: var(--button-color);
+  --graph-fill: var(--t);
+  --graph-lines: var(--number);
 }
 
 :root:not([data-theme="randomize"]) {
@@ -381,7 +393,8 @@ option {
     .tab:checked:nth-of-type(1)~.tab__content:nth-of-type(1),
     .tab:checked:nth-of-type(2)~.tab__content:nth-of-type(2),
     .tab:checked:nth-of-type(3)~.tab__content:nth-of-type(3),
-    .tab:checked:nth-of-type(4)~.tab__content:nth-of-type(4) {
+    .tab:checked:nth-of-type(4)~.tab__content:nth-of-type(4),
+    .tab:checked:nth-of-type(5)~.tab__content:nth-of-type(5)  {
       opacity: 1;
 
       position: relative;
@@ -461,6 +474,43 @@ option {
           }
         }
       }
+
+
+      div[disabled] {
+        display: none;
+      }
+
+      #eqOptions {
+
+        table {
+
+          width: 100%;
+
+          th {
+            text-align: right;
+            width: 7ch;
+          }
+
+          input {
+            width: 100%;
+            padding: 0px;
+          }
+
+          output {
+            display: block;
+            width: 5ch;
+            color: var(--number);
+          }
+         
+        }
+
+        canvas {
+          outline: solid 1px var(--text);
+          width: 100%;
+          border-radius: var(--border-radius); 
+        }
+      }
+
 
     }
 

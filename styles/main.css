@@ -16,6 +16,9 @@
   --success: #0F0;
   --error: red;
   --button-color: rgba(0, 0, 0, 0.5);
+  --graph-background: var(--black);
+  --graph-fill: var(--t);
+  --graph-lines: var(--number);
   --button-text: var(--text);
   --button-border-radius: var(--border-radius);
   --button-border-style: solid;
@@ -69,6 +72,9 @@
   --t: #219ebcff;
   --success: #2ecc71;
   --error: #e74c3c;
+  --graph-background: var(--button-color);
+  --graph-fill: var(--t);
+  --graph-lines: var(--number);
 }
 
 :root[data-theme=monochrome-dark] {
@@ -94,6 +100,9 @@
   --t: #b4398b;
   --success: #2ecc71;
   --error: #e74c3c;
+  --graph-background: var(--button-color);
+  --graph-fill: var(--t);
+  --graph-lines: var(--number);
 }
 
 :root:not([data-theme=randomize]) #randomizeBtn {
@@ -332,7 +341,8 @@ option:checked {
 .dialog .dialog-body .tab:checked:nth-of-type(1) ~ .tab__content:nth-of-type(1),
 .dialog .dialog-body .tab:checked:nth-of-type(2) ~ .tab__content:nth-of-type(2),
 .dialog .dialog-body .tab:checked:nth-of-type(3) ~ .tab__content:nth-of-type(3),
-.dialog .dialog-body .tab:checked:nth-of-type(4) ~ .tab__content:nth-of-type(4) {
+.dialog .dialog-body .tab:checked:nth-of-type(4) ~ .tab__content:nth-of-type(4),
+.dialog .dialog-body .tab:checked:nth-of-type(5) ~ .tab__content:nth-of-type(5) {
   opacity: 1;
   position: relative;
   top: 0;
@@ -395,6 +405,30 @@ option:checked {
 }
 .dialog .dialog-body .tab__content > div > label button:disabled {
   display: none;
+}
+.dialog .dialog-body .tab__content div[disabled] {
+  display: none;
+}
+.dialog .dialog-body .tab__content #eqOptions table {
+  width: 100%;
+}
+.dialog .dialog-body .tab__content #eqOptions table th {
+  text-align: right;
+  width: 7ch;
+}
+.dialog .dialog-body .tab__content #eqOptions table input {
+  width: 100%;
+  padding: 0px;
+}
+.dialog .dialog-body .tab__content #eqOptions table output {
+  display: block;
+  width: 5ch;
+  color: var(--number);
+}
+.dialog .dialog-body .tab__content #eqOptions canvas {
+  outline: solid 1px var(--text);
+  width: 100%;
+  border-radius: var(--border-radius);
 }
 .dialog .dialog-body #reset {
   width: -moz-min-content;

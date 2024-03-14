@@ -168,16 +168,17 @@
           <label for="tab1">Styles</label>
 
           <input type="radio" id="tab2" name="tabGroup1" class="tab">
-          <label for="tab2">Remote</label>
+          <label for="tab2">Audio</label>
 
           <input type="radio" id="tab3" name="tabGroup1" class="tab">
-          <label for="tab3">More</label>
+          <label for="tab3">Remote</label>
 
           <input type="radio" id="tab4" name="tabGroup1" class="tab">
-          <label for="tab4">About</label>
+          <label for="tab4">More</label>
 
-          <!-- <input type="radio" id="tab5" name="tabGroup1" class="tab">
-          <label for="tab4">Eq</label> -->
+          <input type="radio" id="tab5" name="tabGroup1" class="tab">
+          <label for="tab5">About</label>
+
 
           <div class="tab__content">
             <div>
@@ -217,6 +218,61 @@
             </div>
           </div>
 
+           <div class="tab__content">
+
+            <div>
+              <label>
+                <span>Equalizer</span>
+                <label class="switch">
+                  <input id="eqSwitch" type="checkbox"/>
+                  <span class="slider round"></span>
+                </label>
+              </label>
+            </div>
+
+            <div id="eqOptions" disabled>
+              <canvas id="eqGraph" width="512" height="300"></canvas>
+              <table>
+                <tr>
+                  <th>100Hz</th>
+                  <td><input id="eq0" type="range" min="-20" max="20" value="0" step="0.01" /></td>
+                  <td><output id="eq0-value"></output></td>
+                </tr>
+                <tr>
+                  <th>200Hz</th>
+                  <td><input id="eq1" type="range" min="-20" max="20" value="0" step="0.01" /></td>
+                  <td><output id="eq1-value"></output></td>
+                </tr>
+                <tr>
+                  <th>400Hz</th>
+                  <td><input id="eq2" type="range" min="-20" max="20" value="0" step="0.01" /></td>
+                  <td><output id="eq2-value"></output></td>
+                </tr>
+                <tr>
+                  <th>800Hz</th>
+                  <td><input id="eq3" type="range" min="-20" max="20" value="0" step="0.01" /></td>
+                  <td><output id="eq3-value"></output></td>
+                </tr>
+                <tr>
+                  <th>1.6kHz</th>
+                  <td><input id="eq4" type="range" min="-20" max="20" value="0" step="0.01" /></td>
+                  <td><output id="eq4-value"></output></td>
+                </tr>
+                <tr>
+                  <th>3.2kHz</th>
+                  <td><input id="eq5" type="range" min="-20" max="20" value="0" step="0.01" /></td>
+                  <td><output id="eq5-value"></output></td>
+                </tr>
+                <tr>
+                  <th>6.4kHz</th>
+                  <td><input id="eq6" type="range" min="-20" max="20" value="0" step="0.01" /></td>
+                  <td><output id="eq6-value"></output></td>
+                </tr>
+              </table>
+            </div>
+
+          </div>
+
           <div class="tab__content">
             <div>Experimental mode</div>
             <div class="help-text">Open <a href="receive/" target="_blank">this url</a> in another screen and scan the
@@ -231,12 +287,6 @@
             <div id="peerStatus"></div>
 
           </div>
-
-          <!-- <div class="tab__content">
-            <div></div>
-            Multiband
-
-          </div> -->
 
           <div class="tab__content">
             <div>
