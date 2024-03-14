@@ -4,15 +4,20 @@
 
 ## 📜 Table of Contents
 
-- [Usage](#usage)
-  - [Postfix](#postfix)
-  - [Operators](#operators)
-- [Features](#features)
-  - [Remote mode](#remote)
-- [Some demos](some-demos)
-- [More info](#for-more-info)
-- [Credits](#credits)
-- [Licence](#licence)
+- [Usage](#📋-usage)
+  - [Postfix](#➡️-postfix)
+  - [Basic keys](#🔠-basic-keys)
+  - [Operators](#🔣-operators)
+  - [Numbers](#🔢-numbers)
+- [Features](#🌟-features)
+  - [Equalizer](#🎛️-equalizer)
+  - [Styles](#🎨-styles)
+  - [Sharing](#👥-sharing)
+  - [Remote mode](#😎-remote-mode)
+- [Some demos](#🎵-some-demos)
+- [More info](#ℹ️-for-more-info)
+- [Credits](#💜-credits)
+- [Licence](#⚖️-license)
 
 
 ## 📋 Usage
@@ -40,7 +45,41 @@ Postfix in this case I guess can be described as [forth](http://en.wikipedia.org
 
 Note the stack is only 256 elements deep. If you push 257 elements it wraps around. Similarly if you use `pick` with a large value your pick will wrap around. The stack is neither cleared nor reset on each iteration of your function. Some postfix based bytebeat songs take advantage of this where each iteration leaves things on the stack for the next iteration.
 
-## ➗ Operators
+### 🔠 Basic keys
+
+#### `←` `→`  Arrow keys
+You can navigate between the tokens of the expression. The selected token will be replaced by your next input key.
+
+> [!TIP]
+> Long press to navigate directly to the start or end.
+
+#### `HOLD` Hold key
+Presed once and you'll be able to edit the expression without be evaluated until you press the hold key again.
+
+#### `INS` Insert key
+Presed once and you will insert a empty token before your selected position.
+
+Long press for enter to **Insert Mode**: every input key it will insert a empty token first (press again for exit insert mode). When in Insert Mode, the cursor indicator changes from a rectangle to a vertical line.
+
+#### `DEL` Delete key
+Deletes the selected token. (If in insert mode, deletes the character before the cursor.)
+
+> [!CAUTION]
+> Long press will erase the entire expression. There is no confirmation dialog box
+
+#### `UNDO` `REDO`  keys
+Reverse and reapply the most recent action or change.
+
+## 🔢 Numbers
+
+"When you press a number key for the first time, you will enter number mode. In this mode, you will see `+` and `-` buttons online, allowing you to increase or decrease the rightmost digit by 1.
+
+You can also use `⌫`key to clear the rightmost digit.
+
+> [!TIP]
+> If you press the same number key again, a number editor window will open. Here, you can individually increase or decrease each digit.
+
+## 🔣 Operators
 
 The postfix operators are
 
@@ -84,33 +123,20 @@ Pops the top of the stack, applies the binary negate to it, pushes the result.
 > [!TIP]
 > All operators in the top row display more options when long-pressed.
 
-## 🌟 Features
-Touchbit comes with a series of features specific to this interface.
+# 🌟 Features
+Touchbit comes with a set of features tailored specifically to its interface, which is optimized for mobile devices.
 
-#### `←` `→`  Arrow keys
-You can navigate between the tokens of the expression. The selected token will be replaced by your next input key.
+## 🎛️ Equalizer 
+Going to `Settings > Audio`, you can find a three-band equalizer for adjusting the **treble**, **middle**, and **bass** levels.
 
-> [!TIP]
-> Long press to navigate directly to the start or end.
+## 🎨 Styles
+Going to `Settings > Styles`, you can choose between a few theme palettes or opt to randomize for going wild.
 
-#### `HOLD` Hold key
-Presed once and you'll be able to edit the expression without be evaluated until you press the hold key again.
+## 👥 Sharing
+You can share your byte by copying the current URL or by going to `Settings > More`, where you can export the current expression to the [Greggman editor](https://bytebeat.demozoo.org/) or copy it to the clipboard.
 
-#### `INS` Insert key
-Presed once and you will insert a empty token before your selected position.
 
-Long press for enter to **Insert Mode**: every input key it will insert a empty token first (press again for exit insert mode). When in Insert Mode, the cursor indicator changes from a rectangle to a vertical line.
-
-#### `DEL` Delete key
-Deletes the selected token. (If in insert mode, deletes the character before the cursor.)
-
-> [!CAUTION]
-> Long press will erase the entire expression. There is no confirmation dialog box
-
-#### `UNDO` `REDO`  keys
-Reverse and reapply the most recent action or change.
-
-## 💻 Remote mode
+## 😎 Remote mode
 
 You can use your mobile device to remotely control another device. Open the [receiver](https://dev.eypacha.com/touchbit/receive/) in a web browser. Scan the QR code with your phone or paste the ID into the `Settings > More > Remote` input. Now you can use the key interface as a controller, and the expression will be evaluated on the secondary device.
 
