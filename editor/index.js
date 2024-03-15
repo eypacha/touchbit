@@ -1318,7 +1318,7 @@ function showSettingsDialog() {
     g_byteBeat.setType(0);
 
     document.documentElement.dataset.theme = 'default'
-    expFontSize.value = 22
+    expFontSize.value = 30
     keyHeight.value = 45
     debugModeSwitch.checked = false
     document.documentElement.dataset.editionMode = 'replace';

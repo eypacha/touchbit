@@ -17,8 +17,6 @@
 - [Some demos](#🎵-some-demos)
 - [More info](#ℹ️-for-more-info)
 - [Credits](#💜-credits)
-- [Licence](#⚖️-license)
-
 
 ## 📋 Usage
 
@@ -182,7 +180,3 @@ Click any expression for listen and edit:
 * [Greggman](https://github.com/greggman) Built the core library and brought postfix to online bytebeat.
 * [Macronodes](https://github.com/g200kg/webaudio-macronodes) - Library used as an equalizer.
 * [Peer.js](https://peerjs.com) - Used for remote mode, providing WEBRTC peer-to-peer data transmission.
-
-## ⚖️ License
-
-[MIT](LICENSE.md)
