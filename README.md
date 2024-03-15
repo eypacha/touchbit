@@ -171,12 +171,14 @@ Click any expression for listen and edit:
 
 ## ℹ️ For more info
 
-Check out <http://canonical.org/~kragen/bytebeat/> and be sure follow the many links.
+* 📺 [the3 ULTIM4TE gu1de t0 BY7EBEAT](https://www.youtube.com/watch?v=K4GsZu8kBbw) video tutorial by @gabochi
+* 📝 [Kragen post](http://canonical.org/~kragen/bytebeat) and be sure follow the many links.
 
+* 📺 [Bytebeat: Music from very short programs](https://www.youtube.com/watch?v=GtQdIYUtAHg), [📺 Part II](https://www.youtube.com/watch?v=qlrs2Vorw2Y) 📺 [Part III](https://www.youtube.com/watch?v=tCRPUv8V22o) Viznut videos
 
 ## 💜 Credits
 
-* [Gabriel Vinazza](https://github.com/gabochi) - Main user, tester, teacher, and driving force behind this project.
+* [Gabriel Vinazza](https://github.com/gabochi) - Main user, tester, teacher, and driving force behind this project. 
 * [Greggman](https://github.com/greggman) Built the core library and brought postfix to online bytebeat.
 * [Macronodes](https://github.com/g200kg/webaudio-macronodes) - Library used as an equalizer.
 * [Peer.js](https://peerjs.com) - Used for remote mode, providing WEBRTC peer-to-peer data transmission.
