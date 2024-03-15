@@ -176,10 +176,10 @@ Check out <http://canonical.org/~kragen/bytebeat/> and be sure follow the many l
 
 ## 💜 Credits
 
-* [Gabriel Vinazza](https://github.com/gabochi) main user, tester, teacher and driving force of this project.
-* [Greggman](https://github.com/greggman) for build the library and bring postfix to online bytebeat.
-* [Macronodes](https://github.com/g200kg/webaudio-macronodes) library used as equalizer.
-* [Peer.js](https://peerjs.com) WEBRTC peer-to-peer data library.
+* [Gabriel Vinazza](https://github.com/gabochi) - Main user, tester, teacher, and driving force behind this project.
+* [Greggman](https://github.com/greggman) Built the core library and brought postfix to online bytebeat.
+* [Macronodes](https://github.com/g200kg/webaudio-macronodes) - Library used as an equalizer.
+* [Peer.js](https://peerjs.com) - Used for remote mode, providing WEBRTC peer-to-peer data transmission.
 
 ## ⚖️ License
 
