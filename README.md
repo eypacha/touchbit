@@ -5,7 +5,7 @@
 ## 📜 Table of Contents
 
 - [Usage](#-usage)
-  - [Postfix](#-postfix)
+  - [Postfix](#%EF%B8%8F-postfix)
   - [Basic keys](#-basic-keys)
   - [Operators](#-operators)
   - [Numbers](#-numbers)
@@ -15,7 +15,7 @@
   - [Sharing](#-sharing)
   - [Remote mode](#-remote-mode)
 - [Some demos](#-some-demos)
-- [More info](#-for-more-info)
+- [More info](#ℹ%EF%B8%8F-for-more-info)
 - [Credits](#-credits)
 
 ## 📋 Usage
