@@ -140,9 +140,11 @@ You can use your mobile device to remotely control another device. Open the [rec
 
 A new `SEND` button will appear, which will be used to synchronize the expression between devices.
 
-> [!TIP]
-> The expression will be played back on both devices, with the mobile device serving as the monitor and the screen acting as the output master. Ideal for live performances.
+The expression will be played back on both devices, with the mobile device serving as the monitor and the screen acting as the output master. Ideal for live performances.
 
+
+> [!TIP]
+> If you want to customize the ID for the receiver, add `#id=yourphraseid` to the receiver URL. The QR code won't appear upon disconnection.
 
 ## 🎵 Some demos
 
