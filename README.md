@@ -4,19 +4,19 @@
 
 ## 📜 Table of Contents
 
-- [Usage](#📋-usage)
-  - [Postfix](#➡️-postfix)
-  - [Basic keys](#🔠-basic-keys)
-  - [Operators](#🔣-operators)
-  - [Numbers](#🔢-numbers)
-- [Features](#🌟-features)
-  - [Equalizer](#🎛️-equalizer)
-  - [Styles](#🎨-styles)
-  - [Sharing](#👥-sharing)
-  - [Remote mode](#😎-remote-mode)
-- [Some demos](#🎵-some-demos)
-- [More info](#ℹ️-for-more-info)
-- [Credits](#💜-credits)
+- [Usage](#-usage)
+  - [Postfix](#-postfix)
+  - [Basic keys](#-basic-keys)
+  - [Operators](#-operators)
+  - [Numbers](#-numbers)
+- [Features](#-features)
+  - [Equalizer](#-equalizer)
+  - [Styles](#-styles)
+  - [Sharing](#-sharing)
+  - [Remote mode](#-remote-mode)
+- [Some demos](#-some-demos)
+- [More info](#-for-more-info)
+- [Credits](#-credits)
 
 ## 📋 Usage
 
