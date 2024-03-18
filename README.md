@@ -160,7 +160,7 @@ Click any expression for listen and edit:
 *from viznut [the 3rd iteration](http://youtu.be/tCRPUv8V22o) video*
 
 
-[`t 34 ^ t 67 | t 5 >> & | t 15 >> 9 & 1 + * 2 * 0 t 19 >> 3 & 8 SWAP - t SWAP >> - 255 & + 2 / DUP`](https://dev.eypacha.com/touchbit/#t=0&s=8000&bb=5d000001006200000000000000003a0802636dade27e1a010d38eb504b71364ab686ec86e8789c78ea29c1b3e6c4c651b5b28f1c7ce0a3a02070358da719c86f64dda557d457e9d019ce0122a7b912b60b3da4920b255557ffe248e000)
+[`t 34 ^ t 67 | t 5 >> & | t 15 >> 9 & 1 + * 2 * 0 t 19 >> 3 & 8 SWAP - t SWAP >> - 255 & + 2 /`](https://dev.eypacha.com/touchbit/#t=0&s=8000&e=1&bb=5d000001005e00000000000000003a0802636dade27e1a010d38eb504b71364ab686ec86e8789c78ea29c1b3e6c4c651b5b28f1c7ce0a3a02070358da719c86f64dda557d457e9d019ce0122a7b912a6aeca7f1ffff7add000)
 
 *rhytimgrind from Glitch Machine*
 
