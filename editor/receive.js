@@ -35,6 +35,14 @@ let lastPeerId = null;
 let peer = null; // own peer object
 let conn = null;
 
+var hash = window.location.hash.substring(1)
+
+const customId = Object.fromEntries(new URLSearchParams(hash).entries()).id;
+
+if (customId) {
+  $('receiverDialog').classList.remove('active')
+}
+
 function connectFor2Channels() {
   console.log('connect',g_analyzers[0])
 
@@ -218,7 +226,7 @@ async function main() {
 
   function initializePeer() {
     // Create own peer object with connection to shared PeerJS server
-    peer = new Peer(null, {
+    peer = new Peer(customId, {
       debug: 2
     });
 
@@ -233,18 +241,22 @@ async function main() {
 
       console.log('ID: ' + peer.id);
 
+      if(!customId) {
       const path = window.location.origin + window.location.pathname.slice(0,-9);
 
-      new QRCode($('qrcode'), {
-        text: `${path}?r=${peer.id}`,
-        width: 256,
-        height: 256,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.L
-    });
+        new QRCode($('qrcode'), {
+          text: `${path}?r=${peer.id}`,
+          width: 256,
+          height: 256,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.L
+      });
 
       $('receiver-id').innerHTML = peer.id;
+
+    }
+
       console.log("Awaiting connection...");
     });
 
@@ -276,7 +288,10 @@ async function main() {
     peer.on('close', function () {
       conn = null;
       console.log('Connection destroyed');
-      $('receiverDialog').classList.add('active')
+
+      if(!customId) {
+        $('receiverDialog').classList.add('active')
+      }
     });
     peer.on('error', function (err) {
       console.log(err);
