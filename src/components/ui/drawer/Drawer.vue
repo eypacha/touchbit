@@ -1,6 +1,7 @@
 <script setup>
 import { useForwardPropsEmits } from 'radix-vue';
 import { DrawerRoot } from 'vaul-vue';
+import { provide } from 'vue';
 
 const props = defineProps({
   activeSnapPoint: { type: [Number, String, null], required: false },
@@ -13,7 +14,7 @@ const props = defineProps({
   open: { type: Boolean, required: false },
   defaultOpen: { type: Boolean, required: false },
   nested: { type: Boolean, required: false },
-  direction: { type: String, required: false },
+  direction: { type: String, required: false, default: 'bottom' },
   snapPoints: { type: Array, required: false },
   fadeFromIndex: { type: null, required: false },
 });
@@ -25,6 +26,8 @@ const emits = defineEmits([
   'update:open',
   'update:activeSnapPoint',
 ]);
+
+provide('drawer-direction', props.direction);
 
 const forwarded = useForwardPropsEmits(props, emits);
 </script>
