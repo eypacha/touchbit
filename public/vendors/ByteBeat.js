@@ -1,14 +1,9 @@
 /* ByteBeat@2.0.0, license MIT */
 (function (global, factory) {
-  typeof exports === "object" && typeof module !== "undefined"
-    ? (module.exports = factory())
-    : typeof define === "function" && define.amd
-      ? define(factory)
-      : ((global =
-          typeof globalThis !== "undefined" ? globalThis : global || self),
-        (global.ByteBeatNode = factory()));
-})(this, function () {
-  "use strict";
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.ByteBeatNode = factory());
+})(this, (function () { 'use strict';
 
   class WrappingStack {
     constructor(stackSize = 256) {
@@ -18,17 +13,17 @@
         stack.push(0);
       }
 
-      const push = function (v) {
+      const push = function(v) {
         stack[sp++] = v;
         sp = sp % stackSize;
       };
 
-      const pop = function () {
-        sp = sp === 0 ? stackSize - 1 : sp - 1;
+      const pop = function() {
+        sp = (sp === 0) ? (stackSize - 1) : (sp - 1);
         return stack[sp];
       };
 
-      const pick = function (index) {
+      const pick = function(index) {
         let i = sp - Math.floor(index) - 1;
         while (i < 0) {
           i += stackSize;
@@ -36,7 +31,7 @@
         return stack[i % stackSize];
       };
 
-      const put = function (index, value) {
+      const put = function(index, value) {
         let i = sp - Math.floor(index);
         while (i < 0) {
           i += stackSize;
@@ -44,7 +39,7 @@
         stack[i % stackSize] = value;
       };
 
-      const getSP = function () {
+      const getSP = function() {
         return sp;
       };
 
@@ -59,25 +54,21 @@
   }
 
   class ByteBeatCompiler {
+
     static strip(s) {
-      return s.replace(/^\s+/, "").replace(/\s+$/, "");
+      return s.replace(/^\s+/, '').replace(/\s+$/, '');
     }
 
     static removeCommentsAndLineBreaks(x) {
       // remove comments (hacky)
-      x = x.replace(/\/\/.*/g, " ");
-      x = x.replace(/\n/g, " ");
-      x = x.replace(/\/\*.*?\*\//g, " ");
+      x = x.replace(/\/\/.*/g, ' ');
+      x = x.replace(/\n/g, ' ');
+      x = x.replace(/\/\*.*?\*\//g, ' ');
       return x;
     }
 
     static is2NumberArray(v) {
-      return (
-        Array.isArray(v) &&
-        v.length === 2 &&
-        typeof v[0] === "number" &&
-        typeof v[1] === "number"
-      );
+      return Array.isArray(v) && v.length === 2 && typeof v[0] === 'number' && typeof v[1] === 'number';
     }
 
     static applyPostfixTemplate(params) {
@@ -91,154 +82,154 @@
     static postfixToInfix(x) {
       x = ByteBeatCompiler.removeCommentsAndLineBreaks(x);
       // compress space
-      x = x.replace(/(\r\n|\r|\n|\t| )+/gm, " ");
-      const tokens = ByteBeatCompiler.strip(x).split(" ");
+      x = x.replace(/(\r\n|\r|\n|\t| )+/gm, ' ');
+      const tokens = ByteBeatCompiler.strip(x).split(' ');
       const steps = [];
       for (let i = 0; i < tokens.length; ++i) {
         const token = tokens[i];
         switch (token.toLowerCase()) {
-          case ">":
-            steps.push("var v1 = stack.pop();");
-            steps.push("var v2 = stack.pop();");
-            steps.push("stack.push((v1 < v2) ? 0xFFFFFFFF : 0);");
-            break;
-          case "<":
-            steps.push("var v1 = stack.pop();");
-            steps.push("var v2 = stack.pop();");
-            steps.push("stack.push((v1 > v2) ? 0xFFFFFFFF : 0);");
-            break;
-          case "=":
-            steps.push("var v1 = stack.pop();");
-            steps.push("var v2 = stack.pop();");
-            steps.push("stack.push((v2 == v1) ? 0xFFFFFFFF : 0);");
-            break;
-          case "drop":
-            steps.push("stack.pop();");
-            break;
-          case "dup":
-            steps.push("stack.push(stack.pick(0));");
-            break;
-          case "swap":
-            steps.push("var a1 = stack.pop();");
-            steps.push("var a0 = stack.pop();");
-            steps.push("stack.push(a1);");
-            steps.push("stack.push(a0);");
-            break;
-          case "pick":
-            steps.push("var a0 = stack.pop();");
-            steps.push("stack.push(stack.pick(a0));");
-            break;
-          case "put":
-            steps.push("var a0 = stack.pop();");
-            steps.push("var a1 = stack.pick(0);");
-            steps.push("stack.put(a0, a1);");
-            break;
-          case "abs":
-          case "sqrt":
-          case "round":
-          case "tan":
-          case "log":
-          case "exp":
-          case "sin":
-          case "cos":
-          case "floor":
-          case "ceil":
-          case "int":
-            steps.push("var a0 = stack.pop();");
-            steps.push("stack.push(" + token + "(a0));");
-            break;
-          case "max":
-          case "min":
-          case "pow":
-            steps.push("var a0 = stack.pop();");
-            steps.push("var a1 = stack.pop();");
-            steps.push("stack.push(" + token + "(a1, a0));");
-            break;
-          case "random":
-            steps.push("stack.push(" + token + "());");
-            break;
-          case "/":
-          case "+":
-          case "-":
-          case "*":
-          case "%":
-          case ">>":
-          case "<<":
-          case "|":
-          case "&":
-          case "^":
-          case "&&":
-          case "||":
-            steps.push("var a1 = stack.pop();");
-            steps.push("var a0 = stack.pop();");
-            steps.push("stack.push((a0 " + token + " a1) | 0);");
-            break;
-          case "~":
-            steps.push("var a0 = stack.pop();");
-            steps.push("stack.push(~a0);");
-            break;
-          default:
-            steps.push("stack.push(" + token + ");");
-            break;
+        case '>':
+          steps.push('var v1 = stack.pop();');
+          steps.push('var v2 = stack.pop();');
+          steps.push('stack.push((v1 < v2) ? 0xFFFFFFFF : 0);');
+          break;
+        case '<':
+          steps.push('var v1 = stack.pop();');
+          steps.push('var v2 = stack.pop();');
+          steps.push('stack.push((v1 > v2) ? 0xFFFFFFFF : 0);');
+          break;
+        case '=':
+          steps.push('var v1 = stack.pop();');
+          steps.push('var v2 = stack.pop();');
+          steps.push('stack.push((v2 == v1) ? 0xFFFFFFFF : 0);');
+          break;
+        case 'drop':
+          steps.push('stack.pop();');
+          break;
+        case 'dup':
+          steps.push('stack.push(stack.pick(0));');
+          break;
+        case 'swap':
+          steps.push('var a1 = stack.pop();');
+          steps.push('var a0 = stack.pop();');
+          steps.push('stack.push(a1);');
+          steps.push('stack.push(a0);');
+          break;
+        case 'pick':
+          steps.push('var a0 = stack.pop();');
+          steps.push('stack.push(stack.pick(a0));');
+          break;
+        case 'put':
+          steps.push('var a0 = stack.pop();');
+          steps.push('var a1 = stack.pick(0);');
+          steps.push('stack.put(a0, a1);');
+          break;
+        case 'abs':
+        case 'sqrt':
+        case 'round':
+        case 'tan':
+        case 'log':
+        case 'exp':
+        case 'sin':
+        case 'cos':
+        case 'floor':
+        case 'ceil':
+        case 'int':
+          steps.push('var a0 = stack.pop();');
+          steps.push('stack.push(' + token + '(a0));');
+          break;
+        case 'max':
+        case 'min':
+        case 'pow':
+          steps.push('var a0 = stack.pop();');
+          steps.push('var a1 = stack.pop();');
+          steps.push('stack.push(' + token + '(a1, a0));');
+          break;
+        case 'random':
+          steps.push('stack.push(' + token + '());');
+          break;
+        case '/':
+        case '+':
+        case '-':
+        case '*':
+        case '%':
+        case '>>':
+        case '<<':
+        case '|':
+        case '&':
+        case '^':
+        case '&&':
+        case '||':
+          steps.push('var a1 = stack.pop();');
+          steps.push('var a0 = stack.pop();');
+          steps.push('stack.push((a0 ' + token + ' a1) | 0);');
+          break;
+        case '~':
+          steps.push('var a0 = stack.pop();');
+          steps.push('stack.push(~a0);');
+          break;
+        default:
+          steps.push('stack.push(' + token + ');');
+          break;
         }
       }
 
-      steps.push("return stack.pop();");
+      steps.push('return stack.pop();');
 
       const exp = ByteBeatCompiler.applyPostfixTemplate({
-        exp: steps.join("\n"),
+        exp: steps.join('\n'),
       });
       return exp;
     }
 
-    static glitchToPostfix = (function () {
+    static glitchToPostfix = (function() {
       const glitchToPostfixConversion = {
-        a: "t",
-        b: "put",
-        c: "drop",
+          'a': 't',
+          'b': 'put',
+          'c': 'drop',
 
-        d: "*",
-        e: "/",
-        f: "+",
-        g: "-",
-        h: "%",
+          'd': '*',
+          'e': '/',
+          'f': '+',
+          'g': '-',
+          'h': '%',
 
-        j: "<<",
-        k: ">>",
-        l: "&",
-        m: "|",
-        n: "^",
-        o: "~",
+          'j': '<<',
+          'k': '>>',
+          'l': '&',
+          'm': '|',
+          'n': '^',
+          'o': '~',
 
-        p: "dup",
-        q: "pick",
-        r: "swap",
+          'p': 'dup',
+          'q': 'pick',
+          'r': 'swap',
 
-        s: "<",
-        t: ">",
-        u: "=",
-        "/": "//",
+          's': '<',
+          't': '>',
+          'u': '=',
+          '/': '//',
 
-        "!": "\n",
-        ".": " ",
+          '!': '\n',
+          '.': ' ',
       };
 
-      const isCapitalHex = function (c) {
-        return (c >= "0" && c <= "9") || (c >= "A" && c <= "F");
+      const isCapitalHex = function(c) {
+        return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
       };
 
-      return function (x) {
+      return function(x) {
         // Convert to postfix
         const postfix = [];
 
-        x = x.replace("glitch://", ""); // remove "glitch:"
+        x = x.replace('glitch://', ''); // remove "glitch:"
         x = ByteBeatCompiler.removeCommentsAndLineBreaks(x);
-        x = x.replace("glitch:", ""); // remove "glitch:"
-        x = x.replace(/^[^!]*!/, ""); // remove label
+        x = x.replace('glitch:', ''); // remove "glitch:"
+        x = x.replace(/^[^!]*!/, ''); // remove label
 
         for (let i = 0; i < x.length; ++i) {
           let done = false;
-          let imd = "";
+          let imd = '';
 
           // NOTE: works by magic when number is at end. While gathering
           // imd if we're at the end of the string 'c' will be undefined
@@ -254,15 +245,16 @@
               done = true;
               if (imd.length) {
                 --i;
-                c = "0x" + imd;
+                c = '0x' + imd;
               }
             }
           }
           postfix.push(glitchToPostfixConversion[c] || c);
         }
-        return postfix.join(" ");
+        return postfix.join(' ');
       };
-    })();
+
+    }());
 
     static makeContext() {
       return {
@@ -295,50 +287,51 @@
           error() {},
           warn() {},
         };
-        var ${Object.getOwnPropertyNames(object)
-          .filter(filter)
-          .map((key) => {
-            const value = object[key];
-            return typeof value === "function"
+        var ${Object.getOwnPropertyNames(object).filter(filter).map(key => {
+          const value = object[key];
+          return (typeof value === 'function')
               ? `${key} = ${name}.${key}`
               : `${key} = ${name}.${key}`;
-          })
-          .join(",\n")};
+        }).join(',\n')};
     `;
     }
 
-    static s_fnHeader = (function () {
+    static s_fnHeader = (function() {
       const keys = {};
-      const windowKeep = new Set(["parseInt", "parseFloat", "Array", "isNaN"]);
-      const filter = (n) => !windowKeep.has(n);
+      const windowKeep = new Set([
+        'parseInt',
+        'parseFloat',
+        'Array',
+        'isNaN',
+      ]);
+      const filter = n => !windowKeep.has(n);
       //const filter = n => n === 'scroll' || n === 'sin';
-      Object.getOwnPropertyNames(globalThis)
-        .filter(filter)
-        .forEach((key) => {
-          keys[key] = true;
-        });
-      delete keys["Math"];
-      delete keys["window"];
+      Object.getOwnPropertyNames(globalThis).filter(filter).forEach((key) => {
+        keys[key] = true;
+      });
+      delete keys['Math'];
+      delete keys['window'];
       return `
         {try { (0['constructor']['constructor'].prototype.constructor = '') } catch (e) {}};
-        var ${Object.keys(keys).sort().join(",\n")};
-        ${ByteBeatCompiler.addGlobals(Math, "Math")}
+        var ${Object.keys(keys).sort().join(',\n')};
+        ${ByteBeatCompiler.addGlobals(Math, 'Math')}
     `;
-    })();
+    }());
 
-    //         ${ByteBeatCompiler.addGlobals(globalThis, 'globalThis', n => n === 'parseInt' || n === 'parseFloat')}
+  //         ${ByteBeatCompiler.addGlobals(globalThis, 'globalThis', n => n === 'parseInt' || n === 'parseFloat')}
+
 
     static expressionStringToFn(evalExp, extra, test) {
       // console.log(`---\n${evalExp}\n---`);
       // eslint-disable-next-line no-new-func
-      const fp = new Function("stack", "window", "extra", evalExp);
+      const fp = new Function('stack', 'window', 'extra', evalExp);
       let f = fp(undefined, undefined, undefined);
       const ctx = ByteBeatCompiler.makeContext();
       const stack = new WrappingStack();
       const tempExtra = Object.assign({}, extra);
       // check function
       let v = f.call(ctx, 0, 0, stack, ctx, tempExtra);
-      if (typeof v === "function") {
+      if (typeof v === 'function') {
         f = f();
         v = f.call(ctx, 0, 0, stack, ctx, tempExtra);
       }
@@ -351,43 +344,39 @@
           //  console.log('stack: ' + stack.sp());
           //}
           //log("" + i + ": " + s);
-          if (typeof s === "function") {
+          if (typeof s === 'function') {
             f = f();
             s = 0;
           }
           if (ByteBeatCompiler.is2NumberArray(s)) {
             continue;
           }
-          if (typeof s !== "number") {
-            throw "NaN";
+          if (typeof s !== 'number') {
+            throw 'NaN';
           }
         }
       }
 
-      return { f, array };
+      return {f, array};
     }
 
     static compileExpression(x, expressionType, extra) {
       let evalExp;
 
       try {
-        if (expressionType === 3) {
-          // function
+        if (expressionType === 3) {  // function
           x = `
             return function(t, i, stack, window, extra) { 
                 ${ByteBeatCompiler.strip(x)};
             }`;
         } else {
-          if (expressionType === 2) {
-            // glitch
+          if (expressionType === 2) {  // glitch
             x = ByteBeatCompiler.glitchToPostfix(x);
             expressionType = 1;
           }
-          if (expressionType === 1) {
-            // postfix
+          if (expressionType === 1) {  // postfix
             x = ByteBeatCompiler.postfixToInfix(x);
-          } else {
-            // infix
+          } else {  // infix
             x = `
               return function(t, i, stack, window, extra) { 
                   return ${ByteBeatCompiler.strip(x)};
@@ -398,23 +387,17 @@
         x = ByteBeatCompiler.removeCommentsAndLineBreaks(x);
         // Translate a few things.
         function replacer(str, obj, p1, name) {
-          return Object.prototype.hasOwnProperty.call(obj, p1)
-            ? name + p1
-            : str;
+          return Object.prototype.hasOwnProperty.call(obj, p1) ? (name + p1) : str;
         }
-        x = x.replace(/\bint\b/g, "floor");
-        x = x.replace(/\bimport\b/g, "notimport");
-        x = x.replace(/(?:extra\.)?(\w+)/g, function (substr, p1) {
-          return replacer(substr, extra, p1, "extra.");
+        x = x.replace(/\bint\b/g, 'floor');
+        x = x.replace(/\bimport\b/g, 'notimport');
+        x = x.replace(/(?:extra\.)?(\w+)/g, function(substr, p1) {
+          return replacer(substr, extra, p1, 'extra.');
         });
 
         evalExp = `${ByteBeatCompiler.s_fnHeader}${x}`;
 
-        const result = ByteBeatCompiler.expressionStringToFn(
-          evalExp,
-          extra,
-          true,
-        );
+        const result = ByteBeatCompiler.expressionStringToFn(evalExp, extra, true);
         return {
           ...result,
           expression: evalExp,
@@ -425,11 +408,7 @@
           if (m) {
             const charNdx = parseInt(m[1]);
             console.error(e.stack);
-            console.error(
-              evalExp.substring(0, charNdx),
-              "-----VVVVV-----\n",
-              evalExp.substring(charNdx),
-            );
+            console.error(evalExp.substring(0, charNdx), '-----VVVVV-----\n', evalExp.substring(charNdx));
           }
         } else {
           console.error(e, e.stack);
@@ -445,90 +424,30 @@
     static s_samplers = {
       array: [
         // case 0: // bytebeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            const s = fn0.call(
-              ctx0,
-              time / divisor,
-              sampleRate,
-              stack0,
-              ctx0,
-              extra,
-            );
+            const s = fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra);
             buffer0[time % buffer0.length] = (s[0] & 255) / 127 - 1;
             buffer1[time % buffer1.length] = (s[1] & 255) / 127 - 1;
             ++time;
           }
         },
         // case 1:  // floatbeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            const s = fn0.call(
-              ctx0,
-              time / divisor,
-              sampleRate,
-              stack0,
-              ctx0,
-              extra,
-            );
+            const s = fn0.call(ctx0, (time / divisor), sampleRate, stack0, ctx0, extra);
             buffer0[time % buffer0.length] = Number.isNaN(s[0]) ? 0 : s[0];
             buffer1[time % buffer1.length] = Number.isNaN(s[1]) ? 0 : s[1];
             ++time;
           }
         },
         // case 2:  // signed bytebeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            const s = fn0.call(
-              ctx0,
-              time / divisor,
-              sampleRate,
-              stack0,
-              ctx0,
-              extra,
-            );
+            const s = fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra);
             int8[0] = s[0];
             buffer0[time % buffer0.length] = int8[0] / 128;
             int8[0] = s[1];
@@ -539,106 +458,31 @@
       ],
       twoChannels: [
         // case 0: // bytebeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            buffer0[time % buffer0.length] =
-              (fn0.call(ctx0, time / divisor, sampleRate, stack0, ctx0, extra) &
-                255) /
-                127 -
-              1;
-            buffer1[time % buffer1.length] =
-              (fn1.call(ctx1, time / divisor, sampleRate, stack1, ctx1, extra) &
-                255) /
-                127 -
-              1;
+            buffer0[time % buffer0.length] = (fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra) & 255) / 127 - 1;
+            buffer1[time % buffer1.length] = (fn1.call(ctx1, (time) / divisor, sampleRate, stack1, ctx1, extra) & 255) / 127 - 1;
             ++time;
           }
         },
         // case 1:  // floatbeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            const s0 = fn0.call(
-              ctx0,
-              time / divisor,
-              sampleRate,
-              stack0,
-              ctx0,
-              extra,
-            );
+            const s0 = fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra);
             buffer0[time % buffer0.length] = Number.isNaN(s0) ? 0 : s0;
-            const s1 = fn1.call(
-              ctx1,
-              time / divisor,
-              sampleRate,
-              stack1,
-              ctx1,
-              extra,
-            );
+            const s1 = fn1.call(ctx1, (time) / divisor, sampleRate, stack1, ctx1, extra);
             buffer1[time % buffer1.length] = Number.isNaN(s1) ? 0 : s1;
           }
         },
         // case 2:  // signed bytebeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            int8[0] = fn0.call(
-              ctx0,
-              time / divisor,
-              sampleRate,
-              stack0,
-              ctx0,
-              extra,
-            );
+            int8[0] = fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra);
             buffer0[time % buffer0.length] = int8[0] / 128;
-            int8[0] = fn1.call(
-              ctx1,
-              time / divisor,
-              sampleRate,
-              stack1,
-              ctx1,
-              extra,
-            );
+            int8[0] = fn1.call(ctx1, (time) / divisor, sampleRate, stack1, ctx1, extra);
             buffer1[time % buffer1.length] = int8[0] / 128;
             ++time;
           }
@@ -646,84 +490,27 @@
       ],
       oneChannel: [
         // case 0: // bytebeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            buffer0[time % buffer0.length] =
-              (fn0.call(ctx0, time / divisor, sampleRate, stack0, ctx0, extra) &
-                255) /
-                127 -
-              1;
+            buffer0[time % buffer0.length] = (fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra) & 255) / 127 - 1;
             ++time;
           }
         },
         // case 1: // floatbeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            const s = fn0.call(
-              ctx0,
-              time / divisor,
-              sampleRate,
-              stack0,
-              ctx0,
-              extra,
-            );
+            const s = fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra);
             buffer0[time % buffer0.length] = Number.isNaN(s) ? 0 : s;
             ++time;
           }
         },
         // case 2: // signed bytebeat
-        function (
-          buffer0,
-          buffer1,
-          fn0,
-          fn1,
-          time,
-          divisor,
-          stack0,
-          stack1,
-          ctx0,
-          ctx1,
-          extra,
-          lastSample,
-        ) {
+        function(buffer0, buffer1, fn0, fn1, time, divisor, stack0, stack1, ctx0, ctx1, extra, lastSample) {
           const sampleRate = extra?.sampleRate || 8000;
           for (let i = 0; i < lastSample; ++i) {
-            int8[0] = fn0.call(
-              ctx0,
-              time / divisor,
-              sampleRate,
-              stack0,
-              ctx0,
-              extra,
-            );
+            int8[0] = fn0.call(ctx0, (time) / divisor, sampleRate, stack0, ctx0, extra);
             buffer0[time % buffer0.length] = int8[0] / 128;
             ++time;
           }
@@ -734,7 +521,7 @@
     static interpolate(buf, ndx) {
       const n = ndx | 0;
       const f = ndx % 1;
-      const v0 = buf[n % buf.length];
+      const v0 = buf[(n    ) % buf.length];
       const v1 = buf[(n + 1) % buf.length];
       return v0 + (v1 - v0) * f;
     }
@@ -762,17 +549,14 @@
       this.expressionType = 0;
       this.functions = [
         {
-          f: function () {
+          f: function() {
             return 0;
           },
           array: false,
         },
       ];
-      this.contexts = [
-        ByteBeatCompiler.makeContext(),
-        ByteBeatCompiler.makeContext(),
-      ];
-      this.expressions = ["Math.sin(t) * 0.1"];
+      this.contexts = [ByteBeatCompiler.makeContext(), ByteBeatCompiler.makeContext()];
+      this.expressions = ['Math.sin(t) * 0.1'];
       this.extra = ByteBeatCompiler.makeExtra();
       this.stacks = [new WrappingStack(), new WrappingStack()];
     }
@@ -787,7 +571,7 @@
     }
 
     getExtra() {
-      return { ...this.extra };
+      return {...this.extra};
     }
 
     getTime() {
@@ -799,9 +583,7 @@
     }
 
     convertToDesiredSampleRate(rate) {
-      return Math.floor(
-        (rate * this.desiredSampleRate) / this.actualSampleRate,
-      );
+      return Math.floor(rate * this.desiredSampleRate / this.actualSampleRate);
     }
 
     setActualSampleRate(rate) {
@@ -821,7 +603,7 @@
     }
 
     setExpressions(expressions) {
-      this.functions = expressions.map((expression) => {
+      this.functions = expressions.map(expression => {
         return ByteBeatCompiler.expressionStringToFn(expression, {}, false);
       });
     }
@@ -840,15 +622,12 @@
 
     getNumChannels() {
       const fn1 = (this.functions[1] || {}).f;
-      return this.functions[0].array || fn1 ? 2 : 1;
+      return (this.functions[0].array || fn1) ? 2 : 1;
     }
 
     process(dataLength, leftData, rightData) {
-      const neededSrcStartSampleId = this.convertToDesiredSampleRate(
-        this.dstSampleCount,
-      );
-      const neededSrcEndSampleId =
-        this.convertToDesiredSampleRate(this.dstSampleCount + dataLength) + 2;
+      const neededSrcStartSampleId = this.convertToDesiredSampleRate(this.dstSampleCount);
+      const neededSrcEndSampleId = this.convertToDesiredSampleRate(this.dstSampleCount + dataLength) + 2;
       const numNeededSrcSamples = neededSrcEndSampleId - neededSrcStartSampleId;
       if (this.buffer0.length < numNeededSrcSamples) {
         this.buffer0 = new Float32Array(numNeededSrcSamples);
@@ -863,37 +642,22 @@
       const ctx0 = this.contexts[0];
       const ctx1 = this.contexts[1];
       const buffer0 = this.buffer0;
-      const buffer1 = fn0Array || fn1 ? this.buffer1 : buffer0;
+      const buffer1 = (fn0Array || fn1) ? this.buffer1 : buffer0;
       const extra = this.extra;
-      const divisor =
-        this.expressionType === 3 ? this.getDesiredSampleRate() : 1;
+      const divisor = this.expressionType === 3 ? this.getDesiredSampleRate() : 1;
 
       const startSrcId = Math.max(this.srcSampleCount, neededSrcStartSampleId);
       const numSrcSampleToGenerate = neededSrcEndSampleId - startSrcId;
 
       const samplerGroup = fn0Array
-        ? ByteBeatProcessor.s_samplers.array
-        : fn1
-          ? ByteBeatProcessor.s_samplers.twoChannels
-          : ByteBeatProcessor.s_samplers.oneChannel;
+          ? ByteBeatProcessor.s_samplers.array
+          : fn1
+              ? ByteBeatProcessor.s_samplers.twoChannels
+              : ByteBeatProcessor.s_samplers.oneChannel;
       const sampler = samplerGroup[this.type];
-      sampler(
-        buffer0,
-        buffer1,
-        fn0,
-        fn1,
-        startSrcId,
-        divisor,
-        stack0,
-        stack1,
-        ctx0,
-        ctx1,
-        extra,
-        numSrcSampleToGenerate,
-      );
+      sampler(buffer0, buffer1, fn0, fn1, startSrcId, divisor, stack0, stack1, ctx0, ctx1, extra, numSrcSampleToGenerate);
 
-      let ndx =
-        (this.dstSampleCount * this.desiredSampleRate) / this.actualSampleRate;
+      let ndx = this.dstSampleCount * this.desiredSampleRate / this.actualSampleRate;
       const step = this.desiredSampleRate / this.actualSampleRate;
 
       // Note: ideally we'd have a better way to resample but if you google
@@ -902,9 +666,7 @@
       // an issue. At the moment if expandMode is true then basic linear interpolation
       // is used. It sounds awful! The default nearest lowest neighbor. In other words
       // an index of 9.7 will return sample 9, not sample 10.
-      const expandFn = this.expandMode
-        ? ByteBeatProcessor.interpolate
-        : ByteBeatProcessor.trunc;
+      const expandFn = this.expandMode ? ByteBeatProcessor.interpolate : ByteBeatProcessor.trunc;
 
       if (rightData) {
         for (let i = 0; i < dataLength; ++i) {
@@ -946,30 +708,17 @@
     }
 
     getSampleForTime(time, context, stack, channel = 0) {
-      const divisor =
-        this.expressionType === 3 ? this.getDesiredSampleRate() : 1;
+      const divisor = this.expressionType === 3 ? this.getDesiredSampleRate() : 1;
       let s = 0;
       try {
         if (this.functions[0].array) {
-          const ss = this.functions[0].f(
-            time / divisor,
-            channel,
-            stack,
-            context,
-            this.extra,
-          );
+          const ss = this.functions[0].f(time / divisor, channel, stack, context, this.extra);
           s = ss[channel];
         } else {
           if (!this.functions[1]) {
             channel = 0;
           }
-          s = this.functions[channel].f(
-            time / divisor,
-            channel,
-            stack,
-            context,
-            this.extra,
-          );
+          s = this.functions[channel].f(time / divisor, channel, stack, context, this.extra);
         }
         switch (this.type) {
           case 0:
@@ -1158,6 +907,13 @@ class BeatWorkletProcessor extends AudioWorkletProcessor {
     this.#deregisterObj(id);
   }
 
+  getSampleForTime(time, contextId, stackId, channel = 0) {
+    const context = this.idToObj.get(contextId);
+    const stack = this.idToObj.get(stackId);
+
+    return this.byteBeat.getSampleForTime(time, context, stack, channel);
+  }
+
   getSamplesForTimeRange(start, end, numSamples, contextId, stackId, channel = 0) {
     const context = this.idToObj.get(contextId);
     const stack = this.idToObj.get(stackId);
@@ -1173,9 +929,7 @@ class BeatWorkletProcessor extends AudioWorkletProcessor {
 
 registerProcessor('bytebeat-processor', BeatWorkletProcessor);
 `;
-  const workerURL = URL.createObjectURL(
-    new Blob([beatProcessorJS], { type: "application/javascript" }),
-  );
+  const workerURL = URL.createObjectURL(new Blob([beatProcessorJS], {type: 'application/javascript'}));
 
   // This class is the public interface for ByteBeat support.
   // It manages 2 instances of a `ByteBeatProcessor`. One
@@ -1188,15 +942,15 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
   // expressions on to the two ByteBeat instances.
   class ByteBeatNode extends AudioWorkletNode {
     static Type = {
-      byteBeat: 0, // 0 <-> 255
-      floatBeat: 1, // -1.0 <-> +1.0
-      signedByteBeat: 2, // -128 <-> 127
+      byteBeat: 0,          // 0 <-> 255
+      floatBeat: 1,         // -1.0 <-> +1.0
+      signedByteBeat: 2,    // -128 <-> 127
     };
     static ExpressionType = {
-      infix: 0, // sin(t / 50)
-      postfix: 1, // t 50 / sin
-      glitch: 2, // see docs
-      function: 3, // return sin(t / 50)
+      infix: 0,             // sin(t / 50)
+      postfix: 1,           // t 50 / sin
+      glitch: 2,            // see docs
+      function: 3,          // return sin(t / 50)
     };
     static async setup(context) {
       return await context.audioWorklet.addModule(workerURL);
@@ -1216,59 +970,51 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
     #busyPromise;
 
     constructor(context) {
-      super(context, "bytebeat-processor", { outputChannelCount: [2] });
+      super(context, 'bytebeat-processor', { outputChannelCount: [2] });
 
       // TODO: this should arguably not exist here
-      if (typeof window !== "undefined") {
-        window.addEventListener(
-          "mousemove",
-          (event) => {
-            const data = {
-              mouseX: event.clientX,
-              mouseY: event.clientY,
-            };
-            this.#sendExtra(data);
-          },
-          true,
-        );
+      if (typeof window !== 'undefined') {
+        window.addEventListener('mousemove', (event) => {
+          const data = {
+            mouseX: event.clientX,
+            mouseY: event.clientY,
+          };
+          this.#sendExtra(data);
+        }, true);
 
         if (window.DeviceOrientationEvent) {
           // Listen for the deviceorientation event and handle the raw data
-          window.addEventListener(
-            "deviceorientation",
-            (eventData) => {
-              const data = {
-                // gamma is the left-to-right tilt in degrees, where right is positive
-                tiltX: eventData.gamma,
+          window.addEventListener('deviceorientation', (eventData) => {
+            const data = {
+              // gamma is the left-to-right tilt in degrees, where right is positive
+              tiltX: eventData.gamma,
 
-                // beta is the front-to-back tilt in degrees, where front is positive
-                tiltY: eventData.beta,
+              // beta is the front-to-back tilt in degrees, where front is positive
+              tiltY: eventData.beta,
 
-                // alpha is the compass direction the device is facing in degrees
-                compass: eventData.alpha,
-              };
-              this.#sendExtra(data);
-            },
-            false,
-          );
+              // alpha is the compass direction the device is facing in degrees
+              compass: eventData.alpha,
+            };
+            this.#sendExtra(data);
+          }, false);
         }
       }
-      this.#startTime = performance.now(); // time since the song started playing
-      this.#pauseTime = this.#startTime; // time since the song was paused
-      this.#connected = false; // whether or not we're playing the bytebeat
+      this.#startTime = performance.now();   // time since the song started playing
+      this.#pauseTime = this.#startTime;     // time since the song was paused
+      this.#connected = false;               // whether or not we're playing the bytebeat
 
       this.#actualSampleRate = context.sampleRate;
-      this.#callFunc("setActualSampleRate", context.sampleRate);
+      this.#callFunc('setActualSampleRate', context.sampleRate);
 
       this.port.onmessage = this.#processMsg.bind(this);
     }
 
     #processMsg(event) {
-      const { cmd, data } = event.data;
+      const {cmd, data} = event.data;
       switch (cmd) {
-        case "asyncResult": {
-          const { msgId, error, result } = data;
-          const { resolve, reject } = this.#msgIdToResolveMap.get(msgId);
+        case 'asyncResult': {
+          const {msgId, error, result} = data;
+          const {resolve, reject} = this.#msgIdToResolveMap.get(msgId);
           if (!resolve) {
             throw new Error(`unknown msg id: ${msgId}`);
           }
@@ -1287,14 +1033,14 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
 
     #sendExtra(data) {
       this.port.postMessage({
-        cmd: "setExtra",
+        cmd: 'setExtra',
         data,
       });
     }
 
     #callFunc(fnName, ...args) {
       this.port.postMessage({
-        cmd: "callFunc",
+        cmd: 'callFunc',
         data: {
           fn: fnName,
           args,
@@ -1305,7 +1051,7 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
     #callAsync(fnName, ...args) {
       const msgId = this.#nextId++;
       this.port.postMessage({
-        cmd: "callAsync",
+        cmd: 'callAsync',
         data: {
           fn: fnName,
           msgId,
@@ -1314,7 +1060,7 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
       });
       const m = this.#msgIdToResolveMap;
       return new Promise((resolve, reject) => {
-        m.set(msgId, { resolve, reject });
+        m.set(msgId, {resolve, reject});
       });
     }
 
@@ -1336,12 +1082,12 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
     }
 
     resize(width, height) {
-      const data = { width, height };
+      const data = {width, height};
       this.#sendExtra(data);
     }
 
     reset() {
-      this.#callFunc("reset");
+      this.#callFunc('reset');
       this.#startTime = performance.now();
       this.#pauseTime = this.#startTime;
     }
@@ -1351,10 +1097,10 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
     }
 
     getTime() {
+
+      
       const time = this.#connected ? performance.now() : this.#pauseTime;
-      return (
-        ((time - this.#startTime) * 0.001 * this.getDesiredSampleRate()) | 0
-      );
+      return (time - this.#startTime) * 0.001 * this.getDesiredSampleRate() | 0;
     }
 
     async setExpressions(expressions, resetToZero) {
@@ -1362,15 +1108,11 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
         await this.#busyPromise;
       }
       let resolve;
-      this.#busyPromise = new Promise((r) => {
+      this.#busyPromise = new Promise(r => {
         resolve = r;
       });
       try {
-        const data = await this.#callAsync(
-          "setExpressions",
-          expressions,
-          resetToZero,
-        );
+        const data = await this.#callAsync('setExpressions', expressions, resetToZero);
         this.#numChannels = data.numChannels;
         this.#expressions = data.expressions;
       } finally {
@@ -1379,14 +1121,12 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
     }
 
     convertToDesiredSampleRate(rate) {
-      return Math.floor(
-        (rate * this.#desiredSampleRate) / this.#actualSampleRate,
-      );
+      return Math.floor(rate * this.#desiredSampleRate / this.#actualSampleRate);
     }
 
     setDesiredSampleRate(rate) {
       this.#desiredSampleRate = rate;
-      this.#callFunc("setDesiredSampleRate", rate);
+      this.#callFunc('setDesiredSampleRate', rate);
     }
 
     getDesiredSampleRate() {
@@ -1395,7 +1135,7 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
 
     setExpressionType(type) {
       this.#expressionType = type;
-      this.#callFunc("setExpressionType", type);
+      this.#callFunc('setExpressionType', type);
     }
 
     getExpressions() {
@@ -1408,7 +1148,7 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
 
     setType(type) {
       this.#type = type;
-      this.#callFunc("setType", type);
+      this.#callFunc('setType', type);
     }
 
     getType() {
@@ -1420,41 +1160,36 @@ registerProcessor('bytebeat-processor', BeatWorkletProcessor);
     }
 
     async createStack() {
-      return await this.#callAsync("createStack");
+      return await this.#callAsync('createStack');
     }
     async createContext() {
-      return await this.#callAsync("createContext");
+      return await this.#callAsync('createContext');
     }
 
     destroyStack(id) {
-      return this.#callAsync("destroyStack", id);
+      return this.#callAsync('destroyStack', id);
     }
     async destroyContext(id) {
-      return await this.#callAsync("destroyContext", id);
+      return await this.#callAsync('destroyContext', id);
     }
-
-    async getSamplesForTimeRange(
-      start,
-      end,
-      step,
-      contextId,
-      stackId,
-      channel,
-    ) {
+    
+    async getSampleForTime(time, contextId, stackId, channel = 0) {
+      
       if (this.#busyPromise) {
         await this.#busyPromise;
       }
-      return await this.#callAsync(
-        "getSamplesForTimeRange",
-        start,
-        end,
-        step,
-        contextId,
-        stackId,
-        channel,
-      );
+      let sample = await this.#callAsync('getSampleForTime', time, contextId, stackId, channel);
+      return sample
+    }
+
+    async getSamplesForTimeRange(start, end, step, contextId, stackId, channel) {
+      if (this.#busyPromise) {
+        await this.#busyPromise;
+      }
+      return await this.#callAsync('getSamplesForTimeRange', start, end, step, contextId, stackId, channel);
     }
   }
 
   return ByteBeatNode;
-});
+
+}));
