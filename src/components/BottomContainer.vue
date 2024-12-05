@@ -1,12 +1,18 @@
 <template>
-  <div class="h-[300px]">
-    <Carousel class="h-full"> 
+  <div class="h-[300px] bg-background">
+    <Carousel class="h-full" :opts="{
+        startIndex: 1,
+        loop: true,
+      }"> 
       <CarouselContent class="h-full">
+        <BottomCard>
+          <AudioSettings/>
+        </BottomCard>
         <BottomCard>
           <Keyboard/>
         </BottomCard>
         <BottomCard>
-          <AudioSettings/>
+          <AudioEffects/>
         </BottomCard>
       </CarouselContent>
     </Carousel>
@@ -22,4 +28,5 @@ import {
 import BottomCard from '@/components/BottomCard.vue'
 import Keyboard from '@/components/Keyboard.vue'
 import AudioSettings from '@/components/AudioSettings.vue'
+import AudioEffects from '@/components/AudioEffects.vue';
 </script>
