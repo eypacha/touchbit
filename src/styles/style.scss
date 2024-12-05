@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 180 40% 80%;
     --foreground: 0 0% 3.9%;
 
     --muted: 0 0% 96.1%;
@@ -13,10 +13,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    --card: 0 0% 100%;
+    --card: 180 40% 75%;
     --card-foreground: 0 0% 3.9%;
 
-    --border: 0 0% 89.8%;
+    --border: 266 60% 70.8%;
     --input: 0 0% 89.8%;
 
     --primary: 0 0% 9%;
@@ -24,6 +24,12 @@
 
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
+
+    --time: 189 94% 35%;
+    --operator: 189 94% 42.75%;
+    --number: 45.4 93.4% 42.75%;
+    --action: 293.4 69.5% 50%;
+    --error: 0 87% 50%;
 
     --accent: 0 0% 96.1%;
     --accent-foreground: 0 0% 9%;
@@ -37,7 +43,7 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 266 29% 5%;
     --foreground: 0 0% 98%;
 
     --muted: 0 0% 14.9%;
@@ -46,10 +52,10 @@
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --card: 0 0% 3.9%;
+    --card: 266 29% 7%;
     --card-foreground: 0 0% 98%;
 
-    --border: 0 0% 14.9%;
+    --border: 0 0% 20%;
     --input: 0 0% 14.9%;
 
     --primary: 0 0% 98%;
@@ -57,6 +63,12 @@
 
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
+
+    --time: 189 94% 42.75%;
+    --operator: 189 94% 42.75%;
+    --number: 45.4 93.4% 42.75%;
+    --action: 293.4 69.5% 50%;
+    --error: 0 87% 50%;
 
     --accent: 0 0% 14.9%;
     --accent-foreground: 0 0% 98%;
@@ -72,6 +84,12 @@
   * {
     @apply border-border;
   }
+
+  html {
+    @apply bg-background text-foreground;
+
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Courier New', Courier, monospace;
