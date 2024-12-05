@@ -5,30 +5,6 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export const sampleRates = {
-  8000: '8kHz',
-  11000: '11kHz',
-  22000: '22kHz',
-  32000: '32kHz',
-  44100: '44kHz',
-  48000: '48kHz',
-}
-
-export const bpms = {
-  117: '117',
-  120: '120',
-  130: '130',
-  150: '150',
-  160: '160',
-  180: '180',
-}
-
-
-export const byteBeatModes = {
-  0: 'bytebeat',
-  1: 'floatbeat',
-}
-
 export function calculateSampleRate(targetBPM = 120, operand = 4, operator = '>>') {
   const samplesPerCycle = 256;
   
