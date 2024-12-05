@@ -1,30 +1,80 @@
-# Logs
-logs
-*.log
+# Node modules
+/node_modules/
+
+# Dependencias de Vite y otros build tools
+/dist/
+/build/
+/.vite/
+
+# Archivos de entorno
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Archivos y carpetas temporales de macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Archivos de logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
-*.local
+# Archivos de bloqueo (lock files)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-/cypress/videos/
-/cypress/screenshots/
+# Archivos de IDEs y editores (VSCode, etc)
+.vscode/
+.idea/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Archivos generados por npm o yarn
+/.npm/
+/.yarn/
+.yarnrc.yml
 
-*.tsbuildinfo
+# Archivos de configuración global del sistema
+/.sass-cache/
+.vscode/
+
+# Sistema operativo: archivos específicos de Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Archivos temporales de IntelliJ o WebStorm
+/.idea/
+
+# Otros archivos temporales generados por editores de texto
+*.swp
+*.swo
+
+# Archivos de configuración de Webpack o similares si los tienes (en caso de migrar)
+webpack.config.js
+webpack.prod.js
+webpack.dev.js
+
+# Archivos de registros de producción
+*.log
+
+# Archivos específicos de Docker (si estás usando Docker)
+docker-compose.override.yml
+.dockerignore
+Dockerfile
+
+# Archivos de test de frontend si usas Jest, Mocha, o similares
+coverage/
+test-results/
+
+# Archivos generados por servicios de CI/CD
+*.log
+ci-logs/
+
+# Otros archivos temporales generados
+*.tmp
+*.bak
+*.swp
