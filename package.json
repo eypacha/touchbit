@@ -18,7 +18,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-vue": "^8.5.1",
     "lucide-vue-next": "^0.462.0",
-    "pinia": "^2.2.4",
+    "pinia": "^2.2.8",
     "radix-vue": "^1.9.10",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
