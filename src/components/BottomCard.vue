@@ -11,7 +11,6 @@
 </template>
 
 <script setup>
-import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -22,5 +21,4 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel'
 
-import SampleRates from '@/components/SampleRates.vue'
 </script>
