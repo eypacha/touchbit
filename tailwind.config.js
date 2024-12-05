@@ -1,5 +1,18 @@
 const animate = require("tailwindcss-animate")
 
+const categories = ['time', 'number', 'operator', 'action', 'error'];
+const prefixes = ['text', 'border', 'border-x', 'bg', 'active:bg'];
+const extraClasses = ['col-span-2', 'col-span-3'];
+
+const safelist = [
+  ...extraClasses,
+  ...categories.flatMap(category =>
+    prefixes.map(prefix => `${prefix}-${category}`)
+  ),
+  ...categories.map(category => `active:bg-${category}/20`)
+];
+
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -12,7 +25,7 @@ module.exports = {
     './app/**/*.{js,jsx,vue}',
     './src/**/*.{js,jsx,vue}',
 	],
-  
+  safelist,
   theme: {
     container: {
       center: true,
@@ -35,6 +48,21 @@ module.exports = {
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+        },
+        time: {
+          DEFAULT:  "hsl(var(--time))",
+        },
+        number: {
+          DEFAULT:  "hsl(var(--number))",
+        },
+        operator: {
+          DEFAULT:  "hsl(var(--foreground))",
+        },
+        action: {
+          DEFAULT:  "hsl(var(--action))",
+        },
+        error: {
+          DEFAULT:  "hsl(var(--error))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
