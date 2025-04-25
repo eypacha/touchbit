@@ -13,7 +13,7 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'"
   },
   "dependencies": {
-    "@vueuse/core": "^12.0.0",
+    "@vueuse/core": "^13.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-vue": "^8.5.1",
@@ -43,5 +43,6 @@
     "vite": "^5.4.10",
     "vite-plugin-vue-devtools": "^7.5.3",
     "vitest": "^2.1.3"
-  }
+  },
+  "packageManager": "yarn@1.22.0+sha512.28c1cffc9ab9de364a4d8f624d4b77748565fdb7ba50fb3620da3debe0676472cac583537f03269601d368c5b2199a0eef8448e00205be75a162b5ead9448992"
 }
