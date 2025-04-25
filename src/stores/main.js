@@ -205,6 +205,11 @@ function modToken(mod, index = selectedToken.value) {
   evalBytebeat();
 }
 
+function insertToken() {
+  stack.value.splice(selectedToken.value + 1, 0, { type: 'empty', data: '' });
+  moveNext();
+}
+
 function delToken(){
   
   if (selectedToken.value < 0) return
@@ -220,6 +225,7 @@ function delToken(){
   }
 
 }
+
 
 function backspaceToken() {
   if (selectedToken.value <= 0) return
@@ -264,23 +270,35 @@ function backspaceToken() {
         console.log('LEFT pressed');
         movePrev()
        break;
-    case 'RIGHT':
+       
+      case 'RIGHT':
         console.log('RIGHT pressed');
         moveNext()
         break;
+
+      case 'INS':
+        console.log('INSERT pressed');
+        insertToken()
+        break;
+
       case 'DEL':
         console.log('delete',selectedToken.value)
         delToken()
         break;
+        
+
       case 'BCKS':
         backspaceToken()
         break;
+
       case 'UNDO':
         console.log('Undo pressed');
         break;
+
       case 'REDO':
         console.log('Redo pressed');
         break;
+        
       default:
         break;
     }
