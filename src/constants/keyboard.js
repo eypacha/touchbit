@@ -29,7 +29,7 @@ export const layout = [
   { type: 'operator', data: '<<' },
   { type: 'operator', data: '>>' },
   { type: 'action', data: 'HOLD' , disabled: true },
-  { type: 'action', data: 'INS', disabled: true },
+  { type: 'action', data: 'INS' },
   { type: 'action', data: 'DEL', color: 'error' },
   { type: 'action', data: 'LEFT', width: 3 },
   { type: 'action', data: 'RIGHT', width: 3 }
