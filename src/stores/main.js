@@ -19,11 +19,12 @@ export const useMainStore = defineStore("main", () => {
 
   const stack = ref([
     { type: 'time', data: 't' },
-    { type: 'number', data: 4 },
-    { type: 'operator', data: '>>' },
+    { type: 'number', data: 64 },
+    { type: 'operator', data: '&' },
     { type: 'time', data: 't' },
+    { type: 'number', data: '4' },
+    { type: 'operator', data: '>>' },
     { type: 'operator', data: '|' },
-    { type: 'empty', data: '' }
   ]);
   
   const getExpression = computed(() => {
