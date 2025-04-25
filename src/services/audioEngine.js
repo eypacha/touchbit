@@ -226,6 +226,8 @@ class AudioEngine {
      */
     setExpressions(expressions) {
       if (this.byteBeatNode) {
+
+        if(expressions[0] === '') expressions[0] = '0'
         this.byteBeatNode.setExpressions(expressions);
       }
     }
