@@ -172,6 +172,11 @@ export const useMainStore = defineStore("main", () => {
     }
 }
 
+function keyLongPressed(type, data) {
+
+  console.log('longPress', type, data);
+  
+}
 
 function newToken(token, index = selectedToken.value) {
   console.log('newToken',token)
@@ -274,5 +279,25 @@ function backspaceToken() {
     }
   }
 
-  return { stack, currentNumber, keyPressed, theme, updateTheme, toggleTheme, selectedToken, evalBytebeat, playPause, setVolume, setSampleRate, stop, reset, getExpression, time,sample, isPlaying, modToken, moveTo}
+  return {
+    stack,
+    currentNumber,
+    keyPressed,
+    keyLongPressed,
+    theme,
+    updateTheme,
+    toggleTheme,
+    selectedToken,
+    evalBytebeat,
+    playPause,
+    setVolume,
+    setSampleRate,
+    stop,
+    reset,
+    getExpression,
+    time,
+    sample,
+    isPlaying,
+    modToken,
+    moveTo}
 });
