@@ -3,7 +3,7 @@
         <div
         v-for="(token, index) in stack"
         :key="index"
-        class="font-bold text-center p-0 border-b h-7"
+        class="p-0 font-bold text-center border-b h-7"
         :class="[
             { disabled: token.disabled },
             `text-${token.type}`, 
@@ -14,8 +14,10 @@
         >
             <ChevronsLeft v-if="token.data === '<<'" />
             <ChevronsRight v-else-if="token.data === '>>'" />
-            <Number v-else-if="token.type === 'number'" v-model="token.data"  @update:modelValue="handleUpdateNumber(token)" :styled="0"/>
-            <!-- <span v-else-if="token.type === 'number'"> {{ formatNumber(token.data) }}</span> -->
+            <Number v-else-if="token.type === 'number'" 
+                :model-value="parseFloat(token.data)" 
+                @update:modelValue="handleUpdateNumber(token, $event)" 
+                :styled="false"/>
             <span v-else> {{ (token.data) }} </span>
         </div>
     </div>
@@ -76,9 +78,10 @@ const handleTouch = (token, index) => {
     }
 }
 
-const handleUpdateNumber = (token, index) => {
+const handleUpdateNumber = (token, newValue) => {
    if(token.type !== 'number') return
-
-   store.evalBytebeat()
+   
+   token.data = newValue.toString();
+   store.evalBytebeat();
 }
 </script>
