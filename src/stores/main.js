@@ -108,10 +108,6 @@ export const useMainStore = defineStore("main", () => {
 
   function renderLoop() {
 
-    // if (visualizationInterval.value) {
-    //   clearInterval(visualizationInterval.value);
-    // }
-  
     const updateTime = async () => {
     
       if(isPlaying.value) {
@@ -122,18 +118,8 @@ export const useMainStore = defineStore("main", () => {
         requestAnimationFrame(updateTime)
       }
     }
-
-    // const updateVisualization = () => {
-    //   if (isPlaying.value) {
-    //       this.updateVisualization(256); 
-    //   } else {
-        
-    //     clearInterval(visualizationInterval.value);
-    //   }
-    // };
   
     requestAnimationFrame(updateTime)
-    // visualizationInterval.value = setInterval(updateVisualization, 128);
   }
 
   function keyPressed(type, data) {
@@ -150,7 +136,6 @@ export const useMainStore = defineStore("main", () => {
             isEditingNumber.value = true;
             break;
         case 'operator':
-          console.log()
             if (isEditingNumber.value) {
                 isEditingNumber.value = false;
                 moveNext(); 
@@ -160,7 +145,6 @@ export const useMainStore = defineStore("main", () => {
             break;
         case 'time':
             isEditingNumber.value = false;
-            
             newToken({ type: 'time', data: 't' });
             moveNext(); 
             break;
@@ -174,8 +158,24 @@ export const useMainStore = defineStore("main", () => {
 
 function keyLongPressed(type, data) {
 
-  console.log('longPress', type, data);
-  
+  if(type !== 'action') {
+    keyPressed (type, data);
+    return
+  }
+
+  switch (data){
+
+    case 'LEFT':
+      console.log('LEFT long pressed');
+      moveFirst()
+      break;
+    case 'RIGHT':
+      console.log('RIGHT long pressed');
+      moveLast()
+      break;
+
+  }
+
 }
 
 function newToken(token, index = selectedToken.value) {
@@ -233,9 +233,10 @@ function backspaceToken() {
     selectedToken.value = selectedToken.value > 0 ? selectedToken.value - 1 : 0;
   }
 
-  function moveTo(index) {
-    selectedToken.value = index;
+  function moveFirst(){
+    selectedToken.value = 0;
   }
+
 
   function moveNext() {
     const isAtLastPosition = selectedToken.value === stack.value.length - 1;
@@ -246,12 +247,18 @@ function backspaceToken() {
     }
 
     selectedToken.value = Math.min(selectedToken.value + 1, stack.value.length - 1);
-}
-  
+  }
+    
+  function moveLast() {
+    selectedToken.value = stack.value.length - 1;
+  }
+
+  function moveTo(index) {
+    selectedToken.value = index;
+  }
 
   function handleAction(action) {
     
-    // console.log('action',action);
     switch (action) {
       case 'LEFT':
         console.log('LEFT pressed');
