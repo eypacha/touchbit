@@ -1,5 +1,5 @@
 <template>
-  <div class="grid w-full h-full grid-cols-12 gap-2">
+  <div class="grid w-full h-full grid-cols-12 gap-2 max-w-[450px] keyboard">
     <Key v-for="(key, index) in layout"
       :key="index"
       :color="key.color ?? key.type"
