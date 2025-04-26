@@ -6,7 +6,9 @@
       :class="getColSpan(key.width)"
       :disabled="key.disabled"
       @touchstart="handleTouchStart(key.type, key.data, $event)"
+      @mousedown="handleTouchStart(key.type, key.data, $event)"
       @touchend="handleTouchEnd(key.type, key.data, $event)"
+      @mouseup="handleTouchEnd(key.type, key.data, $event)"
       @touchcancel="handleTouchCancel()">
       <ChevronsLeft v-if="key.data === '<<'" />
       <ChevronsRight v-else-if="key.data === '>>'" />
