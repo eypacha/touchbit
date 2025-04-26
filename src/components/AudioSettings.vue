@@ -7,7 +7,7 @@
     </div>
     <div class="flex items-center justify-between gap-2 mb-5">
       <Label :for="'bpmLabel'">BPM</Label>
-      <Key variant="outline" class="ml-8 border-gray" @click="tapTempo">
+      <Key variant="outline" class="ml-8 border-gray" @touchstart="tapTempo">
         <small>tap</small>
       </Key>
       <Number ref="bpmLabel" class="w-24" v-model="selectedBPM" @update:modelValue="setBPM" @touchstart="updatingBPM = true"
