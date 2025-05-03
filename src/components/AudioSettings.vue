@@ -1,5 +1,5 @@
 <template>
-  <div class="content min-w-[250px]">
+  <div class="w-full h-full p-3 border rounded-md content">
     <div class="flex items-center justify-between gap-2 mb-5">
       <Label :for="'sampleRateLabel'">Sample rate</Label>
       <Number ref="sampleRateLabel"  class="w-24" v-model="selectedSampleRate" :step="10" @update:modelValue="setSampleRate"

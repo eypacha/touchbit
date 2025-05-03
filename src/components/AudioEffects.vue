@@ -1,6 +1,6 @@
 <template>
-  <div class="content min-w-[250px]">
-     <div class="block mb-6">
+  <div class="w-full h-full p-2 border rounded-md content">
+     <div class="block w-full mb-6">
           <Label>
             Gain
             <Slider v-model="volumeValue" class="my-2" :max="100" @update:modelValue="setVolume" @touchstart.stop />

@@ -1,8 +1,10 @@
 <template>
   <CarouselItem class="h-full">
-    <div class="p-1 h-full">
-      <Card class="h-full">
-        <CardContent class="w-full h-full flex items-center justify-center p-1">
+    <div class="h-full p-0">
+      <Card class="h-full rounded-none">
+        <CardContent class="flex flex-col items-center justify-center w-full h-full px-2 pb-2">
+          <div class="py-1 pb-2">
+            <span class="opacity-20">...</span></div>
             <slot/>
         </CardContent>
       </Card>

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[300px] bg-background">
+  <div class="bg-background">
     <Carousel class="h-full" :opts="{
         startIndex: 1,
         loop: true,
