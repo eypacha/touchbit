@@ -1,12 +1,13 @@
 <template>
-  <div class="grid w-full h-full grid-cols-12 gap-2 max-w-[450px] keyboard">
+  <div class="grid w-full grid-cols-12 gap-2 max-w-[450px] keyboard" @touchstart.stop @mousedown.stop>
     <Key v-for="(key, index) in layout"
       :key="index"
       :color="key.color ?? key.type"
       :class="getColSpan(key.width)"
       :disabled="key.disabled"
-      @touchstart="handleTouchStart(key.type, key.data, $event)"
-      @mousedown="handleTouchStart(key.type, key.data, $event)"
+      :active="isKeyActive(key)"
+      @touchstart.stop="handleTouchStart(key.type, key.data, $event)"
+      @mousedown.stop="handleTouchStart(key.type, key.data, $event)"
       @touchend="handleTouchEnd(key.type, key.data, $event)"
       @mouseup="handleTouchEnd(key.type, key.data, $event)"
       @touchcancel="handleTouchCancel()">
@@ -43,8 +44,9 @@ import { layout } from  '@/constants/keyboard'
 
 const store = useMainStore()
 const pressTimer = ref(null);
-const longPressThreshold = 500; // 500ms threshold for long press
+const longPressThreshold = 600;
 const isLongPress = ref(false);
+const currentKey = ref(null); 
 
 const keyPressed = (type, data) => {
   store.keyPressed(type, data)
@@ -55,29 +57,40 @@ const longPress = (type, data) => {
 }
 
 const handleTouchStart = (type, data, event) => {
-
+  event.stopPropagation();
+  
+  const keyInfo = layout.find(key => key.type === type && key.data === data);
+  currentKey.value = keyInfo;
+  
   isLongPress.value = false;
 
   if (pressTimer.value) {
     clearTimeout(pressTimer.value);
   }
   
-  pressTimer.value = setTimeout(() => {
-    isLongPress.value = true;
-    longPress(type, data);
-  }, longPressThreshold);
+  if (keyInfo && keyInfo.longPress) {
+    pressTimer.value = setTimeout(() => {
+      isLongPress.value = true;
+      longPress(type, data);
+    }, longPressThreshold);
+  }
 }
 
 const handleTouchEnd = (type, data, event) => {
   event.preventDefault();
   
-  clearTimeout(pressTimer.value);
+  if (pressTimer.value) {
+    clearTimeout(pressTimer.value);
+    pressTimer.value = null;
+  }
   
-  if (!isLongPress.value) {
+  const keyInfo = currentKey.value;
+  
+  if (!isLongPress.value || !keyInfo || !keyInfo.longPress) {
     keyPressed(type, data);
   }
   
-  pressTimer.value = null;
+  currentKey.value = null;
 }
 
 const handleTouchCancel = () => {
@@ -85,7 +98,15 @@ const handleTouchCancel = () => {
     clearTimeout(pressTimer.value);
     pressTimer.value = null;
   }
+  currentKey.value = null;
 }
 
 const getColSpan = (width) => `col-span-${width ?? 2}`
+
+const isKeyActive = (key) => {
+  if (key.type === 'action' && key.data === 'HOLD') {
+    return store.holdMode;
+  }
+  return false;
+}
 </script>

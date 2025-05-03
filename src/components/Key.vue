@@ -1,10 +1,10 @@
 <template>
   <Button
     variant="outline"
-    class="h-10 font-bold border-[1px] border-b-4 active:border-b-[1px] hover:bg-transparent select-none"
-    :class="`border-${color} active:bg-${color}/20`"
+    class="h-10 font-bold border-[1px] border-b-4 active:border-b-[1px] select-none"
+    :class="[active ? `bg-${color}/20 border-white` : `border-${color}`]"
   >
-    <span :class="`text-${color}`">
+    <span :class="active ? 'text-white' : `text-${color}`">
       <slot />
     </span>
   </Button>
@@ -19,6 +19,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'operator'
-  }
+  },
+  active: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
 })
 </script>
