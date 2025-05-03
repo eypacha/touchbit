@@ -1,5 +1,6 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
+import { useThemeStore } from "./themeStore"; // Add this import
 
 import { audioEngine } from "@/services/audioEngine";
 
@@ -15,8 +16,7 @@ export const useMainStore = defineStore("main", () => {
   const sample = ref(0);
   const sampleRate = ref(8000);
   const holdMode = ref(false);
-
-  const theme = ref('dark');
+  const numberMode = ref(false);
 
   const stack = ref([
     { type: 'time', data: 't' },
@@ -34,21 +34,6 @@ export const useMainStore = defineStore("main", () => {
       .map(item => item.data)
       .join(' ');
   });
-
-  function updateTheme() {
-
-    console.log('updateTheme')
-    const html = document.documentElement;
-    if (theme.value === "dark") {
-      html.classList.add("dark");
-    } else {
-      html.classList.remove("dark");
-    }
-  }
-  function toggleTheme() {
-    theme.value = theme.value === "dark" ? "light" : "dark";
-    updateTheme();
-  }
 
   async function playPause() {
 
@@ -328,11 +313,9 @@ function backspaceToken() {
     currentNumber,
     keyPressed,
     keyLongPressed,
-    theme,
-    updateTheme,
-    toggleTheme,
     selectedToken,
     evalBytebeat,
+    numberMode,
     holdMode,
     playPause,
     setVolume,

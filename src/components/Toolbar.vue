@@ -1,10 +1,10 @@
 <template>
-  <header class="w-full p-3 border-b flex gap-1 bg-card">
+  <header class="flex w-full gap-1 p-3 border-b bg-card">
     <Key @click="store.playPause()" class="border-input">
       <Play v-if="!store.isPlaying"/>
       <Square v-else/>
     </Key>
-    <Key variant="outline" class="flex-1 flex justify-end border-input" @click="store.reset()">
+    <Key variant="outline" class="flex justify-end flex-1 border-input" @click="store.reset()">
       <span class="text-time">
         {{ store.time }}</span>
       <span class="mx-2">➝</span>
@@ -31,11 +31,11 @@
 
         </div>
         <DrawerFooter class="items-center">
-          <Switch :checked="store.theme === 'dark'" @update:checked="store.toggleTheme">
+          <Switch :checked="themeStore.theme === 'dark'" @update:checked="themeStore.toggleTheme">
             <template #thumb>
-              <div class="w-full h-full flex items-center justify-center rounded-full">
-                <Moon v-if="store.theme === 'dark'" class="size-4 bg-transparent"/>
-                <Sun v-else class="size-4 bg-transparent" stroke="hsl(var(--number))"/>
+              <div class="flex items-center justify-center w-full h-full rounded-full">
+                <Moon v-if="themeStore.theme === 'dark'" class="bg-transparent size-4"/>
+                <Sun v-else class="bg-transparent size-4" stroke="hsl(var(--number))"/>
               </div>
             </template>
           </Switch>
@@ -65,9 +65,11 @@ import Key from '@/components/Key.vue'
 
 import { Play, Square, EllipsisVertical, Moon, Sun } from 'lucide-vue-next';
 import { useMainStore } from '@/stores/main'
+import { useThemeStore } from '@/stores/themeStore'; // Add this import
 
 import Logo from '@/components/Logo.vue';
 
 const store = useMainStore()
+const themeStore = useThemeStore(); // Add this line
 
 </script>

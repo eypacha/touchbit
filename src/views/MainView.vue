@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loading" class="flex flex-col items-center justify-center absolute top-0 left-0 w-full h-full bg-background z-50">
+  <div v-if="loading" class="absolute top-0 left-0 z-50 flex flex-col items-center justify-center w-full h-full bg-background">
     <Logo class="mb-4"/>
     <div>
       <Button variant="outline" class="border-action text-foreground" @click="initialize()">Start</Button>
@@ -7,7 +7,7 @@
   </div>
 
   <Toolbar />
-  <main class="w-full h-full flex flex-col">
+  <main class="flex flex-col w-full h-full">
     <StackContainer />
     <BottomContainer />
   </main>
@@ -22,8 +22,10 @@ import Toolbar from "@/components/Toolbar.vue";
 import StackContainer from "@/components/StackContainer.vue";
 import BottomContainer from "@/components/BottomContainer.vue";
 import { useMainStore } from '@/stores/main';
+import { useThemeStore } from '@/stores/themeStore'; 
 
 const store = useMainStore();
+const themeStore = useThemeStore();
 
 const loading = ref(true);
 
@@ -32,8 +34,8 @@ const prefersDarkScheme = window.matchMedia(
 ).matches;
 
 onMounted(() => {
-  store.theme = prefersDarkScheme ? "dark" : "light";
-  store.updateTheme();
+  themeStore.theme = prefersDarkScheme ? "dark" : "light";
+  themeStore.updateTheme();
 });
 
 function initialize(){
