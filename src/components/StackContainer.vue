@@ -1,22 +1,23 @@
 <template>
-    <div class="flex flex-1 bg-background content-start flex-wrap p-3 text-xl overflow-x-hidden overflow-y-auto gap-1 shadow-[inset_0_0_10px_0_rgba(0,0,0,2)]" >
+    <div class="flex flex-1 bg-background content-start flex-wrap px-3 pb-x pt-6 text-xl overflow-x-hidden overflow-y-auto gap-1 shadow-[inset_0_0_10px_0_rgba(0,0,0,2)]" >
         <div
         v-for="(token, index) in store.stack"
         :key="index"
-        class="p-0 font-bold text-center border-b h-7"
+        class="p-0 font-bold text-center border-b token-container h-7 min-w-5"
         :class="[
             { disabled: token.disabled },
+            { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
             `text-${token.type}`, 
-             token.type === 'operator' ? 'w-7' : 'min-w-3',
              isSelected(index) ? `border border-x-${token.type}` : 'border border-t-transparent border-x-transparent border-b-gray'
         ]"
         @click="handleTouch(token, index)"
         >
-            <ChevronsLeft v-if="token.data === '<<'" />
-            <ChevronsRight v-else-if="token.data === '>>'" />
+            <span v-if="token.data === '<<'">«</span>
+            <span v-else-if="token.data === '>>'">»</span>
             <Number v-else-if="token.type === 'number'" 
                 :model-value="parseFloat(token.data)" 
                 @update:modelValue="handleUpdateNumber(token, $event)" 
+                :selected="isSelected(index)"
                 :styled="false"/>
             <span v-else> {{ (token.data) }} </span>
         </div>
@@ -49,28 +50,28 @@ const formatNumber = computed(() => {
 const operators = ["+", "-","*", "/", "&", "|", "^", "%",">>","<<"];
 
 const handleTouch = (token, index) => {
-
     if(isSelected(index)) {
-        
-        if (token.type === 'operator') {
+        if (token.type === 'number') {
+            store.isEditingNumber = true;
+        } else {
+            store.isEditingNumber = false;
             
-            console.log(token.data)
+            if (token.type === 'operator') {
+                console.log(token.data)
+                const tokenIndex = operators.indexOf(token.data)
 
-            const tokenIndex = operators.indexOf(token.data)
-
-            if(tokenIndex !== -1) {
-               
-                const mod = {
-                     data: operators[(tokenIndex + 1) % operators.length],
+                if(tokenIndex !== -1) {
+                    const mod = {
+                        data: operators[(tokenIndex + 1) % operators.length],
+                    }
+                    store.modToken(mod,index)
+                } else if(token.data === '~') {
+                    token.disabled = !token.disabled
                 }
-
-               store.modToken(mod,index)
-            } else if(token.data === '~') {
-                token.disabled = !token.disabled
             }
-
         }
     } else {
+        store.isEditingNumber = false;
         store.moveTo(index)
     }
 }
@@ -82,3 +83,18 @@ const handleUpdateNumber = (token, newValue) => {
    store.evalBytebeat();
 }
 </script>
+
+<style>
+@keyframes blink-right-border {
+  0%, 100% {
+    border-right-color: transparent;
+  }
+  50% {
+    border-right-color: currentColor;
+  }
+}
+
+.editing-number {
+  animation: blink-right-border 600ms ease-in-out infinite;
+}
+</style>
