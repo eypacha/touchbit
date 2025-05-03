@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-1 bg-background content-start flex-wrap p-3 text-xl overflow-x-hidden overflow-y-auto gap-1 shadow-[inset_0_0_10px_0_rgba(0,0,0,2)]" >
         <div
-        v-for="(token, index) in stack"
+        v-for="(token, index) in store.stack"
         :key="index"
         class="p-0 font-bold text-center border-b h-7"
         :class="[
@@ -30,10 +30,7 @@ import { useMainStore } from '@/stores/main'
 import { ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 import { Number } from '@/components/ui/Number';
 
-
 const store = useMainStore()
-
-const stack = store.stack
 
 const isSelected = (index) => store.selectedToken === index
 
