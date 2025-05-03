@@ -16,7 +16,6 @@ export const useMainStore = defineStore("main", () => {
   const sample = ref(0);
   const sampleRate = ref(8000);
   const holdMode = ref(false);
-  const numberMode = ref(false);
 
   const stack = ref([
     { type: 'time', data: 't' },
@@ -115,11 +114,18 @@ export const useMainStore = defineStore("main", () => {
     switch (type) {
         case 'number':
             if (stack.value[selectedToken.value].type !== 'number') {
-                console.log('no es numero');
+                console.log('NO NUMERO');
                 newToken({ type: 'number', data: data });
+                isEditingNumber.value = true;
             } else {
-                console.log('lo que sea');
-                stack.value[selectedToken.value].data = stack.value[selectedToken.value].data + data.toString();
+                console.log('NUMERO');
+
+                if(isEditingNumber.value){
+                  stack.value[selectedToken.value].data = stack.value[selectedToken.value].data + data.toString();
+                } else {
+                  newToken({ type: 'number', data: data });
+                  isEditingNumber.value = true;
+                }
             }
             isEditingNumber.value = true;
             break;
@@ -137,6 +143,7 @@ export const useMainStore = defineStore("main", () => {
             moveNext(); 
             break;
         case 'action':
+            isEditingNumber.value = false;
             handleAction(data);
             break;
         default:
@@ -311,11 +318,11 @@ function backspaceToken() {
   return {
     stack,
     currentNumber,
+    isEditingNumber,
     keyPressed,
     keyLongPressed,
     selectedToken,
     evalBytebeat,
-    numberMode,
     holdMode,
     playPause,
     setVolume,

@@ -1,18 +1,33 @@
 <template>
     <div
-      :class="[
-      props.styled ? 'h-9 px-4 py-2 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground' : ''
-    ]"
-      @touchstart="startTouch"
-      @touchmove="onTouchMove"
-      @touchend="endTouch"
+      class="relative"
+      @touchstart="handleTouchStart"
+      @touchmove="handleTouchMove"
+      @touchend="handleTouchEnd"
     >
       <span class="text-number">{{ formatedValue }}</span>
+      <div v-if="selected && store.isEditingNumber">
+        <button 
+          class="absolute w-6 h-6 text-white transform -translate-x-1/2 -top-6 bg-number left-1/2"
+          @click="incrementValue">
+          <span>+</span>
+        </button>
+        <button 
+          class="absolute w-6 h-6 text-white transform -translate-x-1/2 -bottom-6 bg-number left-1/2"
+          @click="decrementValue">
+          <span>-</span>
+        </button>
+      </div>
     </div>
 </template>
 
-  <script setup>
+<script setup>
 import { ref, computed, watch, defineProps, defineEmits } from 'vue';
+
+import { useMainStore } from '@/stores/main'; // Add this import
+
+// Get store instance
+const store = useMainStore();
 
 // Definir las props del componente
 const props = defineProps({
@@ -40,6 +55,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  selected: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const formatedValue = computed(() => {
@@ -78,15 +97,29 @@ const onTouchMove = (event) => {
   const delta = startTouchY.value - currentTouchY.value;
 
   if (Math.abs(delta) > 10) {
-    // Incrementa o decrementa el valor dependiendo de la dirección
-    if (delta > 0) {
-      value.value += props.step; // Aumenta el valor
+    // Check if initial value is an integer between 0 and 255
+    const isModuloNumber = Number.isInteger(props.modelValue) && 
+                          props.modelValue >= 0 && 
+                          props.modelValue <= 255;
+    
+    if (isModuloNumber) {
+      // Apply modulo 256 arithmetic
+      if (delta > 0) {
+        value.value = (value.value + props.step) % 256; // Wrap around at 256
+      } else {
+        value.value = (value.value - props.step + 256) % 256; // Add 256 before modulo to handle negative numbers
+      }
     } else {
-      value.value -= props.step; // Disminuye el valor
+      // Original behavior for other numbers
+      if (delta > 0) {
+        value.value += props.step; // Aumenta el valor
+      } else {
+        value.value -= props.step; // Disminuye el valor
+      }
+      
+      // Asegúrate de que el valor esté dentro del rango permitido
+      value.value = clampValue(value.value);
     }
-
-    // Asegúrate de que el valor esté dentro del rango permitido
-    value.value = clampValue(value.value);
 
     // Emitir el valor actualizado
     emit('update:modelValue', value.value);
@@ -110,4 +143,59 @@ watch(() => props.modelValue, (newVal) => {
 watch(value, (newVal) => {
   emit('update:modelValue', newVal);
 });
+
+// Update touch handlers to only work when selected
+const handleTouchStart = (event) => {
+  if (!props.selected) return;
+  startTouch(event);
+};
+
+const handleTouchMove = (event) => {
+  if (!props.selected) return;
+  onTouchMove(event);
+};
+
+const handleTouchEnd = (event) => {
+  if (!props.selected) return;
+  endTouch(event);
+};
+
+// Add these new functions for button clicks
+const incrementValue = () => {
+  // Check if number should use modulo 256 behavior
+  const isModuloNumber = Number.isInteger(props.modelValue) && 
+                        props.modelValue >= 0 && 
+                        props.modelValue <= 255;
+  
+  if (isModuloNumber) {
+    // Apply modulo 256 arithmetic
+    value.value = (value.value + props.step) % 256;
+  } else {
+    // Regular increment with clamping
+    value.value += props.step;
+    value.value = clampValue(value.value);
+  }
+  
+  // Emit the updated value
+  emit('update:modelValue', value.value);
+};
+
+const decrementValue = () => {
+  // Check if number should use modulo 256 behavior
+  const isModuloNumber = Number.isInteger(props.modelValue) && 
+                        props.modelValue >= 0 && 
+                        props.modelValue <= 255;
+  
+  if (isModuloNumber) {
+    // Apply modulo 256 arithmetic (add 256 before modulo to handle negative numbers)
+    value.value = (value.value - props.step + 256) % 256;
+  } else {
+    // Regular decrement with clamping
+    value.value -= props.step;
+    value.value = clampValue(value.value);
+  }
+  
+  // Emit the updated value
+  emit('update:modelValue', value.value);
+};
 </script>
