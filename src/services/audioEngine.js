@@ -36,9 +36,6 @@ class AudioEngine {
         this.gainNode = this.context.createGain();
         this.gainNode.gain.value = this.volume;
         
-        this.byteBeatNode.connect(this.gainNode); 
-        this.gainNode.connect(this.context.destination); 
-        
         return true;
       }
     }
@@ -234,4 +231,3 @@ class AudioEngine {
   }
   
   export const audioEngine = new AudioEngine();
-  
