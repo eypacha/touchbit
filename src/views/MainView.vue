@@ -6,23 +6,31 @@
     </div>
   </div>
 
-  <Toolbar />
-  <main class="flex flex-col w-full h-full">
-    <StackContainer />
-    <BottomContainer />
-  </main>
+    <Toolbar />
+    <main class="flex flex-col w-full h-[calc(100vh-65px)]">
+      <div class="relative h-full">
+
+        <VisualizerCanvas/>
+        <StackContainer class="h-full overflow-y-scroll"/> 
+        <Logger/>
+      </div>
+      <BottomContainer/>
+    </main>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { Button } from '@/components/ui/button'
 
+import { useMainStore } from '@/stores/main';
+import { useThemeStore } from '@/stores/themeStore'; 
+
 import Logo from '@/components/Logo.vue';
 import Toolbar from "@/components/Toolbar.vue";
 import StackContainer from "@/components/StackContainer.vue";
 import BottomContainer from "@/components/BottomContainer.vue";
-import { useMainStore } from '@/stores/main';
-import { useThemeStore } from '@/stores/themeStore'; 
+import VisualizerCanvas from "@/components/VisualizerCanvas.vue";
+import Logger from "@/components/Logger.vue";
 
 const store = useMainStore();
 const themeStore = useThemeStore();
