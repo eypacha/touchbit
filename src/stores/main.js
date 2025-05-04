@@ -1,16 +1,19 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { useThemeStore } from "./themeStore"; // Add this import
+import { useThemeStore } from "./themeStore";
+import { useLoggerStore } from "@/stores/logger"; // Add this import
 
 import { audioEngine } from "@/services/audioEngine";
 
 export const useMainStore = defineStore("main", () => {
+  const logger = useLoggerStore(); // Initialize logger
 
   const selectedToken = ref(0);
   const currentNumber = ref("");
   const isPlaying = ref(false)
   const isEditingNumber = ref(false);
   const visualizationInterval = ref(null);
+  const visualizationData = ref(null);
   const time = ref(0);
   const volume = ref(0.8)
   const sample = ref(0);
@@ -26,7 +29,12 @@ export const useMainStore = defineStore("main", () => {
     { type: 'operator', data: '>>' },
     { type: 'operator', data: '|' },
   ]);
-  
+
+  async function updateVisualization(width) {
+    visualizationData.value = await audioEngine.getSamplesForVisualization(width);
+    return visualizationData.value;
+  }
+
   const getExpression = computed(() => {
     return stack.value
       .filter(item => item.type !== 'empty' && !item.disabled)
@@ -35,12 +43,11 @@ export const useMainStore = defineStore("main", () => {
   });
 
   async function playPause() {
-
-    console.log('play/pause', isPlaying.value)
+    logger.log('AUDIO', isPlaying.value ? 'PLAY' : 'PAUSE');
+    
     if (!isPlaying.value) {
       const result = await audioEngine.play();
       
-      console.log(getExpression.value)
       evalBytebeat();
 
       if (result) {
@@ -82,10 +89,11 @@ export const useMainStore = defineStore("main", () => {
   }
 
   async function evalBytebeat() {
-    console.log('eval')
+    
     if(holdMode.value) return
 
     audioEngine.setExpressions([getExpression.value]);
+    logger.log('COMPILE', `Eval: ${getExpression.value}`);
 
     if(isPlaying.value) return
 
@@ -100,8 +108,6 @@ export const useMainStore = defineStore("main", () => {
       if(isPlaying.value) {
         time.value = audioEngine.getTime();
         sample.value = await audioEngine.getSampleForTime()
-
-        console.log()
         requestAnimationFrame(updateTime)
       }
     }
@@ -110,16 +116,12 @@ export const useMainStore = defineStore("main", () => {
   }
 
   function keyPressed(type, data) {
-    console.log('keyPressed', type, data);
     switch (type) {
         case 'number':
             if (stack.value[selectedToken.value].type !== 'number') {
-                console.log('NO NUMERO');
                 newToken({ type: 'number', data: data });
                 isEditingNumber.value = true;
             } else {
-                console.log('NUMERO');
-
                 if(isEditingNumber.value){
                   stack.value[selectedToken.value].data = stack.value[selectedToken.value].data + data.toString();
                 } else {
@@ -153,8 +155,6 @@ export const useMainStore = defineStore("main", () => {
 
 function keyLongPressed(type, data) {
 
-  console.log(data,'long pressed');
-
   switch (data){
 
     case 'LEFT':
@@ -173,7 +173,6 @@ function keyLongPressed(type, data) {
 }
 
 function newToken(token, index = selectedToken.value) {
-  console.log('newToken',token)
   stack.value.splice(index, 1, token);
   evalBytebeat();
 }
@@ -223,6 +222,7 @@ function delAllTokens() {
   stack.value = [];
   stack.value.push({ type: 'empty', data: '' });
   selectedToken.value = 0;
+  logger.log('EDIT', 'All tokens deleted');
   evalBytebeat();
 }
 function backspaceToken() {
@@ -262,7 +262,7 @@ function backspaceToken() {
   }
 
   function toggleHoldMode() {
-    console.log('Toggle HOLD mode from', holdMode.value, 'to', !holdMode.value);
+    logger.log('INFO', `HOLD MODE ${holdMode.value ? 'OFF' : 'ON'}`);
     
     holdMode.value = !holdMode.value;
     
@@ -334,5 +334,8 @@ function backspaceToken() {
     sample,
     isPlaying,
     modToken,
-    moveTo}
+    moveTo,
+    updateVisualization,
+    visualizationData
+  }
 });
