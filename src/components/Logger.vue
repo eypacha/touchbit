@@ -28,16 +28,16 @@ const latestLogs = computed(() => {
       opacity: 1;
     }
     &:nth-child(2) {
-      opacity: 0.8;
+      opacity: 0.65;
     }
     &:nth-child(3) {
-      opacity: 0.6;
+      opacity: 0.50;
     }
     &:nth-child(4) {
-      opacity: 0.4;
+      opacity: 0.25;
     }
     &:nth-child(5) {
-      opacity: 0.2;
+      opacity: 0.10;
     }
   }
 </style>
