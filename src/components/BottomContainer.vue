@@ -1,22 +1,20 @@
 <template>
-  <div class="bg-background">
-    <Carousel class="h-full" :opts="{
-        startIndex: 1,
-        loop: true,
-      }"> 
-      <CarouselContent class="h-full">
-        <BottomCard>
-          <AudioSettings/>
-        </BottomCard>
-        <BottomCard>
-          <Keyboard/>
-        </BottomCard>
-        <BottomCard>
-          <AudioEffects/>
-        </BottomCard>
-      </CarouselContent>
-    </Carousel>
-  </div>
+  <Carousel class="flex-0" :opts="{
+      startIndex: 1,
+      loop: true,
+    }"> 
+    <CarouselContent class="h-full">
+      <BottomCard>
+        <AudioSettings/>
+      </BottomCard>
+      <BottomCard>
+        <Keyboard/>
+      </BottomCard>
+      <BottomCard>
+        <AudioEffects/>
+      </BottomCard>
+    </CarouselContent>
+  </Carousel>
 </template>
 
 <script setup>
