@@ -13,7 +13,7 @@
 <script setup>
 import { ref } from 'vue';
 
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/mainStore';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 const volumeValue = ref([80])

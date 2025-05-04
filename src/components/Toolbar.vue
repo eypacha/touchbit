@@ -64,7 +64,7 @@ import { Switch } from '@/components/ui/switch'
 import Key from '@/components/Key.vue'
 
 import { Play, Square, EllipsisVertical, Moon, Sun } from 'lucide-vue-next';
-import { useMainStore } from '@/stores/main'
+import { useMainStore } from '@/stores/mainStore'
 import { useThemeStore } from '@/stores/themeStore'; // Add this import
 
 import Logo from '@/components/Logo.vue';

@@ -28,7 +28,7 @@
 <script setup>
 import { computed } from 'vue'
 
-import { useMainStore } from '@/stores/main'
+import { useMainStore } from '@/stores/mainStore'
 import { Number } from '@/components/ui/Number';
 
 const store = useMainStore()

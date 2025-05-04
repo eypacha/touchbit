@@ -37,7 +37,7 @@ import {
   BetweenHorizontalEnd
 } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { useMainStore } from '@/stores/main'
+import { useMainStore } from '@/stores/mainStore'
 import Key from '@/components/Key.vue'
 
 import { layout } from  '@/constants/keyboard'

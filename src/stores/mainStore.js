@@ -1,23 +1,16 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useThemeStore } from "./themeStore";
-import { useLoggerStore } from "@/stores/logger"; // Add this import
-
-import { audioEngine } from "@/services/audioEngine";
+import { useLoggerStore } from "@/stores/loggerStore";
+import { useAudioStore } from "./audioStore"; // Importar el nuevo AudioStore
 
 export const useMainStore = defineStore("main", () => {
-  const logger = useLoggerStore(); // Initialize logger
+  const logger = useLoggerStore();
+  const audioStore = useAudioStore(); // Instanciar el AudioStore
 
   const selectedToken = ref(0);
   const currentNumber = ref("");
-  const isPlaying = ref(false)
   const isEditingNumber = ref(false);
-  const visualizationInterval = ref(null);
-  const visualizationData = ref(null);
-  const time = ref(0);
-  const volume = ref(0.8)
-  const sample = ref(0);
-  const sampleRate = ref(8000);
   const holdMode = ref(false);
 
   const stack = ref([
@@ -30,11 +23,6 @@ export const useMainStore = defineStore("main", () => {
     { type: 'operator', data: '|' },
   ]);
 
-  async function updateVisualization(width) {
-    visualizationData.value = await audioEngine.getSamplesForVisualization(width);
-    return visualizationData.value;
-  }
-
   const getExpression = computed(() => {
     return stack.value
       .filter(item => item.type !== 'empty' && !item.disabled)
@@ -42,79 +30,48 @@ export const useMainStore = defineStore("main", () => {
       .join(' ');
   });
 
+  // Delegamos funciones de audio al AudioStore
   async function playPause() {
-    logger.log('AUDIO', isPlaying.value ? 'PLAY' : 'PAUSE');
-    
-    if (!isPlaying.value) {
-      const result = await audioEngine.play();
-      
-      evalBytebeat();
-
-      if (result) {
-        isPlaying.value = true;
-        renderLoop()
-      }
-    } else {
-      const result = audioEngine.pause();
-      if (result) {
-        isPlaying.value= false;
-        renderLoop()
-      }
-    }
+    await audioStore.playPause(getExpression.value);
   }
 
-  function setVolume(vol, rampTime){
-    volume.value = vol
-    audioEngine.setVolume(vol, rampTime)
+  function setVolume(vol, rampTime) {
+    audioStore.setVolume(vol, rampTime);
   }
 
-  function setSampleRate(rate){
-    sampleRate.value = rate
-    audioEngine.setSampleRate(sampleRate.value)
+  function setSampleRate(rate) {
+    audioStore.setSampleRate(rate);
   }
   
   async function stop() {
-    const result = await audioEngine.stop();
-    time.value = 0
-    if (result) {
-      isPlaying.value = false;
-      // isualizationData = null;
-    }
+    await audioStore.stop();
   }
 
   async function reset() {
-    await audioEngine.reset();
-    time.value = 0
-    // visualizationData.value = null;
+    await audioStore.reset();
   }
 
   async function evalBytebeat() {
+    if(holdMode.value) return;
     
-    if(holdMode.value) return
-
-    audioEngine.setExpressions([getExpression.value]);
-    logger.log('COMPILE', `Eval: ${getExpression.value}`);
-
-    if(isPlaying.value) return
-
-    time.value = audioEngine.getTime();
-    sample.value = await audioEngine.getSampleForTime()
-  }
-
-  function renderLoop() {
-
-    const updateTime = async () => {
+    audioStore.setExpression(getExpression.value);
     
-      if(isPlaying.value) {
-        time.value = audioEngine.getTime();
-        sample.value = await audioEngine.getSampleForTime()
-        requestAnimationFrame(updateTime)
-      }
+    if(!audioStore.isPlaying) {
+      await audioStore.getSampleForTime();
     }
-  
-    requestAnimationFrame(updateTime)
   }
 
+  async function updateVisualization(width) {
+    return await audioStore.updateVisualization(width);
+  }
+
+  // Propiedades computadas para mantener compatibilidad
+  const isPlaying = computed(() => audioStore.isPlaying);
+  const time = computed(() => audioStore.time);
+  const sample = computed(() => audioStore.sample);
+  const visualizationData = computed(() => audioStore.visualizationData);
+
+  // Resto del código existente sin cambios
   function keyPressed(type, data) {
     switch (type) {
         case 'number':
@@ -153,80 +110,75 @@ export const useMainStore = defineStore("main", () => {
     }
 }
 
-function keyLongPressed(type, data) {
-
-  switch (data){
-
-    case 'LEFT':
-      moveFirst()
-      break;
-    case 'RIGHT':
-      moveLast()
-      break;
-    case 'DEL':
-      delAllTokens() 
-      break;
-    default:
-      
+  function keyLongPressed(type, data) {
+    switch (data){
+      case 'LEFT':
+        moveFirst()
+        break;
+      case 'RIGHT':
+        moveLast()
+        break;
+      case 'DEL':
+        delAllTokens() 
+        break;
+      default:
+    }
   }
 
-}
-
-function newToken(token, index = selectedToken.value) {
-  stack.value.splice(index, 1, token);
-  evalBytebeat();
-}
-
-function modToken(mod, index = selectedToken.value) {
-  if (index < 0 || index >= stack.value.length) {
-    console.error(`Índice ${index} fuera de rango. Stack actual:`, stack.value);
-    return;
+  function newToken(token, index = selectedToken.value) {
+    stack.value.splice(index, 1, token);
+    evalBytebeat();
   }
 
-  if (typeof mod !== 'object' || mod === null) {
-    console.error(`El modToken debe ser un objeto. Valor recibido:`, mod);
-    return;
+  function modToken(mod, index = selectedToken.value) {
+    if (index < 0 || index >= stack.value.length) {
+      console.error(`Índice ${index} fuera de rango. Stack actual:`, stack.value);
+      return;
+    }
+
+    if (typeof mod !== 'object' || mod === null) {
+      console.error(`El modToken debe ser un objeto. Valor recibido:`, mod);
+      return;
+    }
+
+    const originalToken = stack.value[index];
+
+    stack.value[index] = {
+      ...originalToken,
+      ...mod,
+    };
+
+    evalBytebeat();
   }
 
-  const originalToken = stack.value[index];
+  function insertToken() {
+    stack.value.splice(selectedToken.value, 0, { type: 'empty', data: '' });
+  }
 
-  stack.value[index] = {
-    ...originalToken,
-    ...mod,
-  };
+  function delToken(){
+    if (selectedToken.value < 0) return
 
-  evalBytebeat();
-}
+    stack.value.splice(selectedToken.value, 1);
+    evalBytebeat();
 
-function insertToken() {
-  stack.value.splice(selectedToken.value, 0, { type: 'empty', data: '' });
-}
+    if (stack.value.length === 0) {
+      stack.value.push({ type: 'empty', data: '' });
+      selectedToken.value = 0; 
+    } else if (selectedToken.value === stack.value.length) {
+      movePrev();
+    }
+  }
 
-function delToken(){
-  
-  if (selectedToken.value < 0) return
-
-  stack.value.splice(selectedToken.value, 1);
-  evalBytebeat();
-
-  if (stack.value.length === 0) {
+  function delAllTokens() {
+    stack.value = [];
     stack.value.push({ type: 'empty', data: '' });
-    selectedToken.value = 0; 
-  } else if (selectedToken.value === stack.value.length) {
-    movePrev();
+    selectedToken.value = 0;
+    logger.log('EDIT', 'All tokens deleted');
+    evalBytebeat();
   }
 
-}
-
-function delAllTokens() {
-  stack.value = [];
-  stack.value.push({ type: 'empty', data: '' });
-  selectedToken.value = 0;
-  logger.log('EDIT', 'All tokens deleted');
-  evalBytebeat();
-}
-function backspaceToken() {
-  if (selectedToken.value <= 0) return
+  function backspaceToken() {
+    if (selectedToken.value <= 0) return
     
     stack.value.splice(selectedToken.value, 1);
     evalBytebeat();
@@ -240,7 +192,6 @@ function backspaceToken() {
   function moveFirst(){
     selectedToken.value = 0;
   }
-
 
   function moveNext() {
     const isAtLastPosition = selectedToken.value === stack.value.length - 1;
@@ -272,7 +223,6 @@ function backspaceToken() {
   }
 
   function handleAction(action) {
-    
     switch (action) {
       case 'LEFT':
         console.log('LEFT pressed');
@@ -324,15 +274,16 @@ function backspaceToken() {
     selectedToken,
     evalBytebeat,
     holdMode,
+    // Delegamos al audioStore pero mantenemos la misma interfaz
     playPause,
     setVolume,
     setSampleRate,
     stop,
     reset,
     getExpression,
+    isPlaying,
     time,
     sample,
-    isPlaying,
     modToken,
     moveTo,
     updateVisualization,

@@ -4,7 +4,7 @@
 
 <script setup>
 import { ref, onMounted, watch, onUnmounted } from 'vue';
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/mainStore';
 
 const props = defineProps({
     width: {
@@ -68,7 +68,7 @@ function startVisualization(ctx) {
             
 
             ctx.lineWidth = 1;
-            ctx.strokeStyle = 'yellow';
+            ctx.strokeStyle = '#ffff0050';
             ctx.beginPath();
             for (let x = 0; x < props.width; ++x) {
                 const y = (data.right[x] * 0.5 + 0.5) * props.height;

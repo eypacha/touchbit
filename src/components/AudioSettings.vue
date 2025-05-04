@@ -23,7 +23,7 @@
 <script setup>
 
 import { ref, watch } from 'vue';
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/mainStore';
 
 import { calculateSampleRate, calculateBPM } from '@/lib/utils';
 import { useTapTempo } from '@/composables/useTapTempo';

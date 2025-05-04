@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { useLoggerStore } from '@/stores/logger';
+import { useLoggerStore } from '@/stores/loggerStore';
 import { computed } from 'vue';
 
 const logger = useLoggerStore();

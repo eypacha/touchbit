@@ -22,7 +22,7 @@
 import { ref, onMounted } from "vue";
 import { Button } from '@/components/ui/button'
 
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/mainStore';
 import { useThemeStore } from '@/stores/themeStore'; 
 
 import Logo from '@/components/Logo.vue';

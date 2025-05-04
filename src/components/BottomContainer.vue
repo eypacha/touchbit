@@ -1,12 +1,12 @@
 <template>
   <Carousel class="flex-0" :opts="{
-      startIndex: 1,
+      startIndex: 0,
       loop: true,
     }"> 
     <CarouselContent class="h-full">
-      <BottomCard>
+      <!-- <BottomCard>
         <AudioSettings/>
-      </BottomCard>
+      </BottomCard> -->
       <BottomCard>
         <Keyboard/>
       </BottomCard>

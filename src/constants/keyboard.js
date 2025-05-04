@@ -1,6 +1,6 @@
 export const layout = [
-  { type: 'action', data: 'UNDO', width: 3, disabled: true },
-  { type: 'action', data: 'REDO', width: 3 , disabled: true},
+  { type: 'action', data: 'UNDO', width: 3 },
+  { type: 'action', data: 'REDO', width: 3 },
   { type: 'action', data: 'STACK', color: 'time', disabled: true},
   { type: 'action', data: 'FUNC', color: 'time' , disabled: true},
   { type: 'action', data: 'SHARE', color: 'time', disabled: true},

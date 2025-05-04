@@ -24,7 +24,7 @@
 <script setup>
 import { ref, computed, watch, defineProps, defineEmits } from 'vue';
 
-import { useMainStore } from '@/stores/main'; // Add this import
+import { useMainStore } from '@/stores/mainStore'; // Add this import
 
 // Get store instance
 const store = useMainStore();
