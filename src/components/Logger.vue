@@ -1,11 +1,11 @@
 <template>
   <div class="absolute bottom-0 left-0 flex flex-col-reverse w-full h-24 p-2 overflow-auto text-xs">
       <div 
-        v-for="(logEntry, index) in latestLogs" 
+        v-for="logEntry in latestLogs" 
         :key="logEntry.id"
         class="log-entry"
       >
-        <span>{{ logEntry.emoji }} {{ logEntry.message }} {{ index }}</span>
+        <span>{{ logEntry.emoji }} {{ logEntry.message }}</span>
       </div>
   </div>
 </template>
