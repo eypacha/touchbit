@@ -8,12 +8,12 @@
       <span class="text-number">{{ formatedValue }}</span>
       <div v-if="selected && store.isEditingNumber">
         <button 
-          class="absolute w-6 h-6 text-white transform -translate-x-1/2 -top-6 bg-number left-1/2"
+          class="absolute w-8 h-8 text-white transform -translate-x-1/2 -top-7 bg-number left-1/2"
           @click="incrementValue">
           <span>+</span>
         </button>
         <button 
-          class="absolute w-6 h-6 text-white transform -translate-x-1/2 -bottom-6 bg-number left-1/2"
+          class="absolute w-8 h-8 text-white transform -translate-x-1/2 -bottom-7 bg-number left-1/2"
           @click="decrementValue">
           <span>-</span>
         </button>
