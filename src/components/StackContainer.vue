@@ -1,9 +1,9 @@
 <template>
-    <div class="flex flex-1 bg-background content-start flex-wrap px-3 pb-x pt-6 text-xl overflow-x-hidden overflow-y-auto gap-1 shadow-[inset_0_0_10px_0_rgba(0,0,0,2)]" >
+    <div class="flex bg-background content-start flex-wrap px-3 pb-x pt-6 text-3xl gap-1 shadow-[inset_0_0_10px_0_rgba(0,0,0,2)] h-full">
         <div
         v-for="(token, index) in store.stack"
         :key="index"
-        class="p-0 font-bold text-center border-b token-container h-7 min-w-5"
+        class="p-0 font-bold text-center border-b cursor-pointer token-container min-h-7 min-w-5"
         :class="[
             { disabled: token.disabled },
             { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
@@ -14,6 +14,7 @@
         >
             <span v-if="token.data === '<<'">«</span>
             <span v-else-if="token.data === '>>'">»</span>
+            <span v-else-if="token.data === '~ ~'" class="opacity-35">~</span>
             <Number v-else-if="token.type === 'number'" 
                 :model-value="parseFloat(token.data)" 
                 @update:modelValue="handleUpdateNumber(token, $event)" 
@@ -28,7 +29,6 @@
 import { computed } from 'vue'
 
 import { useMainStore } from '@/stores/main'
-import { ChevronsLeft, ChevronsRight } from 'lucide-vue-next';
 import { Number } from '@/components/ui/Number';
 
 const store = useMainStore()
@@ -66,7 +66,17 @@ const handleTouch = (token, index) => {
                     }
                     store.modToken(mod,index)
                 } else if(token.data === '~') {
-                    token.disabled = !token.disabled
+                    // Cambiar de "~" a "~ ~"
+                    const mod = {
+                        data: '~ ~'
+                    }
+                    store.modToken(mod, index)
+                } else if(token.data === '~ ~') {
+                    // Cambiar de "~ ~" a "~"
+                    const mod = {
+                        data: '~'
+                    }
+                    store.modToken(mod, index)
                 }
             }
         }
