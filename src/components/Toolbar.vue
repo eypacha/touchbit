@@ -7,12 +7,6 @@
     <Key variant="outline" class="flex justify-end flex-1 border-input" @click="store.reset()">
       <span class="text-time">
         {{ store.time }}</span>
-      <span class="mx-2">➝</span>
-      <span class="text-number">
-
-        {{  store.sample.toString().padStart(3, "0") }}
-
-      </span>
     </Key>
     <Drawer direction="right">
       <DrawerTrigger>

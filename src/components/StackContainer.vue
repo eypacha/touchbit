@@ -1,5 +1,5 @@
 <template>
-    <div class="flex bg-background content-start flex-wrap px-3 pb-x pt-6 text-3xl gap-1 shadow-[inset_0_0_10px_0_rgba(0,0,0,2)] h-full">
+    <div class="flex flex-wrap content-start gap-1 px-3 pt-6 text-3xl bg-background pb-x">
         <div
         v-for="(token, index) in store.stack"
         :key="index"

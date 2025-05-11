@@ -7,12 +7,13 @@
   </div>
 
     <Toolbar />
-    <main class="flex flex-col w-full h-[calc(100vh-65px)]">
+    <main class="flex flex-col w-full h-[calc(100dvh-65px)]">
       <div class="relative h-full">
 
         <VisualizerCanvas/>
         <StackContainer class="h-full overflow-y-scroll"/> 
         <Logger/>
+        <SampleDisplay />
       </div>
       <BottomContainer/>
     </main>
@@ -31,6 +32,7 @@ import StackContainer from "@/components/StackContainer.vue";
 import BottomContainer from "@/components/BottomContainer.vue";
 import VisualizerCanvas from "@/components/VisualizerCanvas.vue";
 import Logger from "@/components/Logger.vue";
+import SampleDisplay from "@/components/SampleDisplay.vue";
 
 const store = useMainStore();
 const themeStore = useThemeStore();

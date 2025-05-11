@@ -1,5 +1,5 @@
 <template>
-    <canvas ref="canvas" class="absolute top-0 left-0 w-full h-full pointer-events-none" :width="width" :height="height"></canvas>
+    <canvas ref="canvas" class="absolute top-0 left-0 w-full h-full opacity-50 pointer-events-none" :width="width" :height="height"></canvas>
 </template>
 
 <script setup>
@@ -21,6 +21,20 @@ const store = useMainStore();
 const canvas = ref(null);
 let visualizationInterval = null;
 
+// Function to get the CSS number color
+const getNumberColor = () => {
+    const numberHsl = getComputedStyle(document.documentElement).getPropertyValue('--number').trim();
+    return `hsl(${numberHsl})`;
+};
+
+// Reactive color that updates when the theme changes
+const numberColor = ref(getNumberColor());
+
+// Update the color when the theme changes
+const updateColor = () => {
+    numberColor.value = getNumberColor();
+};
+
 onUnmounted(() => {
     if (visualizationInterval) {
         clearInterval(visualizationInterval);
@@ -31,6 +45,12 @@ onMounted(() => {
     console.log("Canvas mounted with dimensions:", props.width, "x", props.height);
     const ctx = canvas.value.getContext('2d');
     ctx.imageSmoothingEnabled = false;
+    
+    // Initialize the color on mount
+    numberColor.value = getNumberColor();
+    
+    // Optional: set a listener for theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColor);
     
     watch(
         () => store.isPlaying,
@@ -66,9 +86,9 @@ function startVisualization(ctx) {
         if (data && data.left && data.right) {
             ctx.clearRect(0, 0, props.width, props.height);
             
-
+            // Use the reactive number color
             ctx.lineWidth = 1;
-            ctx.strokeStyle = '#ffff0050';
+            ctx.strokeStyle = numberColor.value;
             ctx.beginPath();
             for (let x = 0; x < props.width; ++x) {
                 const y = (data.right[x] * 0.5 + 0.5) * props.height;
@@ -92,7 +112,5 @@ canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     image-rendering: -moz-crisp-edges;
-    box-shadow: black 0px 2px 8px inset;
-    background-color: rgba(0, 0, 0, 0.1);
 }
 </style>
