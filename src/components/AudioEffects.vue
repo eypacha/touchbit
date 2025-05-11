@@ -14,7 +14,7 @@
       <input 
         type="number" 
         v-model="selectedSampleRate[0]" 
-        class="w-24 ml-2 text-center bg-transparent border rounded-md text-number" 
+        class="w-24 mt-3 ml-2 text-center bg-transparent border rounded-md text-number" 
         :min="4000" 
         :max="16000" 
         @input="setSampleRate" 
