@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "format": "pnpx prettier --plugin prettier-plugin-tailwindcss .",
+    "format": "yarn prettier --plugin prettier-plugin-tailwindcss .",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
