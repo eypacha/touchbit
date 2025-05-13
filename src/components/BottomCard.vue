@@ -1,5 +1,5 @@
 <template>
-  <CarouselItem class="h-full">
+  <CarouselItem class="h-[328px]">
     <div class="h-full p-0">
       <Card class="h-full rounded-none">
         <CardContent class="flex flex-col items-center justify-center w-full h-full px-2 pb-2">

@@ -1,27 +1,32 @@
 <template>
-  <div class="grid w-full grid-cols-12 gap-2 max-w-[450px] keyboard" @touchstart.stop @mousedown.stop>
-    <Key v-for="(key, index) in layout"
-      :key="index"
-      :color="key.color ?? key.type"
-      :class="getColSpan(key.width)"
-      :disabled="key.disabled"
-      :active="isKeyActive(key)"
-      @touchstart.stop="handleTouchStart(key.type, key.data, $event)"
-      @mousedown.stop="handleTouchStart(key.type, key.data, $event)"
-      @touchend="handleTouchEnd(key.type, key.data, $event)"
-      @mouseup="handleTouchEnd(key.type, key.data, $event)"
-      @touchcancel="handleTouchCancel()">
-      <ChevronsLeft v-if="key.data === '<<'" />
-      <ChevronsRight v-else-if="key.data === '>>'" />
-      <Delete v-else-if="key.data === 'BCKS'"/>
-      <BetweenHorizontalEnd v-else-if="key.data === 'STACK'" stroke="hsl(var(--number))"/>
-      <Pi v-else-if="key.data === 'FUNC'" stroke="hsl(var(--number))"/>
-      <Share v-else-if="key.data === 'SHARE'" stroke="hsl(var(--number))"/>
-      <MoveLeft v-else-if="key.data === 'LEFT'" />
-      <MoveRight v-else-if="key.data === 'RIGHT'"/>
-      <Delete v-else-if="key.data === 'BCKS'" />
-      <template v-else> {{ key.data }} </template>
-    </Key>
+  <div class="w-full max-w-[450px] keyboard flex-col flex-1" @touchstart.stop @mousedown.stop>
+    <div v-if="store.isEditingNumber === false" class="grid grid-cols-12 gap-2 ">
+      <Key v-for="(key, index) in layout"
+        :key="index"
+        :color="key.color ?? key.type"
+        :class="getColSpan(key.width)"
+        :disabled="key.disabled"
+        :active="isKeyActive(key)"
+        @touchstart.stop="handleTouchStart(key.type, key.data, $event)"
+        @mousedown.stop="handleTouchStart(key.type, key.data, $event)"
+        @touchend="handleTouchEnd(key.type, key.data, $event)"
+        @mouseup="handleTouchEnd(key.type, key.data, $event)"
+        @touchcancel="handleTouchCancel()">
+        <ChevronsLeft v-if="key.data === '<<'" />
+        <ChevronsRight v-else-if="key.data === '>>'" />
+        <Delete v-else-if="key.data === 'BCKS'"/>
+        <BetweenHorizontalEnd v-else-if="key.data === 'STACK'" stroke="hsl(var(--number))"/>
+        <Pi v-else-if="key.data === 'FUNC'" stroke="hsl(var(--number))"/>
+        <Share v-else-if="key.data === 'SHARE'" stroke="hsl(var(--number))"/>
+        <MoveLeft v-else-if="key.data === 'LEFT'" />
+        <MoveRight v-else-if="key.data === 'RIGHT'"/>
+        <Delete v-else-if="key.data === 'BCKS'" />
+        <template v-else> {{ key.data }} </template>
+      </Key>
+    </div>
+    <div v-else class="flex-1 h-full">
+      <BinaryEditor />
+    </div>
   </div>
 </template>
 
@@ -39,6 +44,7 @@ import {
 import { ref } from 'vue';
 import { useMainStore } from '@/stores/mainStore'
 import Key from '@/components/Key.vue'
+import BinaryEditor from '@/components/BinaryEditor.vue'
 
 import { layout } from  '@/constants/keyboard'
 

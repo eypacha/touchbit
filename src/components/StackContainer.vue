@@ -1,5 +1,6 @@
 <template>
-    <div class="flex flex-wrap content-start gap-1 px-3 pt-6 text-3xl bg-background pb-x">
+    <div class="flex flex-wrap content-start gap-1 px-3 pt-6 text-3xl bg-background pb-x"
+         @click="handleContainerClick">
         <div
         v-for="(token, index) in store.stack"
         :key="index"
@@ -10,7 +11,7 @@
             `text-${token.type}`, 
              isSelected(index) ? `border border-x-${token.type}` : 'border border-t-transparent border-x-transparent border-b-gray'
         ]"
-        @click="handleTouch(token, index)"
+        @click.stop="handleTouch(token, index)"
         >
             <span v-if="token.data === '<<'">«</span>
             <span v-else-if="token.data === '>>'">»</span>
@@ -49,11 +50,20 @@ const formatNumber = computed(() => {
 
 const operators = ["+", "-","*", "/", "&", "|", "^", "%",">>","<<"];
 
+// Manejador para clics en el contenedor (espacio vacío)
+const handleContainerClick = (event) => {
+    // Si el clic es en el contenedor mismo (no en un token)
+    if (event.target === event.currentTarget) {
+        store.isEditingNumber = false;
+    }
+}
+
 const handleTouch = (token, index) => {
     if(isSelected(index)) {
         if (token.type === 'number') {
             store.isEditingNumber = true;
         } else {
+            // Si es un token que no es número, desactivar el modo de edición
             store.isEditingNumber = false;
             
             if (token.type === 'operator') {
@@ -81,6 +91,7 @@ const handleTouch = (token, index) => {
             }
         }
     } else {
+        // Si se toca otro token, desactivar el modo de edición de números
         store.isEditingNumber = false;
         store.moveTo(index)
     }

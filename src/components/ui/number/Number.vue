@@ -1,5 +1,6 @@
 <template>
     <div
+      ref="numberRef"
       class="relative"
       @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
@@ -23,11 +24,13 @@
 
 <script setup>
 import { ref, computed, watch, defineProps, defineEmits } from 'vue';
-
-import { useMainStore } from '@/stores/mainStore'; // Add this import
+import { useMainStore } from '@/stores/mainStore';
 
 // Get store instance
 const store = useMainStore();
+
+// Referencia para el elemento root
+const numberRef = ref(null);
 
 // Definir las props del componente
 const props = defineProps({
