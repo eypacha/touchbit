@@ -1,6 +1,6 @@
 <template>
-  <div class="absolute flex gap-1 px-2 text-2xl font-bold right-3 -top-9 drop-shadow">
-    <span classs="text-foreground"">=</span>
+  <div class="absolute flex gap-1 px-2 text-4xl font-bold right-3 -top-10 drop-shadow">
+    <span class="text-green-600">=</span>
     <span class="text-number">{{ formattedSample }}</span>
   </div>
 </template>
