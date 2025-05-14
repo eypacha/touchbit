@@ -1,6 +1,7 @@
 <template>
-  <div class="absolute flex gap-1 px-2 text-2xl font-bold right-3 -top-9 text-foreground">
-    <span>=</span><span class="text-number">{{ formattedSample }}</span>
+  <div class="absolute flex gap-1 px-2 text-2xl font-bold right-3 -top-9 drop-shadow">
+    <span classs="text-foreground"">=</span>
+    <span class="text-number">{{ formattedSample }}</span>
   </div>
 </template>
 
