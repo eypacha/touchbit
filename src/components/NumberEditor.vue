@@ -3,12 +3,12 @@
     <div class="flex flex-col items-center justify-center flex-1 overflow-auto text-center border border-number">
       <div 
         v-for="(byteGroup, byteIndex) in groupedBits" 
-        :key="byteIndex" 
+        :key="'byte-' + byteIndex" 
         class="flex mb-1 last:mb-0"
       >
         <button
           v-for="(bit, bitIndex) in byteGroup"
-          :key="bitIndex"
+          :key="`bit-${byteIndex * 8 + bitIndex}-${bit}`"
           @click="toggleBit(byteIndex * 8 + bitIndex)"
           class="flex items-center justify-center w-[35px] h-15 text-5xl font-bold bg-transparent text-number hover:bg-number/10"
         >
@@ -19,6 +19,32 @@
     
     <div class="mt-auto">
       <div class="grid grid-cols-5 gap-2">
+        <Key 
+          color="action"
+          @click="undo">
+          bin dec
+        </Key>
+        <Key 
+          color="action"
+          @click="undo">
+          UNDO
+        </Key>
+        <Key 
+          color="action"
+          @click="randomizeBits">
+          RND
+        </Key>
+        <Key 
+          color="action"
+          @click="maxBytes">
+          MAX
+        </Key>
+        <Key 
+          color="action"
+          @click="minBytes">
+          MIN
+        </Key>
+
         <Key 
           color="action"
           @click="invertBits">
@@ -44,18 +70,6 @@
           @click="circularRightShift">
           c&gt;&gt;
         </Key>
-        <Key 
-          color="action"
-          @click="maxBytes">
-          max
-        </Key>
-        <Key 
-          color="action"
-          @click="minBytes">
-          min
-        </Key>
-        
-        
       </div>
     </div>
   </div>
@@ -69,6 +83,7 @@ import { useMainStore } from '@/stores/mainStore';
 
 const store = useMainStore();
 const binaryValue = ref("");
+const binaryHistory = ref([]);
 
 // Función para actualizar el valor binario desde el token
 function updateBinaryFromToken() {
@@ -128,6 +143,9 @@ const groupedBits = computed(() => {
 // Invertir un bit específico
 function toggleBit(index) {
   if (index >= 0 && index < bitsArray.value.length) {
+    // Save current state to history before changing
+    binaryHistory.value.push(binaryValue.value);
+
     const bits = [...bitsArray.value];
     bits[index] = bits[index] === '0' ? '1' : '0';
     
@@ -146,6 +164,9 @@ function toggleBit(index) {
 
 // Invertir todos los bits
 function invertBits() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   let inverted = '';
   for (let i = 0; i < binaryValue.value.length; i++) {
     inverted += binaryValue.value[i] === '0' ? '1' : '0';
@@ -155,6 +176,9 @@ function invertBits() {
 }
 
 function leftShift() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   // Calculate the decimal value, shift it left by 1 bit, then convert back to binary
   const trimmedBinary = binaryValue.value.replace(/^0+/, '') || '0';
   const decimalValue = parseInt(trimmedBinary, 2);
@@ -169,6 +193,9 @@ function leftShift() {
 }
 
 function circularLeftShift() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   const firstBit = binaryValue.value.charAt(0);
   binaryValue.value = binaryValue.value.slice(1) + firstBit;
   updateToken();
@@ -176,11 +203,17 @@ function circularLeftShift() {
 
 // Desplazar bits a la derecha
 function rightShift() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   binaryValue.value = '0' + binaryValue.value.slice(0, -1);
   updateToken();
 }
 
 function circularRightShift() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   const lastBit = binaryValue.value.charAt(binaryValue.value.length - 1);
   binaryValue.value = lastBit + binaryValue.value.slice(0, -1);
   updateToken();
@@ -188,6 +221,9 @@ function circularRightShift() {
 
 // Generate random bits while maintaining the same byte length
 function randomizeBits() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   // Get the current length of the binary value (already a multiple of 8)
   const currentLength = binaryValue.value.length;
   
@@ -206,6 +242,9 @@ function randomizeBits() {
 
 // Set all bits to 1 (maximum value for the current byte length)
 function maxBytes() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   // Get the current length of the binary value (already a multiple of 8)
   const currentLength = binaryValue.value.length;
   
@@ -221,6 +260,9 @@ function maxBytes() {
 
 // Set the minimum value for the current byte range
 function minBytes() {
+  // Save current state to history before changing
+  binaryHistory.value.push(binaryValue.value);
+
   // Get the current length of the binary value in bytes
   const currentByteLength = binaryValue.value.length / 8;
   
@@ -252,5 +294,19 @@ function updateToken() {
     type: 'number',
     data: decimalValue.toString()
   });
+}
+
+// Implement the undo function
+function undo() {
+  if (binaryHistory.value.length > 0) {
+    // Get the last saved state
+    const previousValue = binaryHistory.value.pop();
+    
+    // Set the binary value to the previous state
+    binaryValue.value = previousValue;
+    
+    // Update the token with the previous value
+    updateToken();
+  }
 }
 </script>

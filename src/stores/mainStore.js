@@ -76,15 +76,33 @@ export const useMainStore = defineStore("main", () => {
   function keyPressed(type, data) {
     switch (type) {
         case 'number':
+          console.log('number',data)
+            // Special case for decimal point
+            if (data === '.') {
+                if (stack.value[selectedToken.value].type === 'number' && isEditingNumber.value) {
+                    // Only add the decimal point if it doesn't already have one
+                    const currentData = stack.value[selectedToken.value].data.toString();
+                    if (!currentData.includes('.')) {
+                        stack.value[selectedToken.value].data = currentData + '.';
+                    }
+                } else if (stack.value[selectedToken.value].type !== 'number') {
+                    // If not a number yet, create a new number starting with "0."
+                    newToken({ type: 'number', data: '0.' });
+                    isEditingNumber.value = true;
+                }
+                return;
+            }
+
+            // Normal number handling
             if (stack.value[selectedToken.value].type !== 'number') {
                 newToken({ type: 'number', data: data });
                 isEditingNumber.value = true;
             } else {
                 if(isEditingNumber.value){
-                  stack.value[selectedToken.value].data = stack.value[selectedToken.value].data + data.toString();
+                    stack.value[selectedToken.value].data = stack.value[selectedToken.value].data + data.toString();
                 } else {
-                  newToken({ type: 'number', data: data });
-                  isEditingNumber.value = true;
+                    newToken({ type: 'number', data: data });
+                    isEditingNumber.value = true;
                 }
             }
             isEditingNumber.value = true;

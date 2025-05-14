@@ -66,12 +66,25 @@ const props = defineProps({
 });
 
 const formatedValue = computed(() => {
+  // Get the raw string value first
+  const rawValue = String(props.modelValue);
+  
   // Si showDecimals es mayor que 0, redondeamos el valor
   if (props.showDecimals > 0) {
     return parseFloat(props.modelValue).toFixed(props.showDecimals);
   } else {
-    // Si showDecimals es 0, devolvemos el valor entero
-    return parseInt(props.modelValue);
+    // Handles numbers with decimal points and ensures trailing decimal is preserved
+    if (rawValue.includes('.')) {
+      return rawValue;
+    } else if (props.selected && store.isEditingNumber && 
+               store.stack[store.selectedToken]?.type === 'number' && 
+               String(store.stack[store.selectedToken].data).endsWith('.')) {
+      // Special case: store has a decimal point at the end that hasn't been processed yet
+      return `${rawValue}.`;
+    } else {
+      // Si no tiene parte decimal, devolvemos el valor entero
+      return parseInt(props.modelValue);
+    }
   }
 });
 
