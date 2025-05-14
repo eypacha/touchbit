@@ -167,18 +167,8 @@ const handleTouchEnd = (event) => {
 // Add these new functions for button clicks
 const incrementValue = () => {
   // Check if number should use modulo 256 behavior
-  const isModuloNumber = Number.isInteger(props.modelValue) && 
-                        props.modelValue >= 0 && 
-                        props.modelValue <= 255;
-  
-  if (isModuloNumber) {
-    // Apply modulo 256 arithmetic
-    value.value = (value.value + props.step) % 256;
-  } else {
-    // Regular increment with clamping
-    value.value += props.step;
-    value.value = clampValue(value.value);
-  }
+  value.value += props.step;
+  value.value = clampValue(value.value);
   
   // Emit the updated value
   emit('update:modelValue', value.value);
