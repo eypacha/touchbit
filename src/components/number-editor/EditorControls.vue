@@ -9,7 +9,9 @@
       <span :class="{ 'opacity-40': mode !== NUMBER_MODE.DECIMAL }">dec</span>
     </Key>
     <Key color="action" @click="$emit('undo')">UNDO</Key>
-    <Key color="action" @click="$emit('randomize')">RND</Key>
+    <Key color="action" @click="$emit('randomize')">
+        <Shuffle/>
+    </Key>
     <Key color="action" @click="$emit('max')">
         <MoveUp/>
     </Key>
@@ -43,6 +45,7 @@ import {
   MoveDown,
   ChevronsLeft,
   ChevronsRight,
+  Shuffle,
 } from 'lucide-vue-next';
 
 import Key from '@/components/Key.vue';
