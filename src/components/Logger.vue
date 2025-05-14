@@ -18,7 +18,7 @@ const logger = useLoggerStore();
 const MAX_LOGS = 5;
 
 const latestLogs = computed(() => {
-  return logger.logs.slice(0,MAX_LOGS)
+  return [...logger.logs].slice(0,MAX_LOGS)
 });
 </script>
 
