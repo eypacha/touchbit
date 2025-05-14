@@ -135,8 +135,11 @@ function leftShift() {
   binaryValue.value = binaryValue.value.slice(1) + '0';
   updateToken();
 }
+
 function circularLeftShift() {
-    //
+  const firstBit = binaryValue.value.charAt(0);
+  binaryValue.value = binaryValue.value.slice(1) + firstBit;
+  updateToken();
 }
 
 // Desplazar bits a la derecha
@@ -146,7 +149,9 @@ function rightShift() {
 }
 
 function circularRightShift() {
-    //
+  const lastBit = binaryValue.value.charAt(binaryValue.value.length - 1);
+  binaryValue.value = lastBit + binaryValue.value.slice(0, -1);
+  updateToken();
 }
 
 // Actualizar el token con el nuevo valor
