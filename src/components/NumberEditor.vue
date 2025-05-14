@@ -17,7 +17,7 @@
     <div class="mt-auto">
       <EditorControls 
         :mode="numberMode"
-        @toggle-mode="toggleNumberMode"
+        @toggle-mode="handleModeToggle"
         @undo="undo"
         @randomize="randomizeBits"
         @max="maxBytes"
@@ -46,7 +46,7 @@ import EditorControls from '@/components/number-editor/EditorControls.vue';
 
 const store = useMainStore();
 
-// Usar composables
+// Usar composables con modo binario por defecto
 const {
   binaryValue,
   binaryHistory,
@@ -73,6 +73,15 @@ const {
   minBytes
 } = useBitOperations(binaryValue, saveToHistory, updateToken);
 
+// Función para determinar si el token actual es un float
+function isCurrentTokenFloat() {
+  const selectedTokenIndex = store.selectedToken;
+  if (selectedTokenIndex >= 0 && selectedTokenIndex < store.stack.length) {
+    const token = store.stack[selectedTokenIndex];
+    return token && token.type === 'number' && String(token.data).includes('.');
+  }
+  return false;
+}
 
 // Función para obtener el valor decimal (determina si es float o int)
 function getDecimalValue() {
@@ -80,10 +89,10 @@ function getDecimalValue() {
   const decValue = parseInt(binValue, 2);
   
   // Verificar si el token original es un float
-  const selectedTokenIndex = store.selectedToken;
-  if (selectedTokenIndex >= 0 && selectedTokenIndex < store.stack.length) {
+  if (isCurrentTokenFloat()) {
+    const selectedTokenIndex = store.selectedToken;
     const token = store.stack[selectedTokenIndex];
-    if (token && token.type === 'number' && String(token.data).includes('.')) {
+    if (token) {
       // Si es un float, convertir manteniendo la parte decimal
       return parseFloat(token.data);
     }
@@ -124,12 +133,53 @@ function updateDecimalValue(newValue) {
   });
 }
 
+// Crear una función wrapper para toggleNumberMode que maneje flotantes
+function handleModeToggle() {
+  // Si estamos en modo decimal y es un float, y queremos cambiar a binario
+  if (numberMode.value === NUMBER_MODE.DECIMAL && isCurrentTokenFloat()) {
+    // Convertir el float a int primero
+    const selectedTokenIndex = store.selectedToken;
+    const token = store.stack[selectedTokenIndex];
+    const intValue = Math.floor(parseFloat(token.data));
+    
+    // Actualizar el token a versión entera
+    saveToHistory();
+    store.modToken({
+      type: 'number',
+      data: intValue.toString()
+    });
+    
+    // Actualizar la representación binaria
+    const binary = intValue.toString(2);
+    const remainder = binary.length % 8;
+    const padding = remainder === 0 ? 0 : 8 - remainder;
+    binaryValue.value = binary.padStart(binary.length + padding, '0');
+  }
+  
+  // Ahora cambiamos el modo
+  toggleNumberMode();
+}
+
 // Inicializar y observar cambios
-onMounted(updateBinaryFromToken);
+onMounted(() => {
+  updateBinaryFromToken();
+  
+  // Si el token es float, cambiar a modo decimal automáticamente
+  if (isCurrentTokenFloat()) {
+    numberMode.value = NUMBER_MODE.DECIMAL;
+  }
+});
 
 watch(
   () => [store.selectedToken, [...store.stack]],
-  updateBinaryFromToken,
+  () => {
+    updateBinaryFromToken();
+    
+    // Si el token cambia a float, cambiar a modo decimal
+    if (isCurrentTokenFloat()) {
+      numberMode.value = NUMBER_MODE.DECIMAL;
+    }
+  },
   { deep: true }
 );
 </script>
