@@ -12,7 +12,9 @@
         <div v-else class="h-9"></div>
         
         <!-- Dígito o punto decimal -->
-        <div class="flex items-center justify-center h-16 text-5xl font-bold w-7 text-number">
+        <div
+            class="flex items-center justify-center h-16 text-5xl font-bold text-number"
+            :class="char === '.' ? 'w-4' : 'w-7'">
           {{ char }}
         </div>
         
