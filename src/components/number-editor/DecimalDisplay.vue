@@ -7,7 +7,7 @@
           v-if="char !== '.'"
           @click="incrementDigit(index)"
           class="px-2 py-1 text-lg transition-colors bg-transparent border-0 rounded cursor-pointer text-number hover:bg-number/10">
-          <span>^</span>
+          <ChevronUp/>
         </button>
         <div v-else class="h-9"></div>
         
@@ -23,7 +23,7 @@
           v-if="char !== '.'"
           @click="decrementDigit(index)"
           class="px-2 py-1 text-lg transition-colors bg-transparent border-0 rounded cursor-pointer text-number hover:bg-number/10">
-          <span class="inline-block rotate-180">^</span>
+          <ChevronDown/>
         </button>
         <div v-else class="h-9"></div>
       </div>
@@ -33,6 +33,12 @@
 
 <script setup>
 import { computed } from 'vue';
+
+import {
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-vue-next';
+
 
 const props = defineProps({
   value: {
