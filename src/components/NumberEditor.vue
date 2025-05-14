@@ -44,6 +44,17 @@
           @click="circularRightShift">
           c&gt;&gt;
         </Key>
+        <Key 
+          color="action"
+          @click="maxBytes">
+          max
+        </Key>
+        <Key 
+          color="action"
+          @click="minBytes">
+          min
+        </Key>
+        
         
       </div>
     </div>
@@ -172,6 +183,61 @@ function rightShift() {
 function circularRightShift() {
   const lastBit = binaryValue.value.charAt(binaryValue.value.length - 1);
   binaryValue.value = lastBit + binaryValue.value.slice(0, -1);
+  updateToken();
+}
+
+// Generate random bits while maintaining the same byte length
+function randomizeBits() {
+  // Get the current length of the binary value (already a multiple of 8)
+  const currentLength = binaryValue.value.length;
+  
+  // Generate a random binary string of the same length
+  let randomBinary = '';
+  for (let i = 0; i < currentLength; i++) {
+    randomBinary += Math.random() < 0.5 ? '0' : '1';
+  }
+  
+  // Update the binary value
+  binaryValue.value = randomBinary;
+  
+  // Update the token
+  updateToken();
+}
+
+// Set all bits to 1 (maximum value for the current byte length)
+function maxBytes() {
+  // Get the current length of the binary value (already a multiple of 8)
+  const currentLength = binaryValue.value.length;
+  
+  // Create a string of all '1's with the same length
+  const maxBinary = '1'.repeat(currentLength);
+  
+  // Update the binary value
+  binaryValue.value = maxBinary;
+  
+  // Update the token
+  updateToken();
+}
+
+// Set the minimum value for the current byte range
+function minBytes() {
+  // Get the current length of the binary value in bytes
+  const currentByteLength = binaryValue.value.length / 8;
+  
+  // Use the pattern 2^(8*(n-1)) for n bytes
+  const minValue = Math.pow(2, 8 * (currentByteLength - 1));
+  
+  // Convert to binary
+  let binary = minValue.toString(2);
+  
+  // Ensure it's padded to the current multiple of 8
+  const currentLength = binaryValue.value.length;
+  binary = binary.padStart(currentLength, '0');
+  
+  // Update the binary value
+  binaryValue.value = binary;
+  
+  // Update the token
   updateToken();
 }
 
