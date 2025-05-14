@@ -11,6 +11,7 @@ export const useMainStore = defineStore("main", () => {
   const selectedToken = ref(0);
   const currentNumber = ref("");
   const isEditingNumber = ref(false);
+  const isBinaryEditor = ref(false); 
   const holdMode = ref(false);
 
   const stack = ref([
@@ -222,6 +223,12 @@ export const useMainStore = defineStore("main", () => {
     }
   }
 
+  function toggleBinaryEditor() {
+    if (isEditingNumber.value) {
+      isBinaryEditor.value = !isBinaryEditor.value;
+    }
+  }
+
   function handleAction(action) {
     switch (action) {
       case 'LEFT':
@@ -269,11 +276,13 @@ export const useMainStore = defineStore("main", () => {
     stack,
     currentNumber,
     isEditingNumber,
+    isBinaryEditor,  // Export the new ref
     keyPressed,
     keyLongPressed,
     selectedToken,
     evalBytebeat,
     holdMode,
+    toggleBinaryEditor,  // Export the new function
     // Delegamos al audioStore pero mantenemos la misma interfaz
     playPause,
     setVolume,

@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute bottom-0 left-0 flex flex-col-reverse w-full h-24 p-2 overflow-auto text-xs">
+  <div class="absolute left-0 flex flex-col-reverse w-full h-24 p-2 overflow-hidden text-xs -top-24">
       <div 
         v-for="logEntry in latestLogs" 
         :key="logEntry.id"

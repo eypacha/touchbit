@@ -1,6 +1,6 @@
 <template>
   <div class="w-full max-w-[450px] keyboard flex-col flex-1" @touchstart.stop @mousedown.stop>
-    <div v-if="store.isEditingNumber === false" class="grid grid-cols-12 gap-2 ">
+    <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2 ">
       <Key v-for="(key, index) in layout"
         :key="index"
         :color="key.color ?? key.type"

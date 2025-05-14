@@ -1,20 +1,22 @@
 <template>
-  <Carousel class="flex-0" :opts="{
+  <div class="relative">
+    <Logger/>
+    <SampleDisplay />
+    <Carousel :opts="{
       startIndex: 0,
       loop: true,
     }"> 
-    <CarouselContent class="h-full">
-      <!-- <BottomCard>
-        <AudioSettings/>
-      </BottomCard> -->
-      <BottomCard>
-        <Keyboard/>
-      </BottomCard>
-      <BottomCard>
-        <AudioEffects/>
-      </BottomCard>
-    </CarouselContent>
-  </Carousel>
+      <CarouselContent class="h-full">
+        <BottomCard>
+          <Keyboard/>
+        </BottomCard>
+        <BottomCard>
+          <AudioEffects/>
+        </BottomCard>
+      </CarouselContent>
+    </Carousel>
+  </div>
+  
 </template>
 
 <script setup>
@@ -22,6 +24,10 @@ import {
   Carousel,
   CarouselContent,
 } from '@/components/ui/carousel'
+
+
+import Logger from "@/components/Logger.vue";
+import SampleDisplay from "@/components/SampleDisplay.vue";
 
 import BottomCard from '@/components/BottomCard.vue'
 import Keyboard from '@/components/Keyboard.vue'

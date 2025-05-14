@@ -1,10 +1,10 @@
 <template>
-    <div class="flex flex-wrap content-start gap-1 px-3 pt-6 text-3xl bg-background pb-x"
+    <div class="flex flex-wrap content-start h-full gap-1 px-3 pt-6 overflow-x-hidden overflow-y-scroll text-3xl bg-background pb-x"
          @click="handleContainerClick">
         <div
         v-for="(token, index) in store.stack"
         :key="index"
-        class="p-0 font-bold text-center border-b cursor-pointer token-container min-h-7 min-w-5"
+        class="p-0 text-5xl font-bold text-center border-b cursor-pointer h-17 token-container min-w-5"
         :class="[
             { disabled: token.disabled },
             { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
@@ -55,6 +55,7 @@ const handleContainerClick = (event) => {
     // Si el clic es en el contenedor mismo (no en un token)
     if (event.target === event.currentTarget) {
         store.isEditingNumber = false;
+        store.isBinaryEditor = false;
     }
 }
 
@@ -62,9 +63,10 @@ const handleTouch = (token, index) => {
     if(isSelected(index)) {
         if (token.type === 'number') {
             store.isEditingNumber = true;
+            store.isBinaryEditor = false;
         } else {
-            // Si es un token que no es número, desactivar el modo de edición
             store.isEditingNumber = false;
+            store.isBinaryEditor = false;
             
             if (token.type === 'operator') {
                 console.log(token.data)
@@ -105,7 +107,8 @@ const handleUpdateNumber = (token, newValue) => {
 }
 </script>
 
-<style>
+<style lang="scss">
+// Animación existente
 @keyframes blink-right-border {
   0%, 100% {
     border-right-color: transparent;
@@ -117,5 +120,23 @@ const handleUpdateNumber = (token, newValue) => {
 
 .editing-number {
   animation: blink-right-border 600ms ease-in-out infinite;
+}
+
+// Estilos del scrollbar
+.overflow-y-scroll {
+  // Estilos para navegadores basados en webkit (Chrome, Safari, Edge)
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: hsl(var(--card));
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: hsl(var(--action));
+  }
+
 }
 </style>

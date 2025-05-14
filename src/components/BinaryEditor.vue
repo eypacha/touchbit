@@ -15,31 +15,31 @@
     
     <div class="mt-auto">
       <div class="grid grid-cols-5 gap-2">
-        <button 
-          class="py-2 bg-transparent border rounded-md border-action text-action"
+        <Key 
+          color="action"
           @click="invertBits">
           ~
-        </button>
-        <button 
-          class="py-2 bg-transparent border rounded-md border-action text-action"
+        </Key>
+        <Key
+          color="action"
           @click="leftShift">
           &lt;&lt;
-        </button>
-        <button 
-          class="py-2 bg-transparent border rounded-md border-action text-action"
+        </Key>
+        <Key 
+        color="action"
           @click="rightShift">
           &gt;&gt;
-        </button>
-        <button 
-          class="py-2 bg-transparent border rounded-md border-action text-action"
+        </Key>
+        <Key
+          color="action"
           @click="circularLeftShift">
           c&lt;&lt;
-        </button>
-        <button 
-          class="py-2 bg-transparent border rounded-md border-action text-action"
+        </Key>
+        <Key 
+          color="action"
           @click="circularRightShift">
           c&gt;&gt;
-        </button>
+        </Key>
       </div>
     </div>
   </div>
@@ -47,6 +47,8 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import Key from '@/components/Key.vue';
+
 import { useMainStore } from '@/stores/mainStore';
 
 const store = useMainStore();
