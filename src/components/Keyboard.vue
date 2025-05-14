@@ -44,7 +44,7 @@ import {
 import { ref } from 'vue';
 import { useMainStore } from '@/stores/mainStore'
 import Key from '@/components/Key.vue'
-import BinaryEditor from '@/components/BinaryEditor.vue'
+import BinaryEditor from '@/components/NumberEditor.vue'
 
 import { layout } from  '@/constants/keyboard'
 

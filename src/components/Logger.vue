@@ -15,9 +15,10 @@ import { useLoggerStore } from '@/stores/loggerStore';
 import { computed } from 'vue';
 
 const logger = useLoggerStore();
+const MAX_LOGS = 5;
 
 const latestLogs = computed(() => {
-  return [...logger.logs.slice(0, 5)]
+  return logger.logs.slice(-MAX_LOGS).reverse();
 });
 </script>
 

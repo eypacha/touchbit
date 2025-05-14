@@ -4,7 +4,7 @@
         <div
         v-for="(token, index) in store.stack"
         :key="index"
-        class="p-0 text-5xl font-bold text-center border-b cursor-pointer h-17 token-container min-w-5"
+        class="h-12 p-0 text-5xl font-bold text-center border-b cursor-pointer token-container min-w-5"
         :class="[
             { disabled: token.disabled },
             { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },

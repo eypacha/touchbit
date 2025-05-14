@@ -1,12 +1,16 @@
 <template>
   <div class="flex flex-col w-full h-full gap-2">
-    <div class="flex items-center justify-center flex-1 text-center border whitespace-nowrap border-number">
-      <div class="inline-flex">
+    <div class="flex flex-col items-center justify-center flex-1 overflow-auto text-center border border-number">
+      <div 
+        v-for="(byteGroup, byteIndex) in groupedBits" 
+        :key="byteIndex" 
+        class="flex mb-1 last:mb-0"
+      >
         <button
-          v-for="(bit, index) in bitsArray"
-          :key="index"
-          @click="toggleBit(index)"
-          class="flex items-center justify-center w-[35px] h-20 text-5xl font-bold bg-transparent  text-number hover:bg-number/10"
+          v-for="(bit, bitIndex) in byteGroup"
+          :key="bitIndex"
+          @click="toggleBit(byteIndex * 8 + bitIndex)"
+          class="flex items-center justify-center w-[35px] h-15 text-5xl font-bold bg-transparent text-number hover:bg-number/10"
         >
           {{ bit }}
         </button>
@@ -101,6 +105,15 @@ const bitsArray = computed(() => {
   return binary.split('');
 });
 
+// Group bits into chunks of 8 for display
+const groupedBits = computed(() => {
+  const result = [];
+  for (let i = 0; i < bitsArray.value.length; i += 8) {
+    result.push(bitsArray.value.slice(i, i + 8));
+  }
+  return result;
+});
+
 // Invertir un bit específico
 function toggleBit(index) {
   if (index >= 0 && index < bitsArray.value.length) {
@@ -130,9 +143,17 @@ function invertBits() {
   updateToken();
 }
 
-// Desplazar bits a la izquierda
 function leftShift() {
-  binaryValue.value = binaryValue.value.slice(1) + '0';
+  // Calculate the decimal value, shift it left by 1 bit, then convert back to binary
+  const trimmedBinary = binaryValue.value.replace(/^0+/, '') || '0';
+  const decimalValue = parseInt(trimmedBinary, 2);
+  const shiftedValue = decimalValue << 1;
+  
+  let newBinary = shiftedValue.toString(2);
+  const remainder = newBinary.length % 8;
+  const padding = remainder === 0 ? 0 : 8 - remainder;
+  binaryValue.value = newBinary.padStart(newBinary.length + padding, '0');
+  
   updateToken();
 }
 
