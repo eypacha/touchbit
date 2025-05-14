@@ -9,11 +9,11 @@
     >
       <span class="text-number">{{ formatedValue }}</span>
       <div v-if="selected && store.isEditingNumber">
-        <butJeyton 
+        <button 
           class="absolute w-6 h-6 text-sm text-white transform -translate-x-1/2 -top-6 bg-number left-1/2"
           @click.stop="incrementValue">
           <span>+</span>
-        </butJeyton>
+        </button>
         <button 
           class="absolute w-6 h-6 text-sm text-white transform -translate-x-1/2 -bottom-6 bg-number left-1/2"
           @click.stop="decrementValue">
@@ -135,7 +135,7 @@ const onTouchMove = (event) => {
 
 // Maneja el fin del toque
 const endTouch = () => {
-  store.toggleBinaryEditor();
+  //store.toggleBinaryEditor();
 };
 
 // Observa los cambios en modelValue para ajustar el valor
@@ -206,6 +206,11 @@ const decrementValue = () => {
 // Add new handler for click to toggle binary editor
 const handleClick = () => {
   console.log('handleClick')
+  console.log('store.isEditingNumber', store.isEditingNumber)
+
+  if(store.isEditingNumber) {
+    store.toggleBinaryEditor();
+  } 
 
 };
 </script>

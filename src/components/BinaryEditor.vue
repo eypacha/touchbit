@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col w-full h-full gap-2 p-2">
-    <div class="mb-2 overflow-x-auto text-center whitespace-nowrap">
+  <div class="flex flex-col w-full h-full gap-2">
+    <div class="flex items-center justify-center flex-1 text-center border whitespace-nowrap border-number">
       <div class="inline-flex">
         <button
           v-for="(bit, index) in bitsArray"
@@ -40,6 +40,7 @@
           @click="circularRightShift">
           c&gt;&gt;
         </Key>
+        
       </div>
     </div>
   </div>

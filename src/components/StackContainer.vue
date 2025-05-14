@@ -63,7 +63,6 @@ const handleTouch = (token, index) => {
     if(isSelected(index)) {
         if (token.type === 'number') {
             store.isEditingNumber = true;
-            store.isBinaryEditor = false;
         } else {
             store.isEditingNumber = false;
             store.isBinaryEditor = false;
@@ -95,6 +94,7 @@ const handleTouch = (token, index) => {
     } else {
         // Si se toca otro token, desactivar el modo de edición de números
         store.isEditingNumber = false;
+        store.isBinaryEditor = false;
         store.moveTo(index)
     }
 }
