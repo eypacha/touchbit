@@ -1,9 +1,8 @@
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { NUMBER_MODE } from '@/constants/index.js';
 
 export function useBinaryEditor(store, initialMode) {
   const binaryValue = ref("");
-  const binaryHistory = ref([]);
   const numberMode = ref(initialMode);
 
   // Actualizar valor binario desde un token
@@ -21,9 +20,9 @@ export function useBinaryEditor(store, initialMode) {
     }
   }
 
-  // Guardar estado actual en historial
+  // Simplificamos la función para utilizar solo el historial global
   function saveToHistory() {
-    binaryHistory.value.push(binaryValue.value);
+    store.saveToHistory();
   }
 
   // Actualizar token con nuevo valor
@@ -64,17 +63,14 @@ export function useBinaryEditor(store, initialMode) {
       : NUMBER_MODE.BINARY;
   }
 
-  // Deshacer último cambio
+  // Función de undo que ya usa el historial global
   function undo() {
-    if (binaryHistory.value.length > 0) {
-      binaryValue.value = binaryHistory.value.pop();
-      updateToken();
-    }
+    store.undo();
+    updateBinaryFromToken();
   }
 
   return {
     binaryValue,
-    binaryHistory,
     numberMode,
     updateBinaryFromToken,
     saveToHistory,

@@ -5,15 +5,19 @@
       <Button variant="outline" class="border-action text-foreground" @click="initialize()">Start</Button>
     </div>
   </div>
-
-    <Toolbar />
-    <main class="flex flex-col w-full h-[calc(100dvh-65px)]">
-
-
-        <VisualizerCanvas class="absolute"/>
-        <StackContainer/> 
-      <BottomContainer class="flex-0 h-[328px]"/>
-    </main>
+  <div class="flex">
+    <div class="w-full md:max-w-[450px]">
+      <Toolbar />
+      <main class="flex flex-col w-full h-[calc(100dvh-65px)] relative">
+          <VisualizerCanvas/>
+          <StackContainer/>
+        <BottomContainer class="flex-0 h-[328px]"/>
+      </main>
+    </div>
+    <div class="hidden md:block md:flex-1">
+      <Sidepanel />
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -28,6 +32,7 @@ import Toolbar from "@/components/Toolbar.vue";
 import StackContainer from "@/components/StackContainer.vue";
 import BottomContainer from "@/components/BottomContainer.vue";
 import VisualizerCanvas from "@/components/VisualizerCanvas.vue";
+import Sidepanel from "@/components/Sidepanel.vue";
 
 const store = useMainStore();
 const themeStore = useThemeStore();
@@ -49,5 +54,3 @@ function initialize(){
   loading.value = false;
 }
 </script>
-
-<style lang="scss" module></style>

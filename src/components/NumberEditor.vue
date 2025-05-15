@@ -17,16 +17,16 @@
     <div class="mt-auto">
       <EditorControls 
         :mode="numberMode"
-        @toggle-mode="handleModeToggle"
-        @undo="undo"
+        @toggleMode="handleModeToggle"
+        @undo="handleUndo"
         @randomize="randomizeBits"
         @max="maxBytes"
         @min="minBytes"
         @invert="invertBits"
-        @left-shift="leftShift"
-        @right-shift="rightShift"
-        @circular-left-shift="circularLeftShift"
-        @circular-right-shift="circularRightShift"
+        @leftShift="leftShift"
+        @rightShift="rightShift"
+        @circularLeftShift="circularLeftShift"
+        @circularRightShift="circularRightShift"
       />
     </div>
   </div>
@@ -49,7 +49,7 @@ const store = useMainStore();
 // Usar composables con modo binario por defecto
 const {
   binaryValue,
-  binaryHistory,
+  // Eliminamos binaryHistory de la desestructuración
   numberMode,
   updateBinaryFromToken,
   saveToHistory,
@@ -159,6 +159,14 @@ function handleModeToggle() {
   // Ahora cambiamos el modo
   toggleNumberMode();
 }
+
+// En NumberEditor.vue, dentro del setup
+const handleUndo = () => {
+  // Llamar al undo del store directamente
+  store.undo();
+  // Actualizar el valor binario después de deshacer
+  updateBinaryFromToken();
+};
 
 // Inicializar y observar cambios
 onMounted(() => {

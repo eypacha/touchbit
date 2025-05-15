@@ -14,6 +14,10 @@ export const useMainStore = defineStore("main", () => {
   const isBinaryEditor = ref(false); 
   const holdMode = ref(false);
 
+  const history = ref([]);
+  const historyIndex = ref(-1);
+  const maxHistorySize = 50;
+
   const stack = ref([
     { type: 'time', data: 't' },
     { type: 'number', data: 64 },
@@ -24,6 +28,54 @@ export const useMainStore = defineStore("main", () => {
     { type: 'operator', data: '|' },
   ]);
 
+  function initHistory() {
+    history.value = [JSON.stringify(stack.value)];
+    historyIndex.value = 0;
+  }
+
+  // Llamar a initHistory al inicio
+  initHistory();
+
+  function saveToHistory() {
+    // Si estamos en medio del historial, eliminar los estados futuros
+    if (historyIndex.value < history.value.length - 1) {
+      history.value = history.value.slice(0, historyIndex.value + 1);
+    }
+    
+    // Agregar el estado actual al historial
+    history.value.push(JSON.stringify(stack.value));
+    historyIndex.value = history.value.length - 1;
+    
+    // Limitar el tamaño del historial
+    if (history.value.length > maxHistorySize) {
+      history.value = history.value.slice(history.value.length - maxHistorySize);
+      historyIndex.value = history.value.length - 1;
+    }
+  }
+
+  // Función para deshacer (undo)
+  function undo() {
+    if (historyIndex.value > 0) {
+      historyIndex.value--;
+      stack.value = JSON.parse(history.value[historyIndex.value]);
+      logger.log('EDIT', 'Undo');
+      evalBytebeat();
+    } else {
+      logger.log('INFO', 'Nothing to undo');
+    }
+  }
+
+  // Función para rehacer (redo)
+  function redo() {
+    if (historyIndex.value < history.value.length - 1) {
+      historyIndex.value++;
+      stack.value = JSON.parse(history.value[historyIndex.value]);
+      logger.log('EDIT', 'Redo');
+      evalBytebeat();
+    } else {
+      logger.log('INFO', 'Nothing to redo');
+    }
+  }
   const getExpression = computed(() => {
     return stack.value
       .filter(item => item.type !== 'empty' && !item.disabled)
@@ -145,6 +197,7 @@ export const useMainStore = defineStore("main", () => {
   }
 
   function newToken(token, index = selectedToken.value) {
+    saveToHistory();
     stack.value.splice(index, 1, token);
     evalBytebeat();
   }
@@ -160,6 +213,7 @@ export const useMainStore = defineStore("main", () => {
       return;
     }
 
+    saveToHistory();
     const originalToken = stack.value[index];
 
     stack.value[index] = {
@@ -171,12 +225,14 @@ export const useMainStore = defineStore("main", () => {
   }
 
   function insertToken() {
+    saveToHistory();
     stack.value.splice(selectedToken.value, 0, { type: 'empty', data: '' });
   }
 
   function delToken(){
     if (selectedToken.value < 0) return
 
+    saveToHistory();
     stack.value.splice(selectedToken.value, 1);
     evalBytebeat();
 
@@ -189,6 +245,7 @@ export const useMainStore = defineStore("main", () => {
   }
 
   function delAllTokens() {
+    saveToHistory();
     stack.value = [];
     stack.value.push({ type: 'empty', data: '' });
     selectedToken.value = 0;
@@ -199,6 +256,7 @@ export const useMainStore = defineStore("main", () => {
   function backspaceToken() {
     if (selectedToken.value <= 0) return
     
+    saveToHistory();
     stack.value.splice(selectedToken.value, 1);
     evalBytebeat();
     movePrev();
@@ -278,10 +336,12 @@ export const useMainStore = defineStore("main", () => {
         break;
 
       case 'UNDO':
+        undo();
         console.log('Undo pressed');
         break;
 
       case 'REDO':
+        redo();
         console.log('Redo pressed');
         break;
         
@@ -300,8 +360,10 @@ export const useMainStore = defineStore("main", () => {
     selectedToken,
     evalBytebeat,
     holdMode,
-    toggleBinaryEditor,  // Export the new function
-    // Delegamos al audioStore pero mantenemos la misma interfaz
+    toggleBinaryEditor,
+    undo,
+    redo,
+    saveToHistory,
     playPause,
     setVolume,
     setSampleRate,

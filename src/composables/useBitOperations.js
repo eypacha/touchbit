@@ -2,6 +2,7 @@ export function useBitOperations(binaryValue, saveToHistory, updateToken, ensure
   
   // Función auxiliar para asegurar que trabajamos con enteros antes de cada operación
   function prepareOperation() {
+    // Guardar en el historial antes de cada operación
     saveToHistory();
     
     // Si se proporcionó la función para asegurar enteros, la ejecutamos

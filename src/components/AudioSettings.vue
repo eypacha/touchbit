@@ -25,7 +25,7 @@
 import { ref, watch } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 
-import { calculateSampleRate, calculateBPM } from '@/lib/utils';
+import { calculateBPM } from '@/lib/utils';
 import { useTapTempo } from '@/composables/useTapTempo';
 
 import Key from '@/components/Key.vue'
@@ -52,7 +52,7 @@ watch(tempo, (newTempo) => {
 function caclB() {
   console.log('caclB');
   console.log(calculateBPM(selectedSampleRate.value, store.stack[1].data, store.stack[2].data));
-  console.log(calculateSampleRate(selectedBPM.value, store.stack[1].data, store.stack[2].data));
+  // console.log(calculateSampleRate(selectedBPM.value, store.stack[1].data, store.stack[2].data));
 }
 function setSampleRate() {
   if (updatingBPM.value) return;

@@ -114,6 +114,8 @@ const onTouchMove = (event) => {
   const delta = startTouchY.value - currentTouchY.value;
 
   if (Math.abs(delta) > 10) {
+
+    store.saveToHistory();
     // Check if initial value is an integer between 0 and 255
     const isModuloNumber = Number.isInteger(props.modelValue) && 
                           props.modelValue >= 0 && 
@@ -180,6 +182,7 @@ const handleTouchEnd = (event) => {
 // Add these new functions for button clicks
 const incrementValue = () => {
   // Check if number should use modulo 256 behavior
+  store.saveToHistory();
   value.value += props.step;
   value.value = clampValue(value.value);
   
@@ -188,6 +191,8 @@ const incrementValue = () => {
 };
 
 const decrementValue = () => {
+  store.saveToHistory();
+
   // Check if number should use modulo 256 behavior
   const isModuloNumber = Number.isInteger(props.modelValue) && 
                         props.modelValue >= 0 && 
