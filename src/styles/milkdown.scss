@@ -247,6 +247,78 @@
             padding: 0;
         }
     }
+
+    .milkdown-block-handle {
+        .operation-item {
+            &:hover {
+                background: hsl(var(--card)) !important;
+            }
+        }
+    }
+
+    .milkdown-toolbar {
+        border: solid 1px hsl(var(--border)) !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: hsl(var(--card)) !important;
+
+        .toolbar-item {
+            &:hover {
+                border-radius: 0 !important;
+                background: hsl(var(--background)) !important;
+            }
+        }
+    }
+
+    .milkdown-slash-menu {
+        border: solid 1px hsl(var(--border));
+        border-radius: 0 !important;
+        background-color: var(--crepe-color-background) !important;
+        color: hsl(var(--foreground)) !important;
+        box-shadow: none !important;
+
+        .tab-group {
+            ul {
+                li {
+                    border-radius : 0 !important;
+                    &.selected,
+
+                    &:hover {
+                        background-color: hsl(var(--card)) !important;
+                        color: hsl(var(--action));
+                    }
+                }
+            }
+        }
+
+        .menu-groups {
+            .menu-group {
+                h6 {
+                    color: hsl(var(--time)) !important;
+                }
+            }
+
+            ul {
+                li {
+                    border-radius: 0 !important;
+
+                    &.hover {
+                        background-color: hsl(var(--card)) !important;
+                        color: hsl(var(--number));
+                    }
+                }
+            }
+
+            &::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: hsl(var(--time));
+            }
+        }
+    }
 }
 
 .milkdown {

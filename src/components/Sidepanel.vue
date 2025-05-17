@@ -1,6 +1,6 @@
 <template>
   <div class="h-full p-4 border-l border-border bg-background">
-    <div ref="editorRoot" class="h-[calc(100%-4rem)] overflow-y-auto overflow-x-hidden"></div>
+    <div ref="editorRoot" class="h-[calc(100%-4rem)] overflow-y-scroll overflow-x-hidden"></div>
   </div>
 </template>
 

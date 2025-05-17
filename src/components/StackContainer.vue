@@ -121,22 +121,4 @@ const handleUpdateNumber = (token, newValue) => {
 .editing-number {
   animation: blink-right-border 600ms ease-in-out infinite;
 }
-
-// Estilos del scrollbar
-.overflow-y-scroll {
-  // Estilos para navegadores basados en webkit (Chrome, Safari, Edge)
-  &::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: hsl(var(--card));
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: hsl(var(--action));
-  }
-
-}
 </style>
