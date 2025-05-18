@@ -2,11 +2,12 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useThemeStore } from "./themeStore";
 import { useLoggerStore } from "@/stores/loggerStore";
-import { useAudioStore } from "./audioStore"; // Importar el nuevo AudioStore
+import { useAudioStore } from "./audioStore"; 
+import { useExpressionManager } from "@/composables/useExpressionManager";
 
 export const useMainStore = defineStore("main", () => {
   const logger = useLoggerStore();
-  const audioStore = useAudioStore(); // Instanciar el AudioStore
+  const audioStore = useAudioStore();
 
   const selectedToken = ref(0);
   const currentNumber = ref("");
@@ -28,6 +29,9 @@ export const useMainStore = defineStore("main", () => {
     { type: 'operator', data: '|' },
   ]);
 
+  // Usar el composable de gestión de expresiones
+  const expressionManager = useExpressionManager(stack, holdMode, audioStore, logger);
+  
   function initHistory() {
     history.value = [JSON.stringify(stack.value)];
     historyIndex.value = 0;
@@ -104,10 +108,36 @@ export const useMainStore = defineStore("main", () => {
     await audioStore.reset();
   }
 
+  // Función independiente para compresión LZMA
+  function expressionToHash(expression) {
+    if (!window.LZMA) return;
+    
+    try {
+      const lzmaInstance = new window.LZMA("/vendors/lzma_worker.js");
+      lzmaInstance.compress(expression, 1, (result) => {
+        // Usar la función de utilidad para convertir bytes a hex
+        const compressedStr = convertBytesToHex(result);
+        window.location.hash = `bb=${compressedStr}`;
+
+        console.log('Expresión original:', expression);
+        console.log('Expresión comprimida (LZMA):', compressedStr);
+        console.log('Tamaño original:', expression.length, 'bytes');
+        console.log('Tamaño comprimido:', result.length, 'bytes');
+        console.log('Ratio de compresión:', (result.length / expression.length * 100).toFixed(2) + '%');
+      });
+    } catch (e) {
+      console.error('Error al comprimir con LZMA:', e);
+    }
+  }
+
   async function evalBytebeat() {
     if(holdMode.value) return;
     
-    audioStore.setExpression(getExpression.value);
+    const expression = getExpression.value;
+    audioStore.setExpression(expression);
+    
+    // Llamar a la función de compresión separada
+    expressionToHash(expression);
     
     if(!audioStore.isPlaying) {
       await audioStore.getSampleForTime();
@@ -350,15 +380,67 @@ export const useMainStore = defineStore("main", () => {
     }
   }
 
+  // Función para establecer la expresión desde un string
+  function setExpression(expressionString) {
+    if (!expressionString) return;
+    
+    // Guardar el estado actual antes de la modificación
+    saveToHistory();
+    
+    // Dividir la expresión en tokens individuales
+    const tokens = expressionString.trim().split(/\s+/);
+    
+    // Crear un nuevo stack
+    const newStack = [];
+    
+    // Procesar cada token
+    for (const token of tokens) {
+      if (token === 't') {
+        newStack.push({ type: 'time', data: 't' });
+      } else if (['+', '-', '*', '~', '/', '%', '&', '|', '^', '<<', '>>'].includes(token)) {
+        newStack.push({ type: 'operator', data: token });
+      } else if (!isNaN(token) || (token.includes('.') && !isNaN(parseFloat(token)))) {
+        // Detecta si es un número, preservando decimales y signos
+        newStack.push({ type: 'number', data: token });
+      } else {
+        // Si no se reconoce el token, lo tratar como un operador por defecto
+        console.warn(`Token no reconocido: ${token}`);
+        newStack.push({ type: 'operator', data: token });
+      }
+    }
+    
+    // Asegurarse de que hay al menos un token en el stack
+    if (newStack.length === 0) {
+      newStack.push({ type: 'empty', data: '' });
+    }
+    
+    // Agregar un token vacío al final si no hay ninguno
+    if (newStack[newStack.length - 1].type !== 'empty') {
+      newStack.push({ type: 'empty', data: '' });
+    }
+    
+    // Actualizar el stack
+    stack.value = newStack;
+    
+    // Restablecer el token seleccionado al inicio
+    selectedToken.value = 0;
+    
+    // Evaluar la expresión
+    evalBytebeat();
+    
+    logger.log('EDIT', 'Expression loaded');
+  }
+
+  // Exponer las funciones del expressionManager en el store
   return {
     stack,
     currentNumber,
     isEditingNumber,
-    isBinaryEditor,  // Export the new ref
+    isBinaryEditor,
     keyPressed,
     keyLongPressed,
     selectedToken,
-    evalBytebeat,
+    evalBytebeat: expressionManager.evalBytebeat,
     holdMode,
     toggleBinaryEditor,
     undo,
@@ -369,13 +451,16 @@ export const useMainStore = defineStore("main", () => {
     setSampleRate,
     stop,
     reset,
-    getExpression,
+    getExpression: expressionManager.getExpression,
+    setExpression: (expr) => {
+      selectedToken.value = expressionManager.setExpression(expr, saveToHistory);
+    },
     isPlaying,
     time,
     sample,
     modToken,
     moveTo,
     updateVisualization,
-    visualizationData
+    visualizationData,
   }
 });
