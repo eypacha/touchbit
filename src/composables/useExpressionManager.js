@@ -44,9 +44,62 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
     }
   }
 
+  // Token manipulation functions
+  function newToken(token, index, saveToHistory) {
+    saveToHistory();
+    stack.value.splice(index, 1, token);
+    evalBytebeat();
+  }
+
+  function modToken(mod, index, saveToHistory) {
+    if (index < 0 || index >= stack.value.length) {
+      console.error(`Índice ${index} fuera de rango. Stack actual:`, stack.value);
+      return;
+    }
+
+    if (typeof mod !== 'object' || mod === null) {
+      console.error(`El modToken debe ser un objeto. Valor recibido:`, mod);
+      return;
+    }
+
+    saveToHistory();
+    const originalToken = stack.value[index];
+
+    stack.value[index] = {
+      ...originalToken,
+      ...mod,
+    };
+
+    evalBytebeat();
+  }
+
+  function insertToken(index, saveToHistory) {
+    saveToHistory();
+    stack.value.splice(index, 0, { type: 'empty', data: '' });
+  }
+
+  function delToken(index, saveToHistory) {
+    if (index < 0) return false;
+
+    saveToHistory();
+    stack.value.splice(index, 1);
+    evalBytebeat();
+
+    // Return true if token was deleted
+    return true;
+  }
+
+  function delAllTokens(saveToHistory) {
+    saveToHistory();
+    stack.value = [{ type: 'empty', data: '' }];
+    logger.log('EDIT', 'All tokens deleted');
+    evalBytebeat();
+    return 0; // Return index of first token
+  }
+
   // Función para establecer la expresión desde un string
   function setExpression(expressionString, saveToHistory) {
-    if (!expressionString) return;
+    if (!expressionString) return 0;
     
     // Guardar el estado actual antes de la modificación
     saveToHistory();
@@ -93,9 +146,17 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
   }
 
   return {
+    // Core expression functions
     getExpression,
-    setExpression,
     evalBytebeat,
-    expressionToHash
+    expressionToHash,
+    setExpression,
+    
+    // Token manipulation functions
+    newToken,
+    modToken,
+    insertToken,
+    delToken,
+    delAllTokens
   };
 }

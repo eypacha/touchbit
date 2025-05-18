@@ -227,68 +227,36 @@ export const useMainStore = defineStore("main", () => {
   }
 
   function newToken(token, index = selectedToken.value) {
-    saveToHistory();
-    stack.value.splice(index, 1, token);
-    evalBytebeat();
+    expressionManager.newToken(token, index, saveToHistory);
   }
 
   function modToken(mod, index = selectedToken.value) {
-    if (index < 0 || index >= stack.value.length) {
-      console.error(`Índice ${index} fuera de rango. Stack actual:`, stack.value);
-      return;
-    }
-
-    if (typeof mod !== 'object' || mod === null) {
-      console.error(`El modToken debe ser un objeto. Valor recibido:`, mod);
-      return;
-    }
-
-    saveToHistory();
-    const originalToken = stack.value[index];
-
-    stack.value[index] = {
-      ...originalToken,
-      ...mod,
-    };
-
-    evalBytebeat();
+    expressionManager.modToken(mod, index, saveToHistory);
   }
 
   function insertToken() {
-    saveToHistory();
-    stack.value.splice(selectedToken.value, 0, { type: 'empty', data: '' });
+    expressionManager.insertToken(selectedToken.value, saveToHistory);
   }
 
-  function delToken(){
-    if (selectedToken.value < 0) return
-
-    saveToHistory();
-    stack.value.splice(selectedToken.value, 1);
-    evalBytebeat();
-
-    if (stack.value.length === 0) {
-      stack.value.push({ type: 'empty', data: '' });
-      selectedToken.value = 0; 
-    } else if (selectedToken.value === stack.value.length) {
-      movePrev();
+  function delToken() {
+    if (expressionManager.delToken(selectedToken.value, saveToHistory)) {
+      if (stack.value.length === 0) {
+        stack.value.push({ type: 'empty', data: '' });
+        selectedToken.value = 0; 
+      } else if (selectedToken.value === stack.value.length) {
+        movePrev();
+      }
     }
   }
 
   function delAllTokens() {
-    saveToHistory();
-    stack.value = [];
-    stack.value.push({ type: 'empty', data: '' });
-    selectedToken.value = 0;
-    logger.log('EDIT', 'All tokens deleted');
-    evalBytebeat();
+    selectedToken.value = expressionManager.delAllTokens(saveToHistory);
   }
 
   function backspaceToken() {
-    if (selectedToken.value <= 0) return
+    if (selectedToken.value <= 0) return;
     
-    saveToHistory();
-    stack.value.splice(selectedToken.value, 1);
-    evalBytebeat();
+    expressionManager.delToken(selectedToken.value, saveToHistory);
     movePrev();
   } 
 
@@ -380,58 +348,6 @@ export const useMainStore = defineStore("main", () => {
     }
   }
 
-  // Función para establecer la expresión desde un string
-  function setExpression(expressionString) {
-    if (!expressionString) return;
-    
-    // Guardar el estado actual antes de la modificación
-    saveToHistory();
-    
-    // Dividir la expresión en tokens individuales
-    const tokens = expressionString.trim().split(/\s+/);
-    
-    // Crear un nuevo stack
-    const newStack = [];
-    
-    // Procesar cada token
-    for (const token of tokens) {
-      if (token === 't') {
-        newStack.push({ type: 'time', data: 't' });
-      } else if (['+', '-', '*', '~', '/', '%', '&', '|', '^', '<<', '>>'].includes(token)) {
-        newStack.push({ type: 'operator', data: token });
-      } else if (!isNaN(token) || (token.includes('.') && !isNaN(parseFloat(token)))) {
-        // Detecta si es un número, preservando decimales y signos
-        newStack.push({ type: 'number', data: token });
-      } else {
-        // Si no se reconoce el token, lo tratar como un operador por defecto
-        console.warn(`Token no reconocido: ${token}`);
-        newStack.push({ type: 'operator', data: token });
-      }
-    }
-    
-    // Asegurarse de que hay al menos un token en el stack
-    if (newStack.length === 0) {
-      newStack.push({ type: 'empty', data: '' });
-    }
-    
-    // Agregar un token vacío al final si no hay ninguno
-    if (newStack[newStack.length - 1].type !== 'empty') {
-      newStack.push({ type: 'empty', data: '' });
-    }
-    
-    // Actualizar el stack
-    stack.value = newStack;
-    
-    // Restablecer el token seleccionado al inicio
-    selectedToken.value = 0;
-    
-    // Evaluar la expresión
-    evalBytebeat();
-    
-    logger.log('EDIT', 'Expression loaded');
-  }
-
-  // Exponer las funciones del expressionManager en el store
   return {
     stack,
     currentNumber,
