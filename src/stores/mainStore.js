@@ -5,6 +5,7 @@ import { useLoggerStore } from "@/stores/loggerStore";
 import { useAudioStore } from "./audioStore"; 
 import { useExpressionManager } from "@/composables/useExpressionManager";
 import { useNavigationManager } from "@/composables/useNavigationManager";
+import { useHistoryManager } from "@/composables/useHistoryManager";
 
 export const useMainStore = defineStore("main", () => {
   const logger = useLoggerStore();
@@ -16,74 +17,16 @@ export const useMainStore = defineStore("main", () => {
   const isBinaryEditor = ref(false); 
   const holdMode = ref(false);
 
-  const history = ref([]);
-  const historyIndex = ref(-1);
-  const maxHistorySize = 50;
-
   const stack = ref([]);
 
-  // Usar el composable de gestión de expresiones
+  const historyManager = useHistoryManager(stack, audioStore, logger);
   const expressionManager = useExpressionManager(stack, holdMode, audioStore, logger);
-  
-  // Usar el composable de navegación
   const navigationManager = useNavigationManager(selectedToken, stack);
 
-  function initHistory() {
-    history.value = [JSON.stringify(stack.value)];
-    historyIndex.value = 0;
-  }
+  historyManager.initHistory();
 
-  // Llamar a initHistory al inicio
-  initHistory();
+  const { saveToHistory, undo, redo } = historyManager;
 
-  function saveToHistory() {
-    // Si estamos en medio del historial, eliminar los estados futuros
-    if (historyIndex.value < history.value.length - 1) {
-      history.value = history.value.slice(0, historyIndex.value + 1);
-    }
-    
-    // Agregar el estado actual al historial
-    history.value.push(JSON.stringify(stack.value));
-    historyIndex.value = history.value.length - 1;
-    
-    // Limitar el tamaño del historial
-    if (history.value.length > maxHistorySize) {
-      history.value = history.value.slice(history.value.length - maxHistorySize);
-      historyIndex.value = history.value.length - 1;
-    }
-  }
-
-  // Función para deshacer (undo)
-  function undo() {
-    if (historyIndex.value > 0) {
-      historyIndex.value--;
-      stack.value = JSON.parse(history.value[historyIndex.value]);
-      logger.log('EDIT', 'Undo');
-      evalBytebeat();
-    } else {
-      logger.log('INFO', 'Nothing to undo');
-    }
-  }
-
-  // Función para rehacer (redo)
-  function redo() {
-    if (historyIndex.value < history.value.length - 1) {
-      historyIndex.value++;
-      stack.value = JSON.parse(history.value[historyIndex.value]);
-      logger.log('EDIT', 'Redo');
-      evalBytebeat();
-    } else {
-      logger.log('INFO', 'Nothing to redo');
-    }
-  }
-  const getExpression = computed(() => {
-    return stack.value
-      .filter(item => item.type !== 'empty' && !item.disabled)
-      .map(item => item.data)
-      .join(' ');
-  });
-
-  // Delegamos funciones de audio al AudioStore
   async function playPause() {
     await audioStore.playPause(getExpression.value);
   }
@@ -104,42 +47,6 @@ export const useMainStore = defineStore("main", () => {
     await audioStore.reset();
   }
 
-  // Función independiente para compresión LZMA
-  function expressionToHash(expression) {
-    if (!window.LZMA) return;
-    
-    try {
-      const lzmaInstance = new window.LZMA("/vendors/lzma_worker.js");
-      lzmaInstance.compress(expression, 1, (result) => {
-        // Usar la función de utilidad para convertir bytes a hex
-        const compressedStr = convertBytesToHex(result);
-        window.location.hash = `bb=${compressedStr}`;
-
-        console.log('Expresión original:', expression);
-        console.log('Expresión comprimida (LZMA):', compressedStr);
-        console.log('Tamaño original:', expression.length, 'bytes');
-        console.log('Tamaño comprimido:', result.length, 'bytes');
-        console.log('Ratio de compresión:', (result.length / expression.length * 100).toFixed(2) + '%');
-      });
-    } catch (e) {
-      console.error('Error al comprimir con LZMA:', e);
-    }
-  }
-
-  async function evalBytebeat() {
-    if(holdMode.value) return;
-    
-    const expression = getExpression.value;
-    audioStore.setExpression(expression);
-    
-    // Llamar a la función de compresión separada
-    expressionToHash(expression);
-    
-    if(!audioStore.isPlaying) {
-      await audioStore.getSampleForTime();
-    }
-  }
-
   async function updateVisualization(width) {
     return await audioStore.updateVisualization(width);
   }
@@ -149,6 +56,13 @@ export const useMainStore = defineStore("main", () => {
   const time = computed(() => audioStore.time);
   const sample = computed(() => audioStore.sample);
   const visualizationData = computed(() => audioStore.visualizationData);
+
+  const getExpression = computed(() => {
+    return stack.value
+      .filter(item => item.type !== 'empty' && !item.disabled)
+      .map(item => item.data)
+      .join(' ');
+  });
 
   // Resto del código existente sin cambios
   function keyPressed(type, data) {
@@ -262,7 +176,7 @@ export const useMainStore = defineStore("main", () => {
     holdMode.value = !holdMode.value;
     
     if (!holdMode.value) {
-      evalBytebeat();
+      expressionManager.evalBytebeat();  // Changed from evalBytebeat()
     }
   }
 
@@ -354,6 +268,7 @@ export const useMainStore = defineStore("main", () => {
     keyPressed,
     keyLongPressed,
     toggleBinaryEditor,
+    modToken,
     
     // History Management
     saveToHistory,
