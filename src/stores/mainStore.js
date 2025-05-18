@@ -20,15 +20,7 @@ export const useMainStore = defineStore("main", () => {
   const historyIndex = ref(-1);
   const maxHistorySize = 50;
 
-  const stack = ref([
-    { type: 'time', data: 't' },
-    { type: 'number', data: 64 },
-    { type: 'operator', data: '&' },
-    { type: 'time', data: 't' },
-    { type: 'number', data: '4' },
-    { type: 'operator', data: '>>' },
-    { type: 'operator', data: '|' },
-  ]);
+  const stack = ref([]);
 
   // Usar el composable de gestión de expresiones
   const expressionManager = useExpressionManager(stack, holdMode, audioStore, logger);
