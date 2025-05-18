@@ -4,6 +4,7 @@ import { useThemeStore } from "./themeStore";
 import { useLoggerStore } from "@/stores/loggerStore";
 import { useAudioStore } from "./audioStore"; 
 import { useExpressionManager } from "@/composables/useExpressionManager";
+import { useNavigationManager } from "@/composables/useNavigationManager";
 
 export const useMainStore = defineStore("main", () => {
   const logger = useLoggerStore();
@@ -32,6 +33,9 @@ export const useMainStore = defineStore("main", () => {
   // Usar el composable de gestión de expresiones
   const expressionManager = useExpressionManager(stack, holdMode, audioStore, logger);
   
+  // Usar el composable de navegación
+  const navigationManager = useNavigationManager(selectedToken, stack);
+
   function initHistory() {
     history.value = [JSON.stringify(stack.value)];
     historyIndex.value = 0;
@@ -192,15 +196,15 @@ export const useMainStore = defineStore("main", () => {
         case 'operator':
             if (isEditingNumber.value) {
                 isEditingNumber.value = false;
-                moveNext(); 
+                navigationManager.moveNext(); 
             }
             newToken({ type: 'operator', data: data });
-            moveNext(); 
+            navigationManager.moveNext(); 
             break;
         case 'time':
             isEditingNumber.value = false;
             newToken({ type: 'time', data: 't' });
-            moveNext(); 
+            navigationManager.moveNext(); 
             break;
         case 'action':
             isEditingNumber.value = false;
@@ -214,13 +218,13 @@ export const useMainStore = defineStore("main", () => {
   function keyLongPressed(type, data) {
     switch (data){
       case 'LEFT':
-        moveFirst()
+        navigationManager.moveFirst();
         break;
       case 'RIGHT':
-        moveLast()
+        navigationManager.moveLast();
         break;
       case 'DEL':
-        delAllTokens() 
+        delAllTokens();
         break;
       default:
     }
@@ -244,7 +248,7 @@ export const useMainStore = defineStore("main", () => {
         stack.value.push({ type: 'empty', data: '' });
         selectedToken.value = 0; 
       } else if (selectedToken.value === stack.value.length) {
-        movePrev();
+        navigationManager.movePrev();
       }
     }
   }
@@ -257,35 +261,8 @@ export const useMainStore = defineStore("main", () => {
     if (selectedToken.value <= 0) return;
     
     expressionManager.delToken(selectedToken.value, saveToHistory);
-    movePrev();
+    navigationManager.movePrev();
   } 
-
-  function movePrev(){
-    selectedToken.value = selectedToken.value > 0 ? selectedToken.value - 1 : 0;
-  }
-
-  function moveFirst(){
-    selectedToken.value = 0;
-  }
-
-  function moveNext() {
-    const isAtLastPosition = selectedToken.value === stack.value.length - 1;
-    const isNotEmpty = stack.value[selectedToken.value]?.type !== 'empty';
-
-    if (isAtLastPosition && isNotEmpty) {
-        stack.value.push({ type: 'empty', data: '' });
-    }
-
-    selectedToken.value = Math.min(selectedToken.value + 1, stack.value.length - 1);
-  }
-    
-  function moveLast() {
-    selectedToken.value = stack.value.length - 1;
-  }
-
-  function moveTo(index) {
-    selectedToken.value = index;
-  }
 
   function toggleHoldMode() {
     logger.log('INFO', `HOLD MODE ${holdMode.value ? 'OFF' : 'ON'}`);
@@ -307,26 +284,26 @@ export const useMainStore = defineStore("main", () => {
     switch (action) {
       case 'LEFT':
         console.log('LEFT pressed');
-        movePrev()
-       break;
+        navigationManager.movePrev();
+        break;
        
       case 'RIGHT':
         console.log('RIGHT pressed');
-        moveNext()
+        navigationManager.moveNext();
         break;
 
       case 'INS':
         console.log('INSERT pressed');
-        insertToken()
+        insertToken();
         break;
 
       case 'DEL':
-        console.log('delete',selectedToken.value)
-        delToken()
+        console.log('delete',selectedToken.value);
+        delToken();
         break;
         
       case 'BCKS':
-        backspaceToken()
+        backspaceToken();
         break;
 
       case 'HOLD':
@@ -375,7 +352,7 @@ export const useMainStore = defineStore("main", () => {
     time,
     sample,
     modToken,
-    moveTo,
+    moveTo: navigationManager.moveTo,  // Use the navigation manager's moveTo
     updateVisualization,
     visualizationData,
   }
