@@ -325,34 +325,60 @@ export const useMainStore = defineStore("main", () => {
     }
   }
 
+  const { moveTo, movePrev, moveNext, moveFirst, moveLast } = navigationManager;
+
+  function setExpression(expr) {
+    selectedToken.value = expressionManager.setExpression(expr, saveToHistory);
+  }
+
+  function loadExpressionFromHash() {
+    return expressionManager.loadExpressionFromHash();
+  }
+
+  // Then in your return statement
   return {
+    // Core State
     stack,
+    selectedToken,
     currentNumber,
     isEditingNumber,
     isBinaryEditor,
+    holdMode,
+    
+    // Navigation
+    moveTo,
+    movePrev,
+    moveNext,
+    moveFirst,
+    moveLast,
+    
+    // Expression Management
+    getExpression: expressionManager.getExpression,
+    setExpression,
+    evalBytebeat: expressionManager.evalBytebeat,
+    loadExpressionFromHash,
+    
+    // Editing Functions
     keyPressed,
     keyLongPressed,
-    selectedToken,
-    evalBytebeat: expressionManager.evalBytebeat,
-    holdMode,
     toggleBinaryEditor,
+    
+    // History Management
+    saveToHistory,
     undo,
     redo,
-    saveToHistory,
+    
+    // Audio Control
     playPause,
     setVolume,
     setSampleRate,
     stop,
     reset,
-    getExpression: expressionManager.getExpression,
-    setExpression: (expr) => {
-      selectedToken.value = expressionManager.setExpression(expr, saveToHistory);
-    },
     isPlaying,
     time,
     sample,
-    modToken,
-    moveTo: navigationManager.moveTo,  // Use the navigation manager's moveTo
+    
+    // Visualization
     updateVisualization,
     visualizationData,
   }

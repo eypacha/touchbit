@@ -48,9 +48,15 @@ onMounted(() => {
   themeStore.updateTheme();
 });
 
-function initialize(){
-  store.stack.value = [''];
-  store.selectedToken = 0;
+function initialize() {
+  // Try to load from hash first, if none exists or fails, load default
+  const loadedFromHash = store.loadExpressionFromHash();
+  
+  if (!loadedFromHash) {
+    // Only set default if nothing was loaded from hash
+    store.setExpression("t 64 & t 4 >> |");
+  }
+  
   loading.value = false;
 }
 </script>

@@ -213,8 +213,6 @@ const decrementValue = () => {
 
 // Add new handler for click to toggle binary editor
 const handleClick = () => {
-  console.log('handleClick')
-  console.log('store.isEditingNumber', store.isEditingNumber)
 
   if(store.isEditingNumber) {
     store.toggleBinaryEditor();

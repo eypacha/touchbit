@@ -1,9 +1,9 @@
 import { computed } from 'vue';
-import { convertBytesToHex } from "@/utils/convertUtils";
+import { convertBytesToHex, convertHexToBytes } from "@/utils/convertUtils";
 
 export function useExpressionManager(stack, holdMode, audioStore, logger) {
   // Expresión calculada desde el stack
-  const getExpression = computed(() => {
+  const expressionValue = computed(() => {
     return stack.value
       .filter(item => item.type !== 'empty' && !item.disabled)
       .map(item => item.data)
@@ -18,23 +18,22 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
       const lzmaInstance = new window.LZMA("/vendors/lzma_worker.js");
       lzmaInstance.compress(expression, 1, (result) => {
         const compressedStr = convertBytesToHex(result);
-        window.location.hash = `bb=${compressedStr}`;
-
-        console.log('Expresión original:', expression);
-        console.log('Expresión comprimida (LZMA):', compressedStr);
-        console.log('Tamaño original:', expression.length, 'bytes');
-        console.log('Tamaño comprimido:', result.length, 'bytes');
-        console.log('Ratio de compresión:', (result.length / expression.length * 100).toFixed(2) + '%');
+        
+        // Get current sample rate and add it to the hash
+        const sampleRate = audioStore.sampleRate;
+        window.location.hash = `s=${sampleRate}&bb=${compressedStr}`;
+        
+        console.log('Expression compressed, sample rate:', sampleRate);
       });
     } catch (e) {
-      console.error('Error al comprimir con LZMA:', e);
+      console.error('Error compressing with LZMA:', e);
     }
   }
 
   async function evalBytebeat() {
     if(holdMode.value) return;
     
-    const expression = getExpression.value;
+    const expression = expressionValue.value;
     audioStore.setExpression(expression);
     
     expressionToHash(expression);
@@ -145,12 +144,68 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
     return 0; // Devuelve la posición del token seleccionado
   }
 
+  // Function to load expression from URL hash
+  function loadExpressionFromHash() {
+    try {
+      const hash = window.location.hash.substring(1); // Remove #
+      
+      // Parse hash parameters
+      const params = {};
+      hash.split('&').forEach(param => {
+        const [key, value] = param.split('=');
+        if (key && value) params[key] = value;
+      });
+      
+      let expressionLoaded = false;
+      
+      // Handle sample rate parameter
+      if (params.s && !isNaN(params.s)) {
+        const sampleRate = parseInt(params.s, 10);
+        if (sampleRate >= 8000 && sampleRate <= 48000) {
+          audioStore.setSampleRate(sampleRate);
+          logger.log('INFO', `Sample rate set to ${sampleRate}Hz from URL`);
+        }
+      }
+      
+      // Handle bytebeat expression parameter
+      if (params.bb) {
+        const compressedHex = params.bb;
+        const compressedData = convertHexToBytes(compressedHex);
+        
+        if (!window.LZMA) {
+          logger.log('ERROR', 'LZMA library not loaded');
+          return false;
+        }
+        
+        const lzmaInstance = new window.LZMA("/vendors/lzma_worker.js");
+        lzmaInstance.decompress(compressedData, (result, error) => {
+          if (error) {
+            logger.log('ERROR', `Failed to decompress expression: ${error}`);
+            return;
+          }
+          
+          logger.log('INFO', 'Expression loaded from URL');
+          setExpression(result, () => {}); // No history save for initial load
+        });
+        
+        expressionLoaded = true;
+      }
+      
+      return expressionLoaded;
+    } catch (e) {
+      logger.log('ERROR', `Error loading from hash: ${e.message}`);
+    }
+    
+    return false;
+  }
+
   return {
     // Core expression functions
-    getExpression,
+    expressionValue,
     evalBytebeat,
     expressionToHash,
     setExpression,
+    loadExpressionFromHash, // Add this to the returned object
     
     // Token manipulation functions
     newToken,
