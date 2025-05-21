@@ -262,7 +262,7 @@ export const useMainStore = defineStore("main", () => {
     moveLast,
     
     // Expression Management
-    getExpression: expressionManager.getExpression,
+    getExpression, // Exportamos nuestra propia computed property
     setExpression,
     evalBytebeat: expressionManager.evalBytebeat,
     loadExpressionFromHash,
