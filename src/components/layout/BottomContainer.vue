@@ -32,10 +32,10 @@
     </div>
     
     <!-- Tab Content -->
-    <div class="h-[450px]">
+    <div>
       <Keyboard v-if="activeTab === 'keyboard'" />
       <AudioEffects v-else-if="activeTab === 'effects'" />
-      <Saves/>
+      <Saves v-else-if="activeTab === 'saves'" />
     </div>
   </div>
 </template>
@@ -44,11 +44,11 @@
 import { ref } from 'vue';
 import { useLoggerStore } from "@/stores/loggerStore";
 
-import Logger from "@/components/Logger.vue";
-import SampleDisplay from "@/components/SampleDisplay.vue";
-import Keyboard from '@/components/Keyboard.vue'
-import Saves from '@/components/Saves.vue'
-import AudioEffects from '@/components/AudioSettings.vue';
+import Logger from "@/components/common/Logger.vue";
+import SampleDisplay from "@/components/audio/SampleDisplay.vue";
+import Keyboard from '@/components/core/Keyboard.vue'
+import Saves from '@/components/core/Saves.vue'
+import AudioEffects from '@/components/audio/AudioSettings.vue';
 
 const logger = useLoggerStore();
 const activeTab = ref('keyboard'); // Default to keyboard tab

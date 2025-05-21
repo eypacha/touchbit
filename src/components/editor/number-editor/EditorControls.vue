@@ -48,7 +48,7 @@ import {
   Shuffle,
 } from 'lucide-vue-next';
 
-import Key from '@/components/Key.vue';
+import Key from '@/components/common/Key.vue';
 import { NUMBER_MODE } from '@/constants/index.js';
 
 defineProps({

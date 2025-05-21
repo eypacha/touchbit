@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full p-2" @touchstart.stop.passive @keydown.stop>
+  <div class="w-full h-[450px] p-2" @touchstart.stop.passive @keydown.stop>
     <div class="block w-full p-2">
       <Label>
         Gain

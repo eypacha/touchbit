@@ -11,7 +11,7 @@
       <main class="flex flex-col w-full h-[calc(100dvh-65px)] relative">
           <VisualizerCanvas/>
           <StackContainer/>
-        <BottomContainer class="flex-0 h-[328px]"/>
+        <BottomContainer class="flex-0 h-[338px]"/>
       </main>
     </div>
     <div class="hidden md:block md:flex-1">
@@ -27,12 +27,12 @@ import { Button } from '@/components/ui/button'
 import { useMainStore } from '@/stores/mainStore';
 import { useThemeStore } from '@/stores/themeStore'; 
 
-import Logo from '@/components/Logo.vue';
-import Toolbar from "@/components/Toolbar.vue";
-import StackContainer from "@/components/StackContainer.vue";
-import BottomContainer from "@/components/BottomContainer.vue";
-import VisualizerCanvas from "@/components/VisualizerCanvas.vue";
-import Sidepanel from "@/components/Sidepanel.vue";
+import Logo from '@/components/core/Logo.vue';
+import Toolbar from "@/components/layout/Toolbar.vue";
+import StackContainer from "@/components/layout/StackContainer.vue";
+import BottomContainer from "@/components/layout/BottomContainer.vue";
+import VisualizerCanvas from "@/components/core/VisualizerCanvas.vue";
+import Sidepanel from "@/components/layout/Sidepanel.vue";
 
 const store = useMainStore();
 const themeStore = useThemeStore();

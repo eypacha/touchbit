@@ -60,13 +60,13 @@ import {
 } from '@/components/ui/drawer'
 
 import { Switch } from '@/components/ui/switch'
-import Key from '@/components/Key.vue'
+import Key from '@/components/common/Key.vue'
 
 import { Play, RotateCcw, Square, EllipsisVertical, Moon, Sun } from 'lucide-vue-next';
 import { useMainStore } from '@/stores/mainStore'
 import { useThemeStore } from '@/stores/themeStore'; 
 
-import Logo from '@/components/Logo.vue';
+import Logo from '@/components/core/Logo.vue';
 
 const store = useMainStore()
 const themeStore = useThemeStore(); 

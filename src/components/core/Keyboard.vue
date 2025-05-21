@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-[450px] keyboard flex-col flex-1" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
+  <div class="w-full max-w-[450px] h-[560px] keyboard p-2" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
     <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2 ">
       <Key v-for="(key, index) in layout"
         :key="index"
@@ -24,9 +24,7 @@
         <template v-else> {{ key.data }} </template>
       </Key>
     </div>
-    <div v-else class="flex-1 h-full">
-      <BinaryEditor />
-    </div>
+    <BinaryEditor v-else/>
   </div>
 </template>
 
@@ -43,8 +41,8 @@ import {
 } from 'lucide-vue-next';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useMainStore } from '@/stores/mainStore'
-import Key from '@/components/Key.vue'
-import BinaryEditor from '@/components/NumberEditor.vue'
+import Key from '@/components/common/Key.vue'
+import BinaryEditor from '@/components/core/NumberEditor.vue'
 
 import { layout } from  '@/constants/keyboard'
 

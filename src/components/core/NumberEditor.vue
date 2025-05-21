@@ -40,9 +40,9 @@ import { useBinaryEditor } from '@/composables/useBinaryEditor';
 import { useBitOperations } from '@/composables/useBitOperations';
 
 // Importar componentes
-import BinaryDisplay from '@/components/number-editor/BinaryDisplay.vue';
-import DecimalDisplay from '@/components/number-editor/DecimalDisplay.vue';
-import EditorControls from '@/components/number-editor/EditorControls.vue';
+import BinaryDisplay from '@/components/editor/number-editor/BinaryDisplay.vue';
+import DecimalDisplay from '@/components/editor/number-editor/DecimalDisplay.vue';
+import EditorControls from '@/components/editor/number-editor/EditorControls.vue';
 
 const store = useMainStore();
 
