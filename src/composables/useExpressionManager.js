@@ -148,6 +148,7 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
   function loadExpressionFromHash() {
     try {
       const hash = window.location.hash.substring(1); // Remove #
+
       
       // Parse hash parameters
       const params = {};
@@ -155,17 +156,18 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
         const [key, value] = param.split('=');
         if (key && value) params[key] = value;
       });
+
       
       let expressionLoaded = false;
       
       // Handle sample rate parameter
       if (params.s && !isNaN(params.s)) {
         const sampleRate = parseInt(params.s, 10);
-        if (sampleRate >= 8000 && sampleRate <= 48000) {
+        if (sampleRate >= 1000 && sampleRate <= 48000) {
           audioStore.setSampleRate(sampleRate);
-          logger.log('INFO', `Sample rate set to ${sampleRate}Hz from URL`);
+
         }
-      }
+      } 
       
       // Handle bytebeat expression parameter
       if (params.bb) {
@@ -184,7 +186,7 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
             return;
           }
           
-          logger.log('INFO', 'Expression loaded from URL');
+          console.log('INFO', 'Expression loaded from URL!',result);
           setExpression(result, () => {}); // No history save for initial load
         });
         
