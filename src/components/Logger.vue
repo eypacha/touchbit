@@ -5,7 +5,7 @@
         :key="logEntry.id"
         class="log-entry"
       >
-        <span>{{ logEntry.emoji }} {{ logEntry.message }}</span>
+        <span class="block overflow-hidden whitespace-nowrap text-ellipsis">{{ logEntry.emoji }} {{ logEntry.message }}</span>
       </div>
   </div>
 </template>
