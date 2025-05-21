@@ -59,9 +59,42 @@ function incrementDigit(index) {
   const charArray = [...characters.value];
   if (charArray[index] === '.') return; // No hacer nada si es un punto decimal
   
-  const currentValue = parseInt(charArray[index]);
-  // Incrementar el dígito (volver a 0 después de 9)
-  charArray[index] = (currentValue + 1) % 10;
+  let currentValue = parseInt(charArray[index]);
+  
+  if (currentValue < 9) {
+    charArray[index] = (currentValue + 1).toString();
+  } else { // currentValue es 9, así que se convierte en '0'
+    charArray[index] = '0';
+    // Intentar acarrear al dígito de la izquierda
+    let currentIndexToCarry = index - 1;
+    while (currentIndexToCarry >= 0) {
+      if (charArray[currentIndexToCarry] === '.') {
+        currentIndexToCarry--; // Saltar el punto decimal
+        continue;
+      }
+      
+      let digitToModify = parseInt(charArray[currentIndexToCarry]);
+      if (digitToModify < 9) {
+        charArray[currentIndexToCarry] = (digitToModify + 1).toString();
+        break; // Acarreo exitoso, detener la propagación
+      } else { // digitToModify es 9, se convierte en '0'
+        charArray[currentIndexToCarry] = '0';
+        // Continuar acarreando al siguiente dígito a la izquierda
+        currentIndexToCarry--;
+      }
+    }
+    // Si currentIndexToCarry < 0 y el primer dígito (o el único dígito si index era 0)
+    // se convirtió en '0' debido al acarreo o porque era '9' originalmente.
+    // Esto significa que necesitamos añadir un '1' al principio del número.
+    // Ej: "9.9" -> "10.0", "99" -> "100", "9" -> "10"
+    if (currentIndexToCarry < 0 && charArray[0] === '0') {
+      // Si el acarreo se propagó hasta el inicio y el primer carácter es '0',
+      // (o si el número original era '9' y se convirtió en '0'),
+      // prependemos '1' al array.
+      charArray.unshift('1');
+    }
+  }
+  
   updateValue(charArray);
 }
 
@@ -70,9 +103,36 @@ function decrementDigit(index) {
   const charArray = [...characters.value];
   if (charArray[index] === '.') return; // No hacer nada si es un punto decimal
   
-  const currentValue = parseInt(charArray[index]);
-  // Decrementar el dígito (volver a 9 después de 0)
-  charArray[index] = (currentValue - 1 + 10) % 10;
+  let digitValue = parseInt(charArray[index]);
+  
+  if (digitValue > 0) {
+    charArray[index] = (digitValue - 1).toString();
+  } else { // digitValue es 0, así que se convierte en '9'
+    charArray[index] = '9';
+    // Intentar tomar prestado del dígito de la izquierda
+    let currentIndexToBorrow = index - 1;
+    while (currentIndexToBorrow >= 0) {
+      if (charArray[currentIndexToBorrow] === '.') {
+        currentIndexToBorrow--; // Saltar el punto decimal
+        continue;
+      }
+      
+      let digitToModify = parseInt(charArray[currentIndexToBorrow]);
+      if (digitToModify > 0) {
+        charArray[currentIndexToBorrow] = (digitToModify - 1).toString();
+        break; // Préstamo exitoso, detener la propagación
+      } else { // digitToModify es 0, se convierte en '9'
+        charArray[currentIndexToBorrow] = '9';
+        // Continuar tomando prestado del siguiente dígito a la izquierda
+        currentIndexToBorrow--;
+      }
+    }
+    // Si currentIndexToBorrow < 0, significa que el préstamo se propagó hasta el inicio
+    // o no había más dígitos de los cuales tomar prestado.
+    // Ej: "0.0" decrementado en el último "0" se convierte en "9.9" (parseFloat lo interpreta así)
+    // Ej: "100" decrementado en el último "0" se convierte en "099" (parseFloat lo interpreta como 99)
+  }
+  
   updateValue(charArray);
 }
 
