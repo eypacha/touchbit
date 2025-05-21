@@ -4,9 +4,13 @@
       <Play v-if="!store.isPlaying"/>
       <Square v-else/>
     </Key>
-    <Key variant="outline" class="flex justify-end flex-1 border-input" @click="store.reset()">
+    <Key @click="store.reset()" class="border-input">
+      <RotateCcw/>
+    </Key>
+    <Key @click="toggleTimeFormat" variant="outline" class="flex justify-end flex-1 border-input">
       <span class="text-time">
-        {{ store.time }}</span>
+        {{ displayTime }}
+      </span>
     </Key>
     <Drawer direction="right">
       <DrawerTrigger>
@@ -43,6 +47,7 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'; // Import ref and computed
 import { Button } from '@/components/ui/button'
 import {
   Drawer,
@@ -57,13 +62,41 @@ import {
 import { Switch } from '@/components/ui/switch'
 import Key from '@/components/Key.vue'
 
-import { Play, Square, EllipsisVertical, Moon, Sun } from 'lucide-vue-next';
+import { Play, RotateCcw, Square, EllipsisVertical, Moon, Sun } from 'lucide-vue-next';
 import { useMainStore } from '@/stores/mainStore'
-import { useThemeStore } from '@/stores/themeStore'; // Add this import
+import { useThemeStore } from '@/stores/themeStore'; 
 
 import Logo from '@/components/Logo.vue';
 
 const store = useMainStore()
-const themeStore = useThemeStore(); // Add this line
+const themeStore = useThemeStore(); 
+
+const showFormattedTime = ref(false); // Reactive reference for toggling format
+
+const formattedTime = computed(() => {
+  const totalSeconds = Math.floor(store.time / store.sampleRate);
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  
+  if (totalMinutes >= 60) {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    const seconds = totalSeconds % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  } else {
+    const minutes = totalMinutes;
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+});
+
+const displayTime = computed(() => {
+  return showFormattedTime.value ? formattedTime.value : store.time;
+});
+
+function toggleTimeFormat() {
+  console.log('time', store.time)
+  console.log('sampleRate', store.sampleRate)
+  showFormattedTime.value = !showFormattedTime.value;
+}
 
 </script>
