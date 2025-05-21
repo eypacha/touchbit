@@ -1,69 +1,49 @@
 <template>
-  <div class="w-full h-full p-3 border rounded-md content">
-    <div class="flex items-center justify-between gap-2 mb-5">
-      <Label :for="'sampleRateLabel'">Sample rate</Label>
-      <Number ref="sampleRateLabel"  class="w-24" v-model="selectedSampleRate" :step="10" @update:modelValue="setSampleRate"
-        @touchstart.passive="updatingSampleRate = true" @touchend="updatingSampleRate = false" />
+  <div class="w-full h-full p-2" @touchstart.stop.passive @keydown.stop>
+    <div class="block w-full p-2">
+      <Label>
+        Gain
+        <Slider v-model="volumeValue" class="my-2" :max="100"  @update:modelValue="setVolume" @touchstart.stop.passive />
+      </Label>
     </div>
-    <div class="flex items-center justify-between gap-2 mb-5">
-      <Label :for="'bpmLabel'">BPM</Label>
-      <Key variant="outline" class="ml-8 border-gray" @touchstart.passive="tapTempo">
-        <small>tap</small>
-      </Key>
-      <Number ref="bpmLabel" class="w-24" v-model="selectedBPM" @update:modelValue="setBPM" @touchstart.passive="updatingBPM = true"
-        @touchend="updatingBPM = false" />
+    <div class="flex w-full p-2">
+      <Label class="justify-center flex-1 align-center">
+        Sample Rate
+        <Slider v-model="selectedSampleRate" class="my-2" :min="4000" :max="16000" @update:modelValue="setSampleRate" @touchstart.stop.passive />
+      </Label>
+      <input 
+        type="number" 
+        v-model="selectedSampleRate[0]" 
+        class="w-24 mt-3 ml-2 text-center bg-transparent border rounded-md text-number" 
+        :min="4000" 
+        :max="16000" 
+        @input="setSampleRate" 
+        @keydown.stop
+      />
     </div>
-    <Key @click="caclB">C</Key>
-    <div>
-  </div>
   </div>
 </template>
 
-
 <script setup>
-
-import { ref, watch } from 'vue';
-import { useMainStore } from '@/stores/mainStore';
-
-import { calculateBPM } from '@/lib/utils';
-import { useTapTempo } from '@/composables/useTapTempo';
-
-import Key from '@/components/Key.vue'
-import { Label } from '@/components/ui/label';
+import { ref } from 'vue';
 import { Number } from '@/components/ui/Number';
+import { useMainStore } from '@/stores/mainStore';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 
+const volumeValue = ref([80])
+const selectedSampleRate = ref([8000])
 
 const store = useMainStore();
 
-const selectedBPM = ref(117)
-const selectedSampleRate = ref(8000)
-const updatingSampleRate = ref(false)
-const updatingBPM = ref(false)
-
-const { tempo, tapTempo } = useTapTempo();
-
-
-watch(tempo, (newTempo) => {
-  selectedBPM.value = newTempo;
-  setBPM();
-});
-
-
-function caclB() {
-  console.log('caclB');
-  console.log(calculateBPM(selectedSampleRate.value, store.stack[1].data, store.stack[2].data));
-  // console.log(calculateSampleRate(selectedBPM.value, store.stack[1].data, store.stack[2].data));
+function setVolume() {
+  const linearVolume = volumeValue.value[0] / 100;
+  const logVolume = Math.pow(linearVolume, 2);
+  store.setVolume(logVolume);
 }
+
 function setSampleRate() {
-  if (updatingBPM.value) return;
-  console.log('setSampleRate');
-  selectedBPM.value = calculateBPM(selectedSampleRate.value, store.stack[1].data, store.stack[2].data)
-  store.setSampleRate(selectedSampleRate.value)
-}
-function setBPM() {
-  if (updatingSampleRate.value) return;
-  console.log('setBPM', selectedBPM.value);
-  selectedSampleRate.value = calculateSampleRate(selectedBPM.value, store.stack[1].data, store.stack[2].data)
-  store.setSampleRate(selectedSampleRate.value)
+  console.log('setSampleRate', selectedSampleRate.value[0]);
+  store.setSampleRate(selectedSampleRate.value[0]);
 }
 </script>
