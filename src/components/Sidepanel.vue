@@ -28,7 +28,9 @@ Bytebeat is a form of algorithmic music that uses bitwise operations to generate
 Touchbit uses postfix notation, also known as Reverse Polish Notation (RPN), to write expressions. This means the operator follows the operands. For example, the expression ${'`t 4 >>`'} in postfix notation represents t right shifted 4 times. This notation doesn't need parenthesis to define the order of operations because it operates on a stack to dictate precedence.
 ## Examples
 Click the expression to load it.
+- ${'`t t 8 >> &`'}: Minimal Sierpinski
 - ${'`t t 10 >> 42 & t *`'}: 42 Melody
+- ${'`t 255 % t 511 & ^ 3 *`'}: Starlost from Glitch Machine
 `
     });
 

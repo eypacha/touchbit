@@ -13,7 +13,7 @@
     }
 
     strong {
-        color: hsl(var(--action));
+        color: hsl(var(--time));
     }
 
     :focus-visible {
@@ -106,19 +106,23 @@
         h6 {
             padding: 2px 0;
             font-family: var(--crepe-font-title);
-            font-weight: 400;
+            font-weight: bold;
         }
 
         h1 {
             margin-top: 32px;
-            color: hsl(var(--time));
+            color: hsl(var(--number));
             font-size: 42px;
             line-height: 50px;
+
+            &::first-letter {
+                color: hsl(var(--time));
+            }
         }
 
         h2 {
             margin-top: 28px;
-            color: hsl(var(--number));
+            color: hsl(var(--action));
             font-size: 36px;
             line-height: 44px;
         }
@@ -159,16 +163,17 @@
             border-radius: 4px;
             display: inline-block;
             padding: 0 2px;
-            color: var(--crepe-color-inline-code);
+            color: hsl(var(--time));
             font-family: var(--crepe-font-code);
             font-weight: bold;
             font-size: 87.5%;
             background: color-mix(
                 in srgb,
-                var(--crepe-color-inline-area),
-                transparent 40%
+                hsl(var(--time)),
+                transparent 90%
             );
             line-height: 1.4286;
+            outline: solid 1px hsl(var(--time));
             cursor: pointer;
         }
 
