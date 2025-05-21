@@ -3,7 +3,7 @@
       ref="numberRef"
       class="relative"
       @touchstart.passive="handleTouchStart"
-      @touchmove="handleTouchMove"
+      @touchmove.passive="handleTouchMove"
       @touchend="handleTouchEnd"
       @click="handleClick"
     >
