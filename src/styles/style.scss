@@ -4,35 +4,8 @@
 @tailwind utilities;
 
 @layer base {
-    :root {
-        --background: 180 100% 95%;
-        --foreground: 0 0% 3.9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --card: 180 100% 96%;
-        --card-foreground: 0 0% 3.9%;
-        --border: 266 60% 70.8%;
-        --input: 0 0% 89.8%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --time: 189 94% 35%;
-        --operator: 189 94% 42.75%;
-        --number: 45.4 93.4% 42.75%;
-        --action: 293.4 69.5% 50%;
-        --error: 0 87% 50%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --ring: 0 0% 3.9%;
-        --radius: 0.5rem;
-    }
-
-    .dark {
+    /* Classic Theme (Default) */
+    [data-theme="classic"] {
         --background: 266 29% 5%;
         --foreground: 0 0% 98%;
         --muted: 0 0% 14.9%;
@@ -57,6 +30,118 @@
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
         --ring: 0 0% 83.1%;
+    }
+    
+    /* Dark Theme */
+    [data-theme="dark"] {
+        --background: 222 47% 11%;
+        --foreground: 0 0% 98%;
+        --muted: 223 47% 15%;
+        --muted-foreground: 215.4 16.3% 56.9%;
+        --popover: 224 71% 4%;
+        --popover-foreground: 215 20.2% 97.5%;
+        --card: 222 47% 13%;
+        --card-foreground: 0 0% 98%;
+        --border: 216 34% 17%;
+        --input: 216 34% 17%;
+        --primary: 210 100% 50%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 222 47% 20%;
+        --secondary-foreground: 0 0% 98%;
+        --time: 189 94% 42.75%;
+        --operator: 189 94% 42.75%;
+        --number: 45.4 93.4% 42.75%;
+        --action: 293.4 69.5% 50%;
+        --error: 0 87% 50%;
+        --accent: 216 34% 17%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+        --ring: 216 34% 17%;
+    }
+    
+    /* Light Theme */
+    [data-theme="light"] {
+        --background: 0 0% 100%;
+        --foreground: 222.2 47.4% 11.2%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 47.4% 11.2%;
+        --card: 0 0% 98%;
+        --card-foreground: 222.2 47.4% 11.2%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --primary: 222.2 47.4% 11.2%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+        --time: 189 94% 42.75%;
+        --operator: 189 94% 42.75%;
+        --number: 45.4 93.4% 42.75%;
+        --action: 293.4 69.5% 50%;
+        --error: 0 87% 50%;
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+        --ring: 215 20.2% 65.1%;
+    }
+    
+    /* Retro Theme */
+    [data-theme="retro"] {
+        --background: 75 8% 15%;
+        --foreground: 60 30% 85%;
+        --muted: 60 5% 25%;
+        --muted-foreground: 60 15% 70%;
+        --popover: 75 8% 15%;
+        --popover-foreground: 60 30% 85%;
+        --card: 70 8% 20%;
+        --card-foreground: 60 30% 85%;
+        --border: 60 5% 30%;
+        --input: 60 5% 25%;
+        --primary: 65 70% 60%;
+        --primary-foreground: 70 8% 15%;
+        --secondary: 25 70% 45%;
+        --secondary-foreground: 60 30% 85%;
+        --time: 130 50% 40%;
+        --operator: 200 70% 50%;
+        --number: 25 70% 45%;
+        --action: 300 60% 50%;
+        --error: 0 80% 50%;
+        --accent: 60 5% 25%;
+        --accent-foreground: 60 30% 85%;
+        --destructive: 0 60% 40%;
+        --destructive-foreground: 60 30% 85%;
+        --ring: 60 5% 30%;
+    }
+    
+    /* Neon Theme */
+    [data-theme="neon"] {
+        --background: 260 20% 10%;
+        --foreground: 60 100% 80%;
+        --muted: 260 20% 15%;
+        --muted-foreground: 180 100% 70%;
+        --popover: 260 20% 10%;
+        --popover-foreground: 60 100% 80%;
+        --card: 260 20% 12%;
+        --card-foreground: 60 100% 80%;
+        --border: 260 20% 20%;
+        --input: 260 20% 15%;
+        --primary: 320 100% 60%;
+        --primary-foreground: 260 20% 10%;
+        --secondary: 180 100% 50%;
+        --secondary-foreground: 260 20% 10%;
+        --time: 180 100% 50%;
+        --operator: 280 100% 60%;
+        --number: 60 100% 50%;
+        --action: 320 100% 60%;
+        --error: 0 100% 60%;
+        --accent: 260 20% 15%;
+        --accent-foreground: 60 100% 80%;
+        --destructive: 0 100% 50%;
+        --destructive-foreground: 60 100% 80%;
+        --ring: 260 20% 20%;
     }
 }
 

@@ -2,25 +2,38 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 
 export const useThemeStore = defineStore("theme", () => {
-  const theme = ref('dark');
+  const theme = ref('classic');
+  const availableThemes = ['classic', 'dark', 'light', 'retro', 'neon'];
 
-  function updateTheme() {
+  function setTheme(newTheme) {
+    // Update the data-theme attribute on the html element
     const html = document.documentElement;
-    if (theme.value === "dark") {
-      html.classList.add("dark");
-    } else {
-      html.classList.remove("dark");
-    }
+    html.setAttribute('data-theme', newTheme);
+    
+    // Update the theme state
+    theme.value = newTheme;
   }
   
-  function toggleTheme() {
-    theme.value = theme.value === "dark" ? "light" : "dark";
-    updateTheme();
+  // Initialize theme from localStorage or default
+  function initTheme() {
+    const savedTheme = localStorage.getItem('touchbit-theme');
+    if (savedTheme && availableThemes.includes(savedTheme)) {
+      setTheme(savedTheme);
+    } else {
+      setTheme('classic'); // Default theme
+    }
+  }
+
+  // Save theme to localStorage whenever it changes
+  function saveThemePreference() {
+    localStorage.setItem('touchbit-theme', theme.value);
   }
 
   return {
     theme,
-    updateTheme,
-    toggleTheme
+    availableThemes,
+    setTheme,
+    initTheme,
+    saveThemePreference
   };
 });

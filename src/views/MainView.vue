@@ -35,18 +35,8 @@ import VisualizerCanvas from "@/components/core/VisualizerCanvas.vue";
 import Sidepanel from "@/components/layout/Sidepanel.vue";
 
 const store = useMainStore();
-const themeStore = useThemeStore();
 
 const loading = ref(true);
-
-const prefersDarkScheme = window.matchMedia(
-  "(prefers-color-scheme: dark)",
-).matches;
-
-onMounted(() => {
-  themeStore.theme = prefersDarkScheme ? "dark" : "light";
-  themeStore.updateTheme();
-});
 
 function initialize() {
   // Try to load from hash first, if none exists or fails, load default
