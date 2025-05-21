@@ -141,16 +141,18 @@ const onTouchMove = (event) => {
     if (isModuloNumber) {
       // Apply modulo 256 arithmetic
       if (delta > 0) {
-        value.value = (value.value + props.step) % 256; // Wrap around at 256
+        value.value = (value.value + 1) % 256; // Wrap around at 256, changing by 1
       } else {
-        value.value = (value.value - props.step + 256) % 256; // Add 256 before modulo to handle negative numbers
+        value.value = (value.value - 1 + 256) % 256; // Add 256 before modulo to handle negative numbers
       }
     } else {
-      // Original behavior for other numbers
+      // Use least significant digit change logic for other numbers
+      const changeAmount = getLeastSignificantChange(value.value);
+      
       if (delta > 0) {
-        value.value += props.step; // Aumenta el valor
+        value.value = parseFloat((value.value + changeAmount).toFixed(10)); // Fix floating point precision
       } else {
-        value.value -= props.step; // Disminuye el valor
+        value.value = parseFloat((value.value - changeAmount).toFixed(10)); // Fix floating point precision
       }
       
       // Asegúrate de que el valor esté dentro del rango permitido
@@ -196,12 +198,44 @@ const handleTouchEnd = (event) => {
   endTouch(event);
 };
 
+// Helper function to determine if a value is a decimal number
+const hasDecimalPlaces = (num) => {
+  const strNum = String(num);
+  return strNum.includes('.') && !strNum.endsWith('.');
+};
+
+// Helper function to get the appropriate increment/decrement value
+const getLeastSignificantChange = (num) => {
+  const strNum = String(num);
+  
+  // For decimal numbers, adjust based on the last decimal place
+  if (hasDecimalPlaces(num)) {
+    const decimalPart = strNum.split('.')[1];
+    return 1 / (10 ** decimalPart.length);
+  }
+  
+  // For integers, return 1 (change the units place)
+  return 1;
+};
+
 // Add these new functions for button clicks
 const incrementValue = () => {
-  // Check if number should use modulo 256 behavior
   store.saveToHistory();
-  value.value += props.step;
-  value.value = clampValue(value.value);
+  
+  // Check if number should use modulo 256 behavior
+  const isModuloNumber = Number.isInteger(props.modelValue) && 
+                        props.modelValue >= 0 && 
+                        props.modelValue <= 255;
+  
+  if (isModuloNumber) {
+    // For modulo numbers, always increment by 1 and apply modulo 256
+    value.value = (value.value + 1) % 256;
+  } else {
+    // For regular numbers, increment by the appropriate amount for the least significant digit
+    const increment = getLeastSignificantChange(value.value);
+    value.value = parseFloat((value.value + increment).toFixed(10)); // Fix floating point precision issues
+    value.value = clampValue(value.value);
+  }
   
   // Emit the updated value
   emit('update:modelValue', value.value);
@@ -216,11 +250,12 @@ const decrementValue = () => {
                         props.modelValue <= 255;
   
   if (isModuloNumber) {
-    // Apply modulo 256 arithmetic (add 256 before modulo to handle negative numbers)
-    value.value = (value.value - props.step + 256) % 256;
+    // For modulo numbers, decrement by 1 and apply modulo 256
+    value.value = (value.value - 1 + 256) % 256;
   } else {
-    // Regular decrement with clamping
-    value.value -= props.step;
+    // For regular numbers, decrement by the appropriate amount for the least significant digit
+    const decrement = getLeastSignificantChange(value.value);
+    value.value = parseFloat((value.value - decrement).toFixed(10)); // Fix floating point precision issues
     value.value = clampValue(value.value);
   }
   
