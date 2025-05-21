@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <Logger/>
+    <Logger v-if="logger.showLogs"/>
     <SampleDisplay />
     <Carousel :opts="{
       startIndex: 0,
@@ -24,6 +24,7 @@ import {
   Carousel,
   CarouselContent,
 } from '@/components/ui/carousel'
+import { useLoggerStore } from "@/stores/loggerStore";
 
 
 import Logger from "@/components/Logger.vue";
@@ -33,4 +34,6 @@ import BottomCard from '@/components/BottomCard.vue'
 import Keyboard from '@/components/Keyboard.vue'
 import AudioSettings from '@/components/AudioSettings.vue'
 import AudioEffects from '@/components/AudioEffects.vue';
+
+const logger = useLoggerStore();
 </script>
