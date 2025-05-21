@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap content-start h-full gap-1 px-3 pt-6 overflow-x-hidden overflow-y-scroll text-3xl bg-background pb-x"
+    <div class="flex flex-wrap content-start h-full gap-1 px-3 overflow-x-hidden overflow-y-scroll text-3xl pt-9 bg-background pb-x"
          @click="handleContainerClick">
         <div
         v-for="(token, index) in store.stack"
@@ -17,7 +17,7 @@
             <span v-else-if="token.data === '>>'">»</span>
             <span v-else-if="token.data === '~ ~'" class="opacity-35">~</span>
             <Number v-else-if="token.type === 'number'" 
-                :model-value="parseFloat(token.data)" 
+                :model-value="token.data" 
                 @update:modelValue="handleUpdateNumber(token, $event)" 
                 :selected="isSelected(index)"
                 :styled="false"/>
