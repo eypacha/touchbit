@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-[450px] keyboard flex-col flex-1" @touchstart.stop.passive @mousedown.stop>
+  <div class="w-full max-w-[450px] keyboard flex-col flex-1" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
     <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2 ">
       <Key v-for="(key, index) in layout"
         :key="index"
@@ -41,7 +41,7 @@ import {
   Pi,
   BetweenHorizontalEnd
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useMainStore } from '@/stores/mainStore'
 import Key from '@/components/Key.vue'
 import BinaryEditor from '@/components/NumberEditor.vue'
@@ -53,6 +53,38 @@ const pressTimer = ref(null);
 const longPressThreshold = 600;
 const isLongPress = ref(false);
 const currentKey = ref(null); 
+
+// Add space key functionality (not on the physical keyboard)
+const spaceKey = { type: 'space', data: ' ', key: ' ' };
+
+// Handle keyboard input
+const handleKeyDown = (event) => {
+  // Skip if user is typing in an input field or textarea
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+    return;
+  }
+  
+  const key = event.key;
+  
+  // Handle space key separately (since it's not in the layout)
+  if (key === ' ') {
+    keyPressed(spaceKey.type, spaceKey.data);
+    event.preventDefault();
+    return;
+  }
+  
+  // Find matching key in our layout
+  const keyItem = layout.find(item => item.key === key);
+  if (keyItem) {
+    // Simulate the same behavior as if the key was clicked
+    keyPressed(keyItem.type, keyItem.data);
+    
+    // Prevent default browser behavior for certain keys
+    if (['ArrowLeft', 'ArrowRight', 'Backspace', 'Delete'].includes(key)) {
+      event.preventDefault();
+    }
+  }
+};
 
 const keyPressed = (type, data) => {
   store.keyPressed(type, data)
