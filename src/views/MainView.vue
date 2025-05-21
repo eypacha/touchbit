@@ -51,6 +51,8 @@ onMounted(() => {
 function initialize() {
   // Try to load from hash first, if none exists or fails, load default
   const loadedFromHash = store.loadExpressionFromHash();
+
+  console.log("Loaded from hash:", loadedFromHash);
   
   if (!loadedFromHash) {
     // Only set default if nothing was loaded from hash
