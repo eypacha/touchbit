@@ -69,15 +69,30 @@ export const useMainStore = defineStore("main", () => {
   function keyPressed(type, data) {
     switch (type) {
         case 'number':
-          console.log('number',data)
-            if (stack.value[selectedToken.value].type === 'number' && isEditingNumber.value) {
-              stack.value[selectedToken.value].data += data.toString();
+          console.log('number', data);
+          const currentToken = stack.value[selectedToken.value];
+          const dataStr = data.toString();
+
+          if (isEditingNumber.value === true && currentToken && currentToken.type === 'number') {
+            // A number token is currently selected. Modify it.
+            if (dataStr === '.') {
+              // Handle decimal point input
+              if (!currentToken.data.includes('.')) {
+                currentToken.data += '.';
+              }
+              // If currentToken.data already includes '.', do nothing to prevent multiple dots.
             } else {
-              newToken({ type: 'number', data: data.toString() });
-              isEditingNumber.value = true;
+              // Handle digit input
+              currentToken.data += dataStr;
             }
-            isEditingNumber.value = true;
-            break;
+            isEditingNumber.value = true; // Set to true as we've modified the number.
+          } else {
+            // No number token is selected, or the selected token is not of type 'number'.
+            // Create a new number token.
+            newToken({ type: 'number', data: dataStr });
+            isEditingNumber.value = true; // Set to true as we've started a new number.
+          }
+          break;
         case 'operator':
             if (isEditingNumber.value) {
                 isEditingNumber.value = false;
