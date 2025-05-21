@@ -4,6 +4,7 @@ import { ref } from 'vue';
 export const useLoggerStore = defineStore('logger', () => {
   const logs = ref([]);
   const maxLogs = ref(100); // Limit number of logs to prevent memory issues
+  const showLogs = ref(false); // Control visibility of logs
 
   // Emoji mapping for different log types
   const logEmojis = {
@@ -53,6 +54,7 @@ export const useLoggerStore = defineStore('logger', () => {
   }
 
   return {
+    showLogs,
     logs,
     maxLogs,
     log,
