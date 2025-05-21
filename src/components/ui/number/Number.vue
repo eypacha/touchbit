@@ -36,7 +36,7 @@ const numberRef = ref(null);
 // Definir las props del componente
 const props = defineProps({
   modelValue: {
-    type: Number,
+    type: [Number, String], // Permitir Number o String
     default: 0
   },
   min: {
@@ -66,24 +66,41 @@ const props = defineProps({
 });
 
 const formatedValue = computed(() => {
-  // Get the raw string value first
-  const rawValue = String(props.modelValue);
-  
-  // Si showDecimals es mayor que 0, redondeamos el valor
+  const rawValue = props.modelValue;
+
+  // Si el valor es una cadena que termina en punto (ej. "4."), mostrarla tal cual.
+  if (typeof rawValue === 'string' && rawValue.endsWith('.')) {
+    return rawValue;
+  }
+
+  // Si showDecimals es mayor que 0, redondear y formatear el valor numérico.
   if (props.showDecimals > 0) {
-    return parseFloat(props.modelValue).toFixed(props.showDecimals);
+    const numericValue = parseFloat(String(rawValue));
+    // Si no es un número válido (ej. después de un parseo fallido), 
+    // podríamos devolver el rawValue o un string vacío/predeterminado.
+    // Por ahora, si es NaN, se devuelve como está para no perder la entrada del usuario.
+    return isNaN(numericValue) ? String(rawValue) : numericValue.toFixed(props.showDecimals);
   } else {
-    // Handles numbers with decimal points and ensures trailing decimal is preserved
-    if (rawValue.includes('.')) {
-      return rawValue;
-    } else if (props.selected && store.isEditingNumber && 
-               store.stack[store.selectedToken]?.type === 'number' && 
+    // Si no se especifican decimales (showDecimals === 0)
+    const stringValue = String(rawValue);
+    
+    // Si el valor original (como string) ya incluye un punto, mostrarlo tal cual.
+    // Esto cubre casos como "12.3" cuando showDecimals es 0, o "4."
+    if (stringValue.includes('.')) {
+      return stringValue;
+    }
+    // Caso especial del store: si el token en el store termina en punto y estamos editando.
+    // Esto es para mostrar el punto tan pronto como se presiona, antes de que modelValue se actualice completamente.
+    else if (props.selected && store.isEditingNumber &&
+               store.stack[store.selectedToken]?.type === 'number' &&
                String(store.stack[store.selectedToken].data).endsWith('.')) {
-      // Special case: store has a decimal point at the end that hasn't been processed yet
-      return `${rawValue}.`;
+      // Asegurarse de que no añadimos un segundo punto si modelValue ya lo tiene (aunque el if anterior debería cubrirlo)
+      return stringValue.endsWith('.') ? stringValue : `${stringValue}.`;
     } else {
-      // Si no tiene parte decimal, devolvemos el valor entero
-      return parseInt(props.modelValue);
+      // Si no tiene parte decimal y no es el caso especial del store, convertir a entero.
+      const numericValue = parseInt(stringValue, 10);
+      // Devolver el string original si no se puede parsear como entero, o el número parseado.
+      return isNaN(numericValue) ? stringValue : String(numericValue);
     }
   }
 });
