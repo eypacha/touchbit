@@ -12,24 +12,9 @@
         {{ displayTime }}
       </span>
     </Key>
-    <Drawer direction="right">
-      <DrawerTrigger>
-        <Key class="border-input">
-          <EllipsisVertical/>
-        </Key>
-      </DrawerTrigger>
-      <DrawerContent class="bg-card">
-        <DrawerHeader>
-          <DrawerTitle>
-            <Logo/>
-          </DrawerTitle>
-          <DrawerDescription/>
-        </DrawerHeader>
-        <div class="p-5"> 
-
-        </div>
-        <DrawerFooter class="items-center">
-          <Switch :checked="themeStore.theme === 'dark'" @update:checked="themeStore.toggleTheme">
+  </header>
+</template>
+<Switch :checked="themeStore.theme === 'dark'" @update:checked="themeStore.toggleTheme">
             <template #thumb>
               <div class="flex items-center justify-center w-full h-full rounded-full">
                 <Moon v-if="themeStore.theme === 'dark'" class="bg-transparent size-4"/>
@@ -37,41 +22,18 @@
               </div>
             </template>
           </Switch>
-          <Button variant="ghost" size="sm">
-           Settings
-          </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
-  </header>
-</template>
-
 <script setup>
 import { ref, computed } from 'vue'; // Import ref and computed
-import { Button } from '@/components/ui/button'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer'
 
-import { Switch } from '@/components/ui/switch'
 import Key from '@/components/common/Key.vue'
 
-import { Play, RotateCcw, Square, EllipsisVertical, Moon, Sun } from 'lucide-vue-next';
+import { Play, RotateCcw, Square } from 'lucide-vue-next';
 import { useMainStore } from '@/stores/mainStore'
 import { useThemeStore } from '@/stores/themeStore'; 
 
-import Logo from '@/components/core/Logo.vue';
-
 const store = useMainStore()
-const themeStore = useThemeStore(); 
 
-const showFormattedTime = ref(false); // Reactive reference for toggling format
+const showFormattedTime = ref(false); 
 
 const formattedTime = computed(() => {
   const totalSeconds = Math.floor(store.time / store.sampleRate);

@@ -14,14 +14,6 @@
         Keyboard
       </button>
       <button 
-        @click="activeTab = 'effects'" 
-        :class="[
-          'px-4 py-2 text-sm font-medium',
-          activeTab === 'effects' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
-        ]">
-        Audio
-      </button>
-      <button 
         @click="activeTab = 'saves'" 
         :class="[
           'px-4 py-2 text-sm font-medium',
@@ -29,13 +21,30 @@
         ]">
         Bytebeats
       </button>
+      <button 
+        @click="activeTab = 'audioSettings'" 
+        :class="[
+          'px-4 py-2 text-sm font-medium',
+          activeTab === 'audioSettings' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
+        ]">
+        Audio
+      </button>
+      <button 
+        @click="activeTab = 'visualSettings'" 
+        :class="[
+          'px-4 py-2 text-sm font-medium',
+          activeTab === 'visualSettings' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
+        ]">
+        Visuals
+      </button>
     </div>
     
     <!-- Tab Content -->
     <div>
       <Keyboard v-if="activeTab === 'keyboard'" />
-      <AudioEffects v-else-if="activeTab === 'effects'" />
+      <AudioEffects v-else-if="activeTab === 'audioSettings'" />
       <Saves v-else-if="activeTab === 'saves'" />
+      <VisualSettings v-else-if="activeTab === 'visualSettings'" />
     </div>
   </div>
 </template>
@@ -47,8 +56,9 @@ import { useLoggerStore } from "@/stores/loggerStore";
 import Logger from "@/components/common/Logger.vue";
 import SampleDisplay from "@/components/audio/SampleDisplay.vue";
 import Keyboard from '@/components/core/Keyboard.vue'
-import Saves from '@/components/core/Saves.vue'
 import AudioEffects from '@/components/audio/AudioSettings.vue';
+import Saves from '@/components/core/Saves.vue'
+import VisualSettings from '@/components/core/VisualSettings.vue'
 
 const logger = useLoggerStore();
 const activeTab = ref('keyboard'); // Default to keyboard tab
