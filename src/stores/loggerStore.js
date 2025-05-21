@@ -19,6 +19,9 @@ export const useLoggerStore = defineStore('logger', () => {
     AUDIO: "🔊",
     SETTINGS: "⚙️",
     HISTORY: "📜",
+    SAVE: "💾",
+    LOAD: "📂",
+    DELETE: "🗑️",
   };
 
   function log(type, message) {

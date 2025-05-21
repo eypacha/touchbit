@@ -29,8 +29,11 @@ Touchbit uses postfix notation, also known as Reverse Polish Notation (RPN), to 
 ## Examples
 Click the expression to load it.
 - ${'`t t 8 >> &`'}: Minimal Sierpinski
+- ${'`t 92 | .896 * 96 |`'}: hardcOR by Gede
 - ${'`t t 10 >> 42 & t *`'}: 42 Melody
 - ${'`t 255 % t 511 & ^ 3 *`'}: Starlost from Glitch Machine
+
+
 `
     });
 
