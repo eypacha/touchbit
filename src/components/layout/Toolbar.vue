@@ -14,14 +14,7 @@
     </Key>
   </header>
 </template>
-<Switch :checked="themeStore.theme === 'dark'" @update:checked="themeStore.toggleTheme">
-            <template #thumb>
-              <div class="flex items-center justify-center w-full h-full rounded-full">
-                <Moon v-if="themeStore.theme === 'dark'" class="bg-transparent size-4"/>
-                <Sun v-else class="bg-transparent size-4" stroke="hsl(var(--number))"/>
-              </div>
-            </template>
-          </Switch>
+
 <script setup>
 import { ref, computed } from 'vue'; // Import ref and computed
 
