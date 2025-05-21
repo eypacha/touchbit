@@ -2,7 +2,7 @@
     <span
       ref="numberRef"
       class="relative"
-      @touchstart="handleTouchStart"
+      @touchstart.passive="handleTouchStart"
       @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
       @click="handleClick"

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-[450px] keyboard flex-col flex-1" @touchstart.stop @mousedown.stop>
+  <div class="w-full max-w-[450px] keyboard flex-col flex-1" @touchstart.stop.passive @mousedown.stop>
     <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2 ">
       <Key v-for="(key, index) in layout"
         :key="index"
@@ -7,7 +7,7 @@
         :class="getColSpan(key.width)"
         :disabled="key.disabled"
         :active="isKeyActive(key)"
-        @touchstart.stop="handleTouchStart(key.type, key.data, $event)"
+        @touchstart.stop.passive="handleTouchStart(key.type, key.data, $event)"
         @mousedown.stop="handleTouchStart(key.type, key.data, $event)"
         @touchend="handleTouchEnd(key.type, key.data, $event)"
         @mouseup="handleTouchEnd(key.type, key.data, $event)"

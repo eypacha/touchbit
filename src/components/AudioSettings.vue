@@ -3,14 +3,14 @@
     <div class="flex items-center justify-between gap-2 mb-5">
       <Label :for="'sampleRateLabel'">Sample rate</Label>
       <Number ref="sampleRateLabel"  class="w-24" v-model="selectedSampleRate" :step="10" @update:modelValue="setSampleRate"
-        @touchstart="updatingSampleRate = true" @touchend="updatingSampleRate = false" />
+        @touchstart.passive="updatingSampleRate = true" @touchend="updatingSampleRate = false" />
     </div>
     <div class="flex items-center justify-between gap-2 mb-5">
       <Label :for="'bpmLabel'">BPM</Label>
-      <Key variant="outline" class="ml-8 border-gray" @touchstart="tapTempo">
+      <Key variant="outline" class="ml-8 border-gray" @touchstart.passive="tapTempo">
         <small>tap</small>
       </Key>
-      <Number ref="bpmLabel" class="w-24" v-model="selectedBPM" @update:modelValue="setBPM" @touchstart="updatingBPM = true"
+      <Number ref="bpmLabel" class="w-24" v-model="selectedBPM" @update:modelValue="setBPM" @touchstart.passive="updatingBPM = true"
         @touchend="updatingBPM = false" />
     </div>
     <Key @click="caclB">C</Key>

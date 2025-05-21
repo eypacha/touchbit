@@ -1,15 +1,15 @@
 <template>
-  <div class="w-full h-full p-2 border rounded-md content" @touchstart.stop @keydown.stop>
+  <div class="w-full h-full p-2 border rounded-md content" @touchstart.stop.passive @keydown.stop>
     <div class="block w-full p-2">
       <Label>
         Gain
-        <Slider v-model="volumeValue" class="my-2" :max="100"  @update:modelValue="setVolume" @touchstart.stop />
+        <Slider v-model="volumeValue" class="my-2" :max="100"  @update:modelValue="setVolume" @touchstart.stop.passive />
       </Label>
     </div>
     <div class="flex w-full p-2">
       <Label class="justify-center flex-1 align-center">
         Sample Rate
-        <Slider v-model="selectedSampleRate" class="my-2" :min="4000" :max="16000" @update:modelValue="setSampleRate" @touchstart.stop />
+        <Slider v-model="selectedSampleRate" class="my-2" :min="4000" :max="16000" @update:modelValue="setSampleRate" @touchstart.stop.passive />
       </Label>
       <input 
         type="number" 
