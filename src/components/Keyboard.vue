@@ -56,6 +56,13 @@ const currentKey = ref(null);
 
 const keyPressed = (type, data) => {
   store.keyPressed(type, data)
+
+  // hackry for dot key. Bug unsolved: the first dot key press is not registered
+  if(type !== 'dot') return
+  setTimeout(() => {
+    store.keyPressed('dot', data)
+  }, 10)
+  
 }
 
 const longPress = (type, data) => {

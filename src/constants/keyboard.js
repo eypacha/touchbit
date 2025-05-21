@@ -22,7 +22,7 @@ export const layout = [
   { type: 'operator', data: '%' },
   { type: 'operator', data: '~' },
   { type: 'operator', data: '^' },
-  { type: 'number', data: '.' },
+  { type: 'dot', data: '.' , color: 'number'},
   { type: 'number', data: 0 },
   { type: 'action', data: 'BCKS', color: 'error' },
   { type: 'time', data: 't' },

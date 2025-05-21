@@ -73,24 +73,33 @@ export const useMainStore = defineStore("main", () => {
           const currentToken = stack.value[selectedToken.value];
           const dataStr = data.toString();
 
+          // Si ya estamos editando un número y el token actual es de tipo 'number'
           if (isEditingNumber.value === true && currentToken && currentToken.type === 'number') {
-            // A number token is currently selected. Modify it.
-            if (dataStr === '.') {
-              // Handle decimal point input
-              if (!currentToken.data.includes('.')) {
-                currentToken.data += '.';
-              }
-              // If currentToken.data already includes '.', do nothing to prevent multiple dots.
-            } else {
-              // Handle digit input
-              currentToken.data += dataStr;
-            }
-            isEditingNumber.value = true; // Set to true as we've modified the number.
+            // Si es un dígito, lo agregamos al final del número actual
+            currentToken.data += dataStr;
           } else {
-            // No number token is selected, or the selected token is not of type 'number'.
-            // Create a new number token.
+            // Si no estamos editando un número, creamos un nuevo token de número
             newToken({ type: 'number', data: dataStr });
-            isEditingNumber.value = true; // Set to true as we've started a new number.
+            // Indicamos que ahora estamos editando un número
+            isEditingNumber.value = true; 
+          }
+          break;
+        
+        case 'dot':
+          console.log('dot pressed');
+          const currentNumberToken = stack.value[selectedToken.value];
+          
+          // Si ya estamos editando un número y el token actual es de tipo 'number'
+          if (isEditingNumber.value === true && currentNumberToken && currentNumberToken.type === 'number') {
+            // Solo agregamos el punto si no existe ya un punto decimal
+            console.log('currentToken for dot', currentNumberToken.data);
+            if (!currentNumberToken.data.includes('.')) {
+              currentNumberToken.data += '.';
+            }
+          } else {
+            // Si no estamos editando un número, creamos un nuevo token con '0.'
+            newToken({ type: 'number', data: '0.' });
+            isEditingNumber.value = true;
           }
           break;
         case 'operator':
