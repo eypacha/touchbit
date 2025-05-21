@@ -161,6 +161,7 @@
             padding: 0 2px;
             color: var(--crepe-color-inline-code);
             font-family: var(--crepe-font-code);
+            font-weight: bold;
             font-size: 87.5%;
             background: color-mix(
                 in srgb,
@@ -168,6 +169,7 @@
                 transparent 40%
             );
             line-height: 1.4286;
+            cursor: pointer;
         }
 
         a {
