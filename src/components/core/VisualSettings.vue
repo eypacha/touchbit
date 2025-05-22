@@ -21,35 +21,6 @@
           </select>
         </div>
         
-        <!-- Theme Preview -->
-        <div class="p-4 border rounded-md border-muted">
-          <div class="flex flex-wrap gap-2">
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-md bg-primary"></div>
-              <span class="text-xs mt-1">Primary</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-md bg-secondary"></div>
-              <span class="text-xs mt-1">Secondary</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-md" style="background-color: hsl(var(--time))"></div>
-              <span class="text-xs mt-1">Time</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-md" style="background-color: hsl(var(--operator))"></div>
-              <span class="text-xs mt-1">Operator</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-md" style="background-color: hsl(var(--number))"></div>
-              <span class="text-xs mt-1">Number</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-md" style="background-color: hsl(var(--action))"></div>
-              <span class="text-xs mt-1">Action</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     
