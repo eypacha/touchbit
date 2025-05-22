@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-[450px] h-[560px] keyboard p-2" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
+  <div class="w-full max-w-[450px] h-[300px] keyboard p-2" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
     <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2 ">
       <Key v-for="(key, index) in layout"
         :key="index"
