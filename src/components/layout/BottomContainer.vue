@@ -2,44 +2,19 @@
   <div class="relative">
     <Logger v-if="logger.showLogs"/>
     <SampleDisplay />
-    
-    <!-- Tabs Navigation -->
+
     <div class="flex border-b border-border">
       <button 
-        @click="activeTab = 'keyboard'" 
+        v-for="tab in tabs" 
+        :key="tab.id"
+        @click="activeTab = tab.id" 
         :class="[
-          'px-4 py-2 text-sm font-medium',
-          activeTab === 'keyboard' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
+          'touch-manipulation px-4 py-2 text-sm font-medium',
+          activeTab === tab.id ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
         ]">
-        Keyboard
-      </button>
-      <button 
-        @click="activeTab = 'saves'" 
-        :class="[
-          'px-4 py-2 text-sm font-medium',
-          activeTab === 'saves' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
-        ]">
-        Bytebeats
-      </button>
-      <button 
-        @click="activeTab = 'audioSettings'" 
-        :class="[
-          'px-4 py-2 text-sm font-medium',
-          activeTab === 'audioSettings' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
-        ]">
-        Audio
-      </button>
-      <button 
-        @click="activeTab = 'visualSettings'" 
-        :class="[
-          'px-4 py-2 text-sm font-medium',
-          activeTab === 'visualSettings' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
-        ]">
-        Visuals
+        {{ tab.name }}
       </button>
     </div>
-    
-    <!-- Tab Content -->
     <div>
       <Keyboard v-if="activeTab === 'keyboard'" />
       <AudioEffects v-else-if="activeTab === 'audioSettings'" />
@@ -62,4 +37,12 @@ import VisualSettings from '@/components/core/VisualSettings.vue'
 
 const logger = useLoggerStore();
 const activeTab = ref('keyboard'); // Default to keyboard tab
+
+// Define the tabs array
+const tabs = [
+  { id: 'keyboard', name: 'Keyboard' },
+  { id: 'saves', name: 'ByteBeats' },
+  { id: 'audioSettings', name: 'Audio' },
+  { id: 'visualSettings', name: 'Visuals' }
+];
 </script>
