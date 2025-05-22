@@ -30,9 +30,11 @@
 import { computed } from 'vue'
 
 import { useMainStore } from '@/stores/mainStore'
+import { useUIStore } from '@/stores/uiStore'
 import { Number } from '@/components/ui/Number';
 
 const store = useMainStore()
+const uiStore = useUIStore()
 
 const isSelected = (index) => store.selectedToken === index
 
@@ -60,6 +62,9 @@ const handleContainerClick = (event) => {
 }
 
 const handleTouch = (token, index) => {
+    // Al interactuar con un token, nos aseguramos de que la pestaña activa sea siempre el teclado
+    uiStore.setActiveTab('keyboard');
+    
     if(isSelected(index)) {
         if (token.type === 'number') {
             store.isEditingNumber = true;
@@ -97,6 +102,9 @@ const handleTouch = (token, index) => {
         store.isBinaryEditor = false;
         store.moveTo(index)
     }
+    
+    // Guardamos la configuración de UI para persistir la pestaña seleccionada
+    uiStore.saveUISettings();
 }
 
 const handleUpdateNumber = (token, newValue) => {

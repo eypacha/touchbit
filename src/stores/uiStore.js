@@ -4,6 +4,7 @@ import { ref, computed } from 'vue';
 export const useUIStore = defineStore('ui', () => {
   // Uso de un único ref para el tipo de visualizador
   const visualizerType = ref('waveform'); // Puede ser 'waveform', 'frequency' o 'none'
+  const activeTab = ref('keyboard'); // Puede ser 'keyboard', 'saves', 'audioSettings', 'visualSettings'
 
   // Usando computed para que sean reactivos
   const showVisualizer = computed(() => visualizerType.value === 'waveform');
@@ -31,18 +32,31 @@ export const useUIStore = defineStore('ui', () => {
     }
   }
 
+  // Función para cambiar la tab activa
+  function setActiveTab(tabId) {
+    if (['keyboard', 'saves', 'audioSettings', 'visualSettings'].includes(tabId)) {
+      activeTab.value = tabId;
+    }
+  }
+
   // Load settings from localStorage on initialization
   function initUISettings() {
     const savedVisualizerType = localStorage.getItem('touchbit-visualizer-type');
+    const savedActiveTab = localStorage.getItem('touchbit-active-tab');
     
     if (savedVisualizerType !== null) {
       visualizerType.value = savedVisualizerType;
+    }
+    
+    if (savedActiveTab !== null) {
+      activeTab.value = savedActiveTab;
     }
   }
 
   // Save settings to localStorage
   function saveUISettings() {
     localStorage.setItem('touchbit-visualizer-type', visualizerType.value);
+    localStorage.setItem('touchbit-active-tab', activeTab.value);
   }
 
   return {
@@ -52,6 +66,8 @@ export const useUIStore = defineStore('ui', () => {
     toggleVisualizer,
     toggleFrequencyVisualizer,
     setVisualizerType,
+    activeTab,
+    setActiveTab,
     initUISettings,
     saveUISettings
   };
