@@ -13,6 +13,7 @@ export const useUIStore = defineStore('ui', () => {
   function toggleFrequencyVisualizer() {
     showFrequencyVisualizer.value = !showFrequencyVisualizer.value;
   }
+
   
   function setVisualizerType(type) {
     if (type === 'waveform') {
