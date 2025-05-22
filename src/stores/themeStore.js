@@ -8,7 +8,7 @@ from "pinia";
 
 export const useThemeStore = defineStore("theme", () => {
     const theme = ref('classic');
-    const availableThemes = ['classic', 'solarized-dark', 'solarized-light', 'retro', 'tokyo-night', 'tokyo-night-light', 'tokyo-night-storm', 'matcha'];
+    const availableThemes = ['classic', 'solarized-dark', 'solarized-light', 'autum', 'tokyo-night', 'tokyo-night-light', 'tokyo-night-storm', 'matcha'];
 
     function setTheme(newTheme) {
         // Update the data-theme attribute on the html element
