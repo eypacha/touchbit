@@ -19,6 +19,9 @@
         :max="16000" 
         @input="setSampleRate" 
         @keydown.stop
+        inputmode="numeric"
+        pattern="[0-9]*"
+        enterkeyhint="done"
       />
     </div>
   </div>
