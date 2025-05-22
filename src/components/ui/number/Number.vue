@@ -8,18 +8,19 @@
       @click="handleClick"
     >
       <span class="text-number">{{ formatedValue }}</span>
-      <div v-if="selected && store.isEditingNumber">
         <button 
-          class="absolute w-6 h-6 text-sm font-bold transform -translate-x-1/2 text-background -top-6 bg-number left-1/2"
+        v-if="selected && store.isEditingNumber"
+          class="absolute w-6 h-6 text-sm font-bold transform -translate-x-1/2 touch-manipulation text-background -top-6 bg-number left-1/2"
           @click.stop="incrementValue">
           <span>+</span>
         </button>
         <button 
+        v-if="selected && store.isEditingNumber"
           class="absolute w-6 h-6 text-sm font-bold transform -translate-x-1/2 text-background -bottom-6 bg-number left-1/2"
           @click.stop="decrementValue">
           <span>-</span>
         </button>
-      </div>
+        
     </span>
 </template>
 
