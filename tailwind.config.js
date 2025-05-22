@@ -1,6 +1,6 @@
 const animate = require("tailwindcss-animate")
 
-const categories = ['time', 'number', 'operator', 'action', 'error'];
+const categories = ['time', 'number', 'operator', 'action', 'error', 'success'];
 const prefixes = ['text', 'border', 'border-x', 'bg', 'active:bg'];
 const extraClasses = ['col-span-2', 'col-span-3'];
 
@@ -63,6 +63,9 @@ module.exports = {
   			},
   			error: {
   				DEFAULT: 'hsl(var(--error))'
+  			},
+  			success: {
+  				DEFAULT: 'hsl(var(--success))'
   			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',

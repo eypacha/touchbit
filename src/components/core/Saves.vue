@@ -21,19 +21,18 @@
       <div 
         v-for="expression in localStorageStore.savedExpressions" 
         :key="expression.id" 
-        class="flex items-center mb-2 overflow-hidden border rounded-md border-muted bg-card group"
+        class="flex items-center px-1 mb-2 overflow-hidden border rounded-md border-muted bg-card group"
       >
         <button 
-          class="flex-1 p-2 text-sm text-left hover:bg-muted group-hover:bg-muted/50"
+          class="flex-1 p-1 text-sm text-left hover:bg-muted group-hover:bg-muted/50"
           @click="loadExpression(expression.expression)"
           :title="expression.expression"
         >
-          <div class="font-bold truncate text-foreground">{{ expression.name || 'Untitled' }}</div>
-          <div class="text-xs truncate text-muted-foreground">{{ expression.expression }}</div>
+          <div class="font-bold truncate text-foreground">{{ expression.name || expression.expression }}</div>
         </button>
         <button 
-          class="p-2 text-muted-foreground hover:text-destructive"
-          @click="confirmDelete(expression.id, expression.name)"
+          class="p-1 text-muted-foreground hover:text-destructive"
+          @click="confirmDelete(expression.id, expression.name || expression.expression)"
           title="Delete"
         >
           <span class="text-lg">×</span>
@@ -48,23 +47,26 @@ import { ref } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 import { useLocalStorageStore } from '@/stores/localStorageStore';
 import { useLoggerStore } from '@/stores/loggerStore';
+import { useUIStore } from '@/stores/uiStore';
 import { useCurrentExpression } from '@/composables/useCurrentExpression';
 import Key from '@/components/common/Key.vue';
 
 const store = useMainStore();
 const localStorageStore = useLocalStorageStore();
 const logger = useLoggerStore();
+const uiStore = useUIStore();
 const expressionName = ref('');
 const { currentExpression } = useCurrentExpression();
 
 function saveCurrentExpression() {
   if (currentExpression.value) {
-    const name = expressionName.value || 'Untitled';
+    const name = expressionName.value;
     const success = localStorageStore.saveExpression(name, currentExpression.value);
     
     if (success) {
       expressionName.value = ''; // Clear input after save
-      logger.log('SAVE', `Saved expression: ${name}`);
+      uiStore.saveUISettings();
+      logger.log('SAVE', `Saved expression: ${name || currentExpression.value}`);
     }
   } else {
     logger.log('ERROR', 'Cannot save an empty expression');
@@ -73,6 +75,9 @@ function saveCurrentExpression() {
 
 function loadExpression(expression) {
   store.setExpression(expression);
+  // Asegurémonos de que la pestaña activa sea el teclado al cargar una expresión
+  uiStore.setActiveTab('keyboard');
+  uiStore.saveUISettings();
   logger.log('LOAD', `Loaded expression: ${expression}`);
 }
 

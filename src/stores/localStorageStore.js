@@ -66,7 +66,7 @@ export const useLocalStorageStore = defineStore('localStorage', () => {
     // Create a new expression object with timestamp as ID
     const newExpression = {
       id: Date.now(),
-      name: name || `Untitled ${savedExpressions.value.length + 1}`,
+      name: name,
       expression: expression,
       timestamp: new Date().toISOString()
     };
