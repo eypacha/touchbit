@@ -9,7 +9,7 @@
         :key="tab.id"
         @click="activeTab = tab.id" 
         :class="[
-          'touch-manipulation px-4 py-2 text-sm font-medium',
+          'touch-manipulation p-2 text-sm font-medium',
           activeTab === tab.id ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground'
         ]">
         {{ tab.name }}
@@ -43,6 +43,6 @@ const tabs = [
   { id: 'keyboard', name: 'Keyboard' },
   { id: 'saves', name: 'ByteBeats' },
   { id: 'audioSettings', name: 'Audio' },
-  { id: 'visualSettings', name: 'Visual' }
+  { id: 'visualSettings', name: 'Visual' },
 ];
 </script>
