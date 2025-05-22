@@ -10,6 +10,7 @@
       <Toolbar />
       <main class="flex flex-col w-full h-[calc(100dvh-65px)] relative">
           <VisualizerCanvas v-show="uiStore.showVisualizer"/>
+          <FrequencyVisualizer v-show="uiStore.showFrequencyVisualizer"/>
           <StackContainer/>
         <BottomContainer class="flex-0 h-[338px]"/>
       </main>
@@ -33,6 +34,7 @@ import Toolbar from "@/components/layout/Toolbar.vue";
 import StackContainer from "@/components/layout/StackContainer.vue";
 import BottomContainer from "@/components/layout/BottomContainer.vue";
 import VisualizerCanvas from "@/components/core/VisualizerCanvas.vue";
+import FrequencyVisualizer from "@/components/core/FrequencyVisualizer.vue";
 import Sidepanel from "@/components/layout/Sidepanel.vue";
 
 const store = useMainStore();

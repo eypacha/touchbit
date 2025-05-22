@@ -13,6 +13,7 @@ export const useAudioStore = defineStore("audio", () => {
   const time = ref(0);
   const sample = ref(0);
   const visualizationData = ref(null);
+  const frequencyData = ref(null);
   
   async function playPause(expression) {
     logger.log('AUDIO', isPlaying.value ? 'PAUSE' : 'PLAY');
@@ -85,6 +86,11 @@ export const useAudioStore = defineStore("audio", () => {
     visualizationData.value = await audioEngine.getSamplesForVisualization(width);
     return visualizationData.value;
   }
+  
+  async function getFrequencyData() {
+    frequencyData.value = await audioEngine.getFrequencyData();
+    return frequencyData.value;
+  }
 
   return {
     isPlaying,
@@ -93,6 +99,7 @@ export const useAudioStore = defineStore("audio", () => {
     time,
     sample,
     visualizationData,
+    frequencyData,
     playPause,
     setVolume,
     setSampleRate,
@@ -100,6 +107,7 @@ export const useAudioStore = defineStore("audio", () => {
     reset,
     setExpression,
     getSampleForTime,
-    updateVisualization
+    updateVisualization,
+    getFrequencyData
   };
 });

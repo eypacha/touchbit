@@ -6,6 +6,7 @@
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 import { useUIStore } from '@/stores/uiStore';
+import { useThemeColor } from '@/composables/useThemeColor';
 
 const props = defineProps({
     width: {
@@ -23,19 +24,8 @@ const uiStore = useUIStore();
 const canvas = ref(null);
 let visualizationInterval = null;
 
-// Function to get the CSS number color
-const getNumberColor = () => {
-    const numberHsl = getComputedStyle(document.documentElement).getPropertyValue('--number').trim();
-    return `hsl(${numberHsl})`;
-};
-
-// Reactive color that updates when the theme changes
-const numberColor = ref(getNumberColor());
-
-// Update the color when the theme changes
-const updateColor = () => {
-    numberColor.value = getNumberColor();
-};
+// Use the theme color composable
+const { numberColor, updateColors } = useThemeColor();
 
 onUnmounted(() => {
     if (visualizationInterval) {
@@ -48,11 +38,8 @@ onMounted(() => {
     const ctx = canvas.value.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     
-    // Initialize the color on mount
-    numberColor.value = getNumberColor();
-    
     // Optional: set a listener for theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColor);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColors);
     
     // Watch for play/pause changes
     watch(

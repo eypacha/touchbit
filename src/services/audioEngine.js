@@ -9,8 +9,10 @@ class AudioEngine {
       this.lastUpdateTime = 0;
       this.time = 0;
       this.stack = null;
-      this.volume = 0.8
+      this.volume = 0.8;
       this.gainNode = null;
+      this.analyser = null;
+      this.frequencyArray = null;
     }
     /**
      * Initializes the audio context and sets up the ByteBeatNode.
@@ -35,6 +37,11 @@ class AudioEngine {
         
         this.gainNode = this.context.createGain();
         this.gainNode.gain.value = this.volume;
+        
+        // Configurar el analizador de frecuencia
+        this.analyser = this.context.createAnalyser();
+        this.analyser.fftSize = 512; // Debe ser una potencia de 2
+        this.frequencyArray = new Uint8Array(this.analyser.frequencyBinCount);
         
         return true;
       }
@@ -98,6 +105,9 @@ class AudioEngine {
         // Reconectar los nodos de audio
         this.byteBeatNode.connect(this.gainNode);
         this.gainNode.connect(this.context.destination);
+        
+        // Conectar el analizador de frecuencia
+        this.gainNode.connect(this.analyser);
     
         this.isPlaying = true;
         return true;
@@ -227,6 +237,20 @@ class AudioEngine {
         if(expressions[0] === '') expressions[0] = '0'
         this.byteBeatNode.setExpressions(expressions);
       }
+    }
+    
+    /**
+     * Gets frequency data from the audio analyser
+     * @returns {Uint8Array} - Array of frequency data values (0-255)
+     */
+    async getFrequencyData() {
+      if (!this.analyser || !this.isPlaying) {
+        return null;
+      }
+      
+      // Get frequency data
+      this.analyser.getByteFrequencyData(this.frequencyArray);
+      return this.frequencyArray;
     }
   }
   

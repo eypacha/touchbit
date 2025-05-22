@@ -141,4 +141,11 @@ module.exports = {
   	}
   },
   plugins: [animate, require("tailwindcss-animate")],
+  extend: {
+    addUtilities: {
+      '.touch-manipulation': {
+        'touch-action': 'manipulation',
+      }
+    }
+  }
 }

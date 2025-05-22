@@ -50,6 +50,10 @@ export const useMainStore = defineStore("main", () => {
   async function updateVisualization(width) {
     return await audioStore.updateVisualization(width);
   }
+  
+  async function getFrequencyData() {
+    return await audioStore.getFrequencyData();
+  }
 
   // Propiedades computadas para mantener compatibilidad
   const isPlaying = computed(() => audioStore.isPlaying);
@@ -57,6 +61,7 @@ export const useMainStore = defineStore("main", () => {
   const sample = computed(() => audioStore.sample);
   const sampleRate = computed(() => audioStore.sampleRate); // <-- Añade esta línea
   const visualizationData = computed(() => audioStore.visualizationData);
+  const frequencyData = computed(() => audioStore.frequencyData);
 
   const getExpression = computed(() => {
     return stack.value
@@ -291,6 +296,8 @@ export const useMainStore = defineStore("main", () => {
     
     // Visualization
     updateVisualization,
+    getFrequencyData,
     visualizationData,
+    frequencyData,
   }
 });

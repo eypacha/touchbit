@@ -26,13 +26,19 @@
     <!-- Visualizer Settings Section -->
     <div class="flex flex-col gap-2">
       <h3 class="text-sm font-bold text-primary">Visualizer</h3>
-      
-      <div class="flex items-center justify-between">
-        <span class="text-sm text-foreground">Show Visualizer</span>
-        <Switch 
-          :checked="uiStore.showVisualizer"
-          @update:checked="toggleVisualizer"
-        />
+
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <select 
+            v-model="selectedVisualizerType" 
+            @change="changeVisualizerType"
+            class="flex-1 p-2 bg-transparent border rounded-md focus:outline-none focus:border-primary border-muted text-foreground"
+          >
+            <option value="waveform">Waveform</option>
+            <option value="frequency">Frequency Spectrum</option>
+            <option value="none">None</option>
+          </select>
+        </div>
       </div>
     </div>
     
@@ -64,10 +70,14 @@ const themeStore = useThemeStore();
 const logger = useLoggerStore();
 const uiStore = useUIStore();
 const selectedTheme = ref(themeStore.theme);
+const selectedVisualizerType = ref('waveform');
 
 onMounted(() => {
   // Ensure the selected theme matches the current theme
   selectedTheme.value = themeStore.theme;
+  
+  // Ensure the selected visualizer type matches the current state
+  selectedVisualizerType.value = uiStore.visualizerType;
 });
 
 function changeTheme() {
@@ -79,6 +89,26 @@ function changeTheme() {
 function formatThemeName(name) {
   // Capitalize the first letter and format names
   return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function changeVisualizerType() {
+  uiStore.setVisualizerType(selectedVisualizerType.value);
+  uiStore.saveUISettings();
+  
+  let logMessage;
+  switch (selectedVisualizerType.value) {
+    case 'waveform':
+      logMessage = 'Waveform visualizer enabled';
+      break;
+    case 'frequency':
+      logMessage = 'Frequency spectrum visualizer enabled';
+      break;
+    case 'none':
+      logMessage = 'Visualizer disabled';
+      break;
+  }
+  
+  logger.log('SETTINGS', logMessage);
 }
 
 function toggleVisualizer(value) {
