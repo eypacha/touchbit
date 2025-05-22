@@ -5,6 +5,7 @@
 <script setup>
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
+import { useUIStore } from '@/stores/uiStore';
 
 const props = defineProps({
     width: {
@@ -18,6 +19,7 @@ const props = defineProps({
 });
 
 const store = useMainStore();
+const uiStore = useUIStore();
 const canvas = ref(null);
 let visualizationInterval = null;
 
@@ -52,6 +54,7 @@ onMounted(() => {
     // Optional: set a listener for theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColor);
     
+    // Watch for play/pause changes
     watch(
         () => store.isPlaying,
         (isPlaying) => {
@@ -59,6 +62,22 @@ onMounted(() => {
             if (isPlaying) {
                 startVisualization(ctx);
             } else if (visualizationInterval) {
+                clearInterval(visualizationInterval);
+                visualizationInterval = null;
+            }
+        }
+    );
+    
+    // Watch for visualizer visibility changes
+    watch(
+        () => uiStore.showVisualizer,
+        (showVisualizer) => {
+            console.log("showVisualizer changed:", showVisualizer);
+            if (showVisualizer && store.isPlaying) {
+                // If visualizer is shown and audio is playing, start visualization
+                startVisualization(ctx);
+            } else if (!showVisualizer && visualizationInterval) {
+                // If visualizer is hidden, stop the visualization
                 clearInterval(visualizationInterval);
                 visualizationInterval = null;
             }
@@ -74,13 +93,15 @@ function startVisualization(ctx) {
     }
     
     const updateVisualization = async () => {
-        if (!store.isPlaying) {
-            console.log("Stopping visualization interval");
+        // Check if we should be visualizing (both playing and visualizer visible)
+        if (!store.isPlaying || !uiStore.showVisualizer) {
+            console.log("Stopping visualization interval - isPlaying:", store.isPlaying, "showVisualizer:", uiStore.showVisualizer);
             clearInterval(visualizationInterval);
             visualizationInterval = null;
             return;
         }
         
+        // Force update visualization data
         const data = await store.updateVisualization(props.width);
         
         if (data && data.left && data.right) {
@@ -102,7 +123,10 @@ function startVisualization(ctx) {
         }
     };
     
+    // Set interval for continuous updates
     visualizationInterval = setInterval(updateVisualization, 100);
+    
+    // Immediate update without waiting for interval
     updateVisualization();
 }
 </script>

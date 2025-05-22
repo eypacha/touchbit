@@ -23,6 +23,19 @@
       </div>
     </div>
     
+    <!-- Visualizer Settings Section -->
+    <div class="flex flex-col gap-2">
+      <h3 class="text-sm font-bold text-primary">Visualizer</h3>
+      
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-foreground">Show Visualizer</span>
+        <Switch 
+          :checked="uiStore.showVisualizer"
+          @update:checked="toggleVisualizer"
+        />
+      </div>
+    </div>
+    
     <!-- Logger Settings Section -->
     <div class="flex flex-col gap-2">
       <h3 class="text-sm font-bold text-primary">Debug</h3>
@@ -44,10 +57,12 @@
 import { ref, onMounted } from 'vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useLoggerStore } from '@/stores/loggerStore';
+import { useUIStore } from '@/stores/uiStore';
 import { Switch } from '@/components/ui/switch';
 
 const themeStore = useThemeStore();
 const logger = useLoggerStore();
+const uiStore = useUIStore();
 const selectedTheme = ref(themeStore.theme);
 
 onMounted(() => {
@@ -64,6 +79,12 @@ function changeTheme() {
 function formatThemeName(name) {
   // Capitalize the first letter and format names
   return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function toggleVisualizer(value) {
+  uiStore.showVisualizer = value;
+  uiStore.saveUISettings();
+  logger.log('SETTINGS', value ? 'Visualizer enabled' : 'Visualizer disabled');
 }
 
 function toggleLogs(value) {

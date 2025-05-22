@@ -9,7 +9,7 @@
     <div class="w-full md:max-w-[450px]">
       <Toolbar />
       <main class="flex flex-col w-full h-[calc(100dvh-65px)] relative">
-          <VisualizerCanvas/>
+          <VisualizerCanvas v-show="uiStore.showVisualizer"/>
           <StackContainer/>
         <BottomContainer class="flex-0 h-[338px]"/>
       </main>
@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button'
 
 import { useMainStore } from '@/stores/mainStore';
 import { useThemeStore } from '@/stores/themeStore'; 
+import { useUIStore } from '@/stores/uiStore';
 
 import Logo from '@/components/core/Logo.vue';
 import Toolbar from "@/components/layout/Toolbar.vue";
@@ -35,10 +36,14 @@ import VisualizerCanvas from "@/components/core/VisualizerCanvas.vue";
 import Sidepanel from "@/components/layout/Sidepanel.vue";
 
 const store = useMainStore();
+const uiStore = useUIStore();
 
 const loading = ref(true);
 
 function initialize() {
+  // Initialize UI settings
+  uiStore.initUISettings();
+  
   // Try to load from hash first, if none exists or fails, load default
   const loadedFromHash = store.loadExpressionFromHash();
 
