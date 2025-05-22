@@ -9,9 +9,12 @@ export function useShare() {
     return `🚀 ${store.getExpression}`;
   });
   
-  // Get current URL for sharing
+  // Get current URL for sharing including hash
   const shareUrl = computed(() => {
-    return window.location.href;
+    // Explicitly construct the URL with hash to ensure it's included
+    const baseUrl = window.location.origin + window.location.pathname;
+    const hash = window.location.hash || '';
+    return baseUrl + hash;
   });
   
   /**
@@ -22,11 +25,10 @@ export function useShare() {
     // Check if the Web Share API is supported
     if (navigator.share) {
 
-    const text = `🚀 ${shareText.value}`
       try {
         await navigator.share({
-          title: text,
-          text: `${text}\n\n 🔗`,
+          title: shareText.value,
+          text: `${shareText.value}\n\n 🔗`,
           url: shareUrl.value,
         });
         console.log('Content shared successfully');
