@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute top-0 left-0 w-full h-[calc(100dvh-400px)]">
+    <div class="absolute top-0 left-0 w-full h-[calc(100dvh-400px)] pointer-events-none">
         <WaveformVisualizer 
             :width="width" 
             :height="height" 
