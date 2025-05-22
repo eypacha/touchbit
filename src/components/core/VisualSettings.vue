@@ -44,8 +44,6 @@
     
     <!-- Logger Settings Section -->
     <div class="flex flex-col gap-2">
-      <h3 class="text-sm font-bold text-primary">Debug</h3>
-      
       <div class="flex items-center justify-between">
         <span class="text-sm text-foreground">Show Logger</span>
         <Switch 
