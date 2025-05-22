@@ -94,6 +94,21 @@ onMounted(() => {
                 clearInterval(analyzerInterval);
                 analyzerInterval = null;
             }
+        },
+        { immediate: true } // Evaluar inmediatamente al montar el componente
+    );
+    
+    // Watch for visualizer type changes directly
+    watch(
+        () => uiStore.visualizerType,
+        (type) => {
+            console.log("Visualizer type changed to:", type);
+            if (type === 'frequency' && store.isPlaying) {
+                startFrequencyVisualization(freqCtx);
+            } else if (type !== 'frequency' && analyzerInterval) {
+                clearInterval(analyzerInterval);
+                analyzerInterval = null;
+            }
         }
     );
 });

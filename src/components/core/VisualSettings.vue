@@ -64,6 +64,7 @@ import { ref, onMounted } from 'vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useLoggerStore } from '@/stores/loggerStore';
 import { useUIStore } from '@/stores/uiStore';
+import { useMainStore } from '@/stores/mainStore';
 import { Switch } from '@/components/ui/switch';
 
 const themeStore = useThemeStore();
@@ -92,9 +93,14 @@ function formatThemeName(name) {
 }
 
 function changeVisualizerType() {
+  const isPlaying = useMainStore().isPlaying;
+  const previousType = uiStore.visualizerType;
+  
+  // Establecer el nuevo tipo de visualizador
   uiStore.setVisualizerType(selectedVisualizerType.value);
   uiStore.saveUISettings();
   
+  // Registrar el cambio en el logger
   let logMessage;
   switch (selectedVisualizerType.value) {
     case 'waveform':

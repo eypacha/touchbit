@@ -1,13 +1,13 @@
 <template>
-    <div class="absolute top-0 left-0 w-full h-[calc(100dvh-393px)]">
+    <div class="absolute top-0 left-0 w-full h-[calc(100dvh-400px)]">
         <WaveformVisualizer 
             :width="width" 
             :height="height" 
-            v-if="uiStore.showVisualizer" />
+            v-show="uiStore.visualizerType === 'waveform'" />
         <FrequencyVisualizer 
             :width="width" 
             :height="height" 
-            v-if="uiStore.showFrequencyVisualizer" />
+            v-show="uiStore.visualizerType === 'frequency'" />
     </div>
 </template>
 

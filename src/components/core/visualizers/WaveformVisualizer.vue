@@ -79,6 +79,21 @@ onMounted(() => {
                 clearInterval(visualizationInterval);
                 visualizationInterval = null;
             }
+        },
+        { immediate: true } // Evaluar inmediatamente al montar el componente
+    );
+    
+    // Watch for visualizer type changes directly
+    watch(
+        () => uiStore.visualizerType,
+        (type) => {
+            console.log("Visualizer type changed to:", type);
+            if (type === 'waveform' && store.isPlaying) {
+                startWaveformVisualization(waveCtx);
+            } else if (type !== 'waveform' && visualizationInterval) {
+                clearInterval(visualizationInterval);
+                visualizationInterval = null;
+            }
         }
     );
 });

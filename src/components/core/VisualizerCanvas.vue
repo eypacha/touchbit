@@ -1,5 +1,5 @@
 <template>
-    <canvas ref="canvas" class="absolute top-0 left-0 w-full h-[calc(100dvh-393px)] opacity-50 pointer-events-none" :width="width" :height="height"></canvas>
+    <canvas ref="canvas" class="absolute top-0 left-0 w-full h-[calc(100dvh-400px)] opacity-50 pointer-events-none" :width="width" :height="height"></canvas>
 </template>
 
 <script setup>
