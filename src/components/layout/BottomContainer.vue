@@ -43,6 +43,6 @@ const tabs = [
   { id: 'keyboard', name: 'Keyboard' },
   { id: 'saves', name: 'ByteBeats' },
   { id: 'audioSettings', name: 'Audio' },
-  { id: 'visualSettings', name: 'Visuals' }
+  { id: 'visualSettings', name: 'Visual' }
 ];
 </script>

@@ -20,7 +20,19 @@
             </option>
           </select>
         </div>
-        
+      </div>
+    </div>
+    
+    <!-- Logger Settings Section -->
+    <div class="flex flex-col gap-2">
+      <h3 class="text-sm font-bold text-primary">Debug</h3>
+      
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-foreground">Show Logger</span>
+        <Switch 
+          :checked="logger.showLogs"
+          @update:checked="toggleLogs"
+        />
       </div>
     </div>
     
@@ -32,6 +44,7 @@
 import { ref, onMounted } from 'vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useLoggerStore } from '@/stores/loggerStore';
+import { Switch } from '@/components/ui/switch';
 
 const themeStore = useThemeStore();
 const logger = useLoggerStore();
@@ -51,5 +64,10 @@ function changeTheme() {
 function formatThemeName(name) {
   // Capitalize the first letter and format names
   return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function toggleLogs(value) {
+  logger.showLogs = value;
+  logger.log('SETTINGS', value ? 'Logger enabled' : 'Logger disabled');
 }
 </script>
