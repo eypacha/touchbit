@@ -7,10 +7,13 @@
     <Key @click="store.reset()" class="border-input">
       <RotateCcw/>
     </Key>
-    <Key @click="toggleTimeFormat" variant="outline" class="flex justify-end flex-1 border-input">
+    <Key @click="toggleTimeFormat" class="flex justify-end flex-1 border-input">
       <span class="text-time">
         {{ displayTime }}
       </span>
+    </Key>
+    <Key @click="shareFeature.shareContent" class="border-input">
+      <Share/>
     </Key>
   </header>
 </template>
@@ -20,11 +23,13 @@ import { ref, computed } from 'vue'; // Import ref and computed
 
 import Key from '@/components/common/Key.vue'
 
-import { Play, RotateCcw, Square } from 'lucide-vue-next';
+import { Play, RotateCcw, Square, Share } from 'lucide-vue-next';
 import { useMainStore } from '@/stores/mainStore'
 import { useThemeStore } from '@/stores/themeStore'; 
+import { useShare } from '@/composables/useShare';
 
 const store = useMainStore()
+const shareFeature = useShare()
 
 const showFormattedTime = ref(false); 
 
