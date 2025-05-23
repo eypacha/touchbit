@@ -7,15 +7,16 @@
       @touchend="handleTouchEnd"
       @click="handleClick"
     >
-      <span class="text-number">{{ formatedValue }}</span>
-        <SmallButton
+      <SmallButton
           v-if="selected && store.isEditingNumber"
-          class="absolute left-1/2 -top-6"
+          class="absolute left-1/2 -top-6 z-2"
           @click.stop="incrementValue">+</SmallButton>
         <SmallButton
           v-if="selected && store.isEditingNumber"
-          class="absolute left-1/2 -bottom-6"
+          class="absolute left-1/2 -bottom-6 z-2"
           @click.stop="decrementValue">-</SmallButton>
+      <span class="relative text-number z-1">{{ formatedValue }}</span>
+        
     </span>
 </template>
 
@@ -227,11 +228,11 @@ const incrementValue = () => {
   
   if (isModuloNumber) {
     // For modulo numbers, always increment by 1 and apply modulo 256
-    value.value = (value.value + 1) % 256;
+    value.value = (parseFloat(value.value) + 1) % 256;
   } else {
     // For regular numbers, increment by the appropriate amount for the least significant digit
     const increment = getLeastSignificantChange(value.value);
-    value.value = parseFloat((value.value + increment).toFixed(10)); // Fix floating point precision issues
+    value.value = parseFloat((parseFloat(value.value) + increment).toFixed(10)); // Fix floating point precision issues
     value.value = clampValue(value.value);
   }
   
