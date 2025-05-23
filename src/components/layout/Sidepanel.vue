@@ -1,6 +1,6 @@
 <template>
-  <div class="h-full p-4 border-l border-border bg-background">
-    <div ref="editorRoot" class="h-[calc(100%-4rem)] overflow-y-scroll overflow-x-hidden"></div>
+  <div class="h-[100dvh] p-4 border-l border-border bg-background">
+    <div ref="editorRoot" class="h-full overflow-x-hidden overflow-y-scroll"></div>
   </div>
 </template>
 
@@ -23,15 +23,28 @@ onMounted(() => {
 # Touchbit!
 Touchbit is a _mobile-friendly_ interface for composing and performing live bytebeat music using postfix expressions.
 ## Bytebeat
-Bytebeat is a form of algorithmic music that uses bitwise operations to generate sound, with only one variable t representing time. The expression is evaluated for each sample of the audio output with an implicit mod 256 at the end.
+Bytebeat is a form of algorithmic __music that uses bitwise operations__ to generate sound, with only one variable t representing time. The expression is evaluated for each sample of the 8bits audio output.
 ## Postfix
-Touchbit uses postfix notation, also known as Reverse Polish Notation (RPN), to write expressions. This means the operator follows the operands. For example, the expression ${'`t 4 >>`'} in postfix notation represents t right shifted 4 times. This notation doesn't need parenthesis to define the order of operations because it operates on a stack to dictate precedence.
+Touchbit uses postfix notation, to write expressions. This means the operator follows the operands. For example, the expression ${'`t 4 >>`'} in postfix notation represents t right shifted 4 times. 
 ## Examples
 Click the expression to load it.
-- ${'`t t 8 >> &`'}: Minimal Sierpinski
-- ${'`t 92 | .896 * 96 |`'}: hardcOR by Gede
-- ${'`t t 10 >> 42 & t *`'}: 42 Melody
-- ${'`t 255 % t 511 & ^ 3 *`'}: Starlost from Glitch Machine
+- ${'`t t 8 >> &`'}: __Minimal Sierpinski__
+- ${'`t 92 | .896 * 96 |`'}: __hardcOR__ by Gede
+- ${'`t t 4 >> | 0.999 *`'}: __untaunta__ by eypacha
+- ${'`t 13 >> t ~ 12 >> | 7 % t * 96 &`'}: __this != copla__ by eypacha
+- ${'`t t 10 >> 42 & t *`'}: __42 Melody__
+- ${'`t 255 % t 511 & ^ 3 *`'}: __Starlost__ from Glitch Machine
+## Shortcuts
+This interface is designed primarily for mobile, but... if you're using it on a computer, these shortcuts might come in handy. First, click any button on the keyboard to activate focus. Now you can press keys to enter tokens. Other keys:
+- __<__      Right Shift
+- __>__       Left Shift
+- __Space__   Play/Pause
+- __U__       Undo
+- __R__       Redo
+- __I__       Insert
+- __H__       Hold
+
+
 
 
 `
