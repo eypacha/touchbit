@@ -1,5 +1,6 @@
 import { computed } from 'vue';
 import { convertBytesToHex, convertHexToBytes } from "@/utils/convertUtils";
+import { getAssetPath } from "@/utils/pathUtils";
 
 export function useExpressionManager(stack, holdMode, audioStore, logger) {
   // Expresión calculada desde el stack
@@ -15,7 +16,9 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
     if (!window.LZMA) return;
     
     try {
-      const lzmaInstance = new window.LZMA("/vendors/lzma_worker.js");
+      // Get correct path for the worker
+      const workerPath = getAssetPath('vendors/lzma_worker.js');
+      const lzmaInstance = new window.LZMA(workerPath);
       lzmaInstance.compress(expression, 1, (result) => {
         const compressedStr = convertBytesToHex(result);
         
@@ -179,7 +182,9 @@ export function useExpressionManager(stack, holdMode, audioStore, logger) {
           return false;
         }
         
-        const lzmaInstance = new window.LZMA("/vendors/lzma_worker.js");
+        // Get correct path for the worker
+        const workerPath = getAssetPath('vendors/lzma_worker.js');
+        const lzmaInstance = new window.LZMA(workerPath);
         lzmaInstance.decompress(compressedData, (result, error) => {
           if (error) {
             logger.log('ERROR', `Failed to decompress expression: ${error}`);

@@ -39,7 +39,7 @@ export const useLocalStorageStore = defineStore('localStorage', () => {
   }, { deep: true });
   
   // Save a new expression
-  function saveExpression(name, expression) {
+  function saveExpression(name, expression, sampleRate) {
     if (!expression) {
       logger.log('ERROR', 'Cannot save empty expression');
       return false;
@@ -58,6 +58,8 @@ export const useLocalStorageStore = defineStore('localStorage', () => {
       // Update it and add to the beginning (most recent)
       existing.name = name || existing.name;
       existing.timestamp = new Date().toISOString();
+      // Update sample rate if provided
+      if (sampleRate) existing.sampleRate = sampleRate;
       savedExpressions.value.unshift(existing);
       
       return true;
@@ -68,6 +70,7 @@ export const useLocalStorageStore = defineStore('localStorage', () => {
       id: Date.now(),
       name: name,
       expression: expression,
+      sampleRate: sampleRate || 8000, // Default to 8000 if not provided
       timestamp: new Date().toISOString()
     };
     

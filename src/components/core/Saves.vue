@@ -4,11 +4,20 @@
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-2">
         <input
-          class="flex-1 p-2 font-bold bg-transparent border rounded-md text-md h-30 text-primary border-muted focus:outline-none focus:border-primary"
+          class="flex-1 p-2 text-sm font-bold bg-transparent border rounded-md h-30 text-primary border-muted focus:outline-none focus:border-primary"
           :placeholder="currentExpression ?? 'Enter a name for this expression'"
           v-model="expressionName"
         />
-        <Key color="action" @click="saveCurrentExpression" class="h-full">Save</Key>
+        <Key color="action" @click="saveCurrentExpression" class="p-2 ">Save</Key>
+         <Key color="secondary" @click="exportSavedExpressions" class="p-2 text-xs">Exp</Key>
+          <Key color="secondary" @click="triggerFileInput" class="p-2 text-xs">Imp</Key>
+          <input 
+            type="file" 
+            ref="fileInput" 
+            accept=".json"
+            class="hidden" 
+            @change="importSavedExpressions" 
+          />
       </div>
     </div>
     
@@ -25,14 +34,14 @@
       >
         <button 
           class="flex-1 p-1 text-sm text-left hover:bg-muted group-hover:bg-muted/50"
-          @click="loadExpression(expression.expression)"
+          @click="loadExpression(expression.expression, expression.id)"
           :title="expression.expression"
         >
           <div class="font-bold truncate text-foreground">{{ expression.name || expression.expression }}</div>
         </button>
         <button 
           class="p-1 text-muted-foreground hover:text-destructive"
-          @click="confirmDelete(expression.id, expression.name || expression.expression)"
+          @click="deleteExpression(expression.id, expression.name || expression.expression)"
           title="Delete"
         >
           <span class="text-lg">×</span>
@@ -49,19 +58,22 @@ import { useLocalStorageStore } from '@/stores/localStorageStore';
 import { useLoggerStore } from '@/stores/loggerStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useCurrentExpression } from '@/composables/useCurrentExpression';
+import { useAudioStore } from '@/stores/audioStore';
 import Key from '@/components/common/Key.vue';
 
 const store = useMainStore();
 const localStorageStore = useLocalStorageStore();
 const logger = useLoggerStore();
 const uiStore = useUIStore();
+const audioStore = useAudioStore();
 const expressionName = ref('');
+const fileInput = ref(null);
 const { currentExpression } = useCurrentExpression();
 
 function saveCurrentExpression() {
   if (currentExpression.value) {
     const name = expressionName.value;
-    const success = localStorageStore.saveExpression(name, currentExpression.value);
+    const success = localStorageStore.saveExpression(name, currentExpression.value, audioStore.sampleRate);
     
     if (success) {
       expressionName.value = ''; // Clear input after save
@@ -73,26 +85,101 @@ function saveCurrentExpression() {
   }
 }
 
-function loadExpression(expression) {
+function loadExpression(expression, id) {
+  // Find the expression by ID to get its sample rate
+  const savedExpression = localStorageStore.savedExpressions.find(exp => exp.id === id || exp.expression === expression);
+  
+  // Set sample rate if available
+  if (savedExpression && savedExpression.sampleRate) {
+    audioStore.setSampleRate(savedExpression.sampleRate);
+  }
+  
+  // Set the expression
   store.setExpression(expression);
-  // Asegurémonos de que la pestaña activa sea el teclado al cargar una expresión
-  uiStore.setActiveTab('keyboard');
   uiStore.saveUISettings();
   logger.log('LOAD', `Loaded expression: ${expression}`);
 }
+function deleteExpression(id, name) {
+  const success = localStorageStore.deleteExpression(id);
+  if (!success) logger.log('DELETE', `Deleted expression: ${name}`);
+}
 
-function confirmDelete(id, name) {
-  // In a more complex app, you might want to use a modal or dialog
-  // For this simple implementation, we'll just use a confirm dialog
-  if (confirm(`Delete expression "${name}"?`)) {
-    deleteExpression(id, name);
+// Trigger file input for import
+function triggerFileInput() {
+  fileInput.value.click();
+}
+
+// Export saved expressions to JSON file
+function exportSavedExpressions() {
+  try {
+    // Convert current format to expected output format
+    const exportData = localStorageStore.savedExpressions.map(exp => ({
+      exp: exp.expression,
+      name: exp.name || '',
+      rate: exp.sampleRate || audioStore.sampleRate
+    }));
+    
+    // Create JSON data and download
+    const jsonData = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create download link and trigger it
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'touchbit-saves.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    logger.log('SAVE', `Exported ${exportData.length} expressions to JSON`);
+  } catch (error) {
+    logger.log('ERROR', `Failed to export expressions: ${error.message}`);
   }
 }
 
-function deleteExpression(id, name) {
-  const success = localStorageStore.deleteExpression(id);
-  if (success) {
-    logger.log('DELETE', `Deleted expression: ${name}`);
-  }
+// Import saved expressions from JSON file
+function importSavedExpressions(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const importData = JSON.parse(e.target.result);
+      
+      if (!Array.isArray(importData)) {
+        throw new Error('Invalid JSON format: expected an array');
+      }
+      
+      let importCount = 0;
+      
+      // Process each expression in the imported data
+      importData.forEach(item => {
+        if (!item.exp) {
+          logger.log('WARNING', 'Skipping import item without expression');
+          return;
+        }
+        
+        // Import each expression
+        const success = localStorageStore.saveExpression(
+          item.name || '', 
+          item.exp,
+          item.rate || audioStore.sampleRate
+        );
+        
+        if (success) importCount++;
+      });
+      
+      // Reset file input to allow importing the same file again
+      event.target.value = '';
+      
+      logger.log('LOAD', `Imported ${importCount} expressions from JSON`);
+    } catch (error) {
+      logger.log('ERROR', `Failed to import expressions: ${error.message}`);
+    }
+  };
+  
+  reader.readAsText(file);
 }
 </script>
