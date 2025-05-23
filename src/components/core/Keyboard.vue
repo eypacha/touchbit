@@ -2,7 +2,12 @@
   <div class="w-full max-w-[450px] h-[300px] keyboard p-2" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
     <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2">
       <div v-for="(key, index) in layout" :key="index" 
-          :class="getColSpan(key.width)">
+          :class="getColSpan(key.width)" class="relative">
+          <div v-if="key.submenu && !key.disabled" class="absolute flex -top-9 bg-background outline-1 outline z-2">
+            <button v-for="button in key.submenu" class="h-8 w-[60px]" :key="button.data">
+              {{ button.data }}
+            </button>
+          </div>
         <Key 
           class="w-full"
           :color="key.color ?? key.type"

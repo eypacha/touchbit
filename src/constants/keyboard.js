@@ -1,7 +1,14 @@
 export const layout = [
   { type: 'action', data: 'UNDO', key: 'u', width: 3 },
   { type: 'action', data: 'REDO', key: 'r', width: 3 },
-  { type: 'action', data: 'STACK', color: 'time', disabled: true},
+  { type: 'action', data: 'STACK', color: 'time', disabled: true,
+      submenu: [
+        { type: 'action', data: 'SWAP', color: 'action' },
+        { type: 'action', data: 'PICK', color: 'action' },
+        { type: 'action', data: 'PUT', color: 'action' },
+        { type: 'action', data: 'DROP', color: 'action' },
+        { type: 'action', data: 'DUP', color: 'action' },
+      ]},
   { type: 'action', data: 'FUNC', color: 'time' , disabled: true},
   { type: 'action', data: 'SHARE', color: 'time', disabled: true},
   { type: 'number', data: 7, key: '7' },
