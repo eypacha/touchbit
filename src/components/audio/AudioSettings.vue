@@ -28,16 +28,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Number } from '@/components/ui/Number';
 import { useMainStore } from '@/stores/mainStore';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 
 const volumeValue = ref([80])
-const selectedSampleRate = ref([8000])
-
 const store = useMainStore();
+
+// Use computed property to keep the selectedSampleRate in sync with the store
+const selectedSampleRate = computed({
+  get: () => [store.sampleRate],
+  set: (value) => setSampleRate(value)
+});
 
 function setVolume() {
   const linearVolume = volumeValue.value[0] / 100;
@@ -45,8 +49,9 @@ function setVolume() {
   store.setVolume(logVolume);
 }
 
-function setSampleRate() {
-  console.log('setSampleRate', selectedSampleRate.value[0]);
-  store.setSampleRate(selectedSampleRate.value[0]);
+function setSampleRate(value) {
+  const rate = value ? value[0] : selectedSampleRate.value[0];
+  console.log('setSampleRate', rate);
+  store.setSampleRate(rate);
 }
 </script>

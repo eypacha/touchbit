@@ -9,68 +9,79 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { Crepe } from "@milkdown/crepe";
 import "@milkdown/crepe/theme/common/style.css"
 import { useMainStore } from '@/stores/mainStore';
+import { WELCOME_TEXT, TUTORIAL } from '@/constants/milkdown';
+
 const store = useMainStore();
 
 const editorRoot = ref(null);
+const tutorialPage = ref(0);
 let crepeInstance = null;
 
-onMounted(() => {
-  // Ahora el DOM está disponible
-  if (editorRoot.value) {
-    crepeInstance = new Crepe({
-      root: editorRoot.value,
-      defaultValue: `
-# Touchbit!
-Touchbit is a _mobile-friendly_ interface for composing and performing live bytebeat music using postfix expressions.
-## Bytebeat
-Bytebeat is a form of algorithmic __music that uses bitwise operations__ to generate sound, with only one variable t representing time. The expression is evaluated for each sample of the 8bits audio output.
-## Postfix
-Touchbit uses postfix notation, to write expressions. This means the operator follows the operands. For example, the expression ${'`t 4 >>`'} in postfix notation represents t right shifted 4 times. 
-## Examples
-Click the expression to load it.
-- ${'`t t 8 >> &`'}: __Minimal Sierpinski__
-- ${'`t 92 | .896 * 96 |`'}: __hardcOR__ by Gede
-- ${'`t t 4 >> | 0.999 *`'}: __untaunta__ by eypacha
-- ${'`t 13 >> t ~ 12 >> | 7 % t * 96 &`'}: __this != copla__ by eypacha
-- ${'`t t 10 >> 42 & t *`'}: __42 Melody__
-- ${'`t 255 % t 511 & ^ 3 *`'}: __Starlost__ from Glitch Machine
-## Shortcuts
-This interface is designed primarily for mobile, but... if you're using it on a computer, these shortcuts might come in handy. First, click any button on the keyboard to activate focus. Now you can press keys to enter tokens. Other keys:
-- __<__      Right Shift
-- __>__       Left Shift
-- __Space__   Play/Pause
-- __U__       Undo
-- __R__       Redo
-- __I__       Insert
-- __H__       Hold
+// Función para crear el editor con un valor específico
+const createEditor = (content) => {
+  // Si ya existe un editor, lo destruimos primero
+  if (crepeInstance) {
+    crepeInstance.destroy();
+    console.log("Editor destroyed");
+  }
 
+  // Crear nuevo editor con el contenido especificado
+  crepeInstance = new Crepe({
+    root: editorRoot.value,
+    defaultValue: content
+  });
 
+  return crepeInstance.create().then(() => {
+    console.log("Editor created with content:", content.substring(0, 20) + "...");
+    
+    // Configurar el editor después de crearlo
+    const editor = document.querySelector(".milkdown > div");
+    if (editor) {
+      editor.setAttribute("spellcheck", "false");
+      
+      editor.addEventListener("click", (event) => {
+        let targetElement = event.target;
+        while (targetElement && targetElement !== editor) {
+          if (targetElement.tagName === 'CODE') {
+            const content = targetElement.textContent;
+            console.log("Code element clicked:", content);
 
-
-`
-    });
-
-    crepeInstance.create().then(() => {
-      console.log("Editor created successfully");
-      const editor = document.querySelector(".milkdown > div");
-      if (editor) {
-        editor.setAttribute("spellcheck", "false");
-        
-        // Add click event listener to the editor with event delegation
-        editor.addEventListener("click", (event) => {
-          // Check if the clicked element or any of its parents is a code element
-          let targetElement = event.target;
-          while (targetElement && targetElement !== editor) {
-            if (targetElement.tagName === 'CODE') {
-              console.log("Code element clicked:", targetElement.textContent);
-              store.setExpression(targetElement.textContent);
-              break;
+            switch (content) {
+              case 'tutorial':
+                console.log('Recreating editor with tutorial content');
+                createEditor(TUTORIAL[0]);
+                break;
+              case 'welcome':
+                console.log('Recreating editor with welcome content');
+                createEditor(WELCOME_TEXT);
+                break;
+              case 'next page':
+                if (tutorialPage.value < TUTORIAL.length - 1) {
+                  tutorialPage.value++;
+                  createEditor(TUTORIAL[tutorialPage.value]);
+                }
+                break;
+              case 'prev page':
+                if (tutorialPage.value > 0) {
+                  tutorialPage.value--;
+                  createEditor(TUTORIAL[tutorialPage.value]);
+                }
+                break;
+              default:
+                store.setExpression(content);
+                break;
             }
-            targetElement = targetElement.parentElement;
           }
-        });
-      }
-    });
+          targetElement = targetElement.parentElement;
+        }
+      });
+    }
+  });
+};
+
+onMounted(() => {
+  if (editorRoot.value) {
+    createEditor(WELCOME_TEXT);
   }
 });
 

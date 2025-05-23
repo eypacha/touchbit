@@ -1,19 +1,37 @@
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import { useLoggerStore } from "@/stores/loggerStore";
 import { audioEngine } from "@/services/audioEngine";
+import { SAMPLE_RATE_KEY } from "@/constants/index";
 
 export const useAudioStore = defineStore("audio", () => {
   const logger = useLoggerStore();
   
-  // Estado relacionado con audio
   const isPlaying = ref(false);
   const volume = ref(0.8);
-  const sampleRate = ref(8000);
+  const sampleRate = ref(getSavedSampleRate());
   const time = ref(0);
   const sample = ref(0);
   const visualizationData = ref(null);
   const frequencyData = ref(null);
+  
+  function getSavedSampleRate() {
+    try {
+      const savedRate = localStorage.getItem(SAMPLE_RATE_KEY);
+      return savedRate ? parseInt(savedRate, 10) : 8000;
+    } catch (error) {
+      logger.log('ERROR', `Failed to load sample rate from localStorage: ${error.message}`);
+      return 8000;
+    }
+  }
+  
+  watch(sampleRate, (newRate) => {
+    try {
+      localStorage.setItem(SAMPLE_RATE_KEY, newRate.toString());
+    } catch (error) {
+      logger.log('ERROR', `Failed to save sample rate to localStorage: ${error.message}`);
+    }
+  });
   
   async function playPause(expression) {
     logger.log('AUDIO', isPlaying.value ? 'PAUSE' : 'PLAY');
@@ -21,7 +39,6 @@ export const useAudioStore = defineStore("audio", () => {
     if (!isPlaying.value) {
       const result = await audioEngine.play();
       
-      // Aquí recibimos la expresión como parámetro en lugar de acceder directamente
       setExpression(expression);
 
       if (result) {
@@ -45,6 +62,7 @@ export const useAudioStore = defineStore("audio", () => {
   function setSampleRate(rate) {
     sampleRate.value = rate;
     audioEngine.setSampleRate(sampleRate.value);
+    logger.log('AUDIO', `Sample Rate: ${rate}`);
   }
   
   async function stop() {
