@@ -8,25 +8,22 @@
       @click="handleClick"
     >
       <span class="text-number">{{ formatedValue }}</span>
-        <button 
-        v-if="selected && store.isEditingNumber"
-          class="absolute w-6 h-6 text-sm font-bold transform -translate-x-1/2 touch-manipulation text-background -top-6 bg-number left-1/2"
-          @click.stop="incrementValue">
-          <span>+</span>
-        </button>
-        <button 
-        v-if="selected && store.isEditingNumber"
-          class="absolute w-6 h-6 text-sm font-bold transform -translate-x-1/2 text-background -bottom-6 bg-number left-1/2"
-          @click.stop="decrementValue">
-          <span>-</span>
-        </button>
-        
+        <SmallButton
+          v-if="selected && store.isEditingNumber"
+          class="absolute left-1/2 -top-6"
+          @click.stop="incrementValue">+</SmallButton>
+        <SmallButton
+          v-if="selected && store.isEditingNumber"
+          class="absolute left-1/2 -bottom-6"
+          @click.stop="decrementValue">-</SmallButton>
     </span>
 </template>
 
 <script setup>
 import { ref, computed, watch, defineProps, defineEmits } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
+
+import SmallButton from '@/components/ui/number/SmallButton.vue';
 
 // Get store instance
 const store = useMainStore();
