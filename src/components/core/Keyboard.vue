@@ -1,28 +1,30 @@
 <template>
   <div class="w-full max-w-[450px] h-[300px] keyboard p-2" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
-    <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2 ">
-      <Key v-for="(key, index) in layout"
-        :key="index"
-        :color="key.color ?? key.type"
-        :class="getColSpan(key.width)"
-        :disabled="key.disabled"
-        :active="isKeyActive(key)"
-        @touchstart.stop.passive="handleTouchStart(key.type, key.data, $event)"
-        @mousedown.stop="handleTouchStart(key.type, key.data, $event)"
-        @touchend="handleTouchEnd(key.type, key.data, $event)"
-        @mouseup="handleTouchEnd(key.type, key.data, $event)"
-        @touchcancel="handleTouchCancel()">
-        <ChevronsLeft v-if="key.data === '<<'" />
-        <ChevronsRight v-else-if="key.data === '>>'" />
-        <Delete v-else-if="key.data === 'BCKS'"/>
-        <BetweenHorizontalEnd v-else-if="key.data === 'STACK'" stroke="hsl(var(--number))"/>
-        <Pi v-else-if="key.data === 'FUNC'" stroke="hsl(var(--number))"/>
-        <Share v-else-if="key.data === 'SHARE'" stroke="hsl(var(--number))"/>
-        <MoveLeft v-else-if="key.data === 'LEFT'" />
-        <MoveRight v-else-if="key.data === 'RIGHT'"/>
-        <Delete v-else-if="key.data === 'BCKS'" />
-        <template v-else> {{ key.data }} </template>
-      </Key>
+    <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2">
+      <div v-for="(key, index) in layout" :key="index" 
+          :class="getColSpan(key.width)">
+        <Key 
+          class="w-full"
+          :color="key.color ?? key.type"
+          :disabled="key.disabled"
+          :active="isKeyActive(key)"
+          @touchstart.stop.passive="handleTouchStart(key.type, key.data, $event)"
+          @mousedown.stop="handleTouchStart(key.type, key.data, $event)"
+          @touchend="handleTouchEnd(key.type, key.data, $event)"
+          @mouseup="handleTouchEnd(key.type, key.data, $event)"
+          @touchcancel="handleTouchCancel()">
+          <ChevronsLeft v-if="key.data === '<<'" />
+          <ChevronsRight v-else-if="key.data === '>>'" />
+          <Delete v-else-if="key.data === 'BCKS'"/>
+          <BetweenHorizontalEnd v-else-if="key.data === 'STACK'" stroke="hsl(var(--number))"/>
+          <Pi v-else-if="key.data === 'FUNC'" stroke="hsl(var(--number))"/>
+          <Share v-else-if="key.data === 'SHARE'" stroke="hsl(var(--number))"/>
+          <MoveLeft v-else-if="key.data === 'LEFT'" />
+          <MoveRight v-else-if="key.data === 'RIGHT'"/>
+          <Delete v-else-if="key.data === 'BCKS'" />
+          <template v-else> {{ key.data }} </template>
+        </Key>
+      </div>
     </div>
     <BinaryEditor v-else/>
   </div>
