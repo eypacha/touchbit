@@ -6,16 +6,17 @@
       @touchmove.passive="handleTouchMove"
       @touchend="handleTouchEnd"
       @click="handleClick"
+      :class="store.isEditingNumber ? 'z-2' : 'z-1'"
     >
+      <span class="relative text-number">{{ formatedValue }}</span>
       <SmallButton
           v-if="selected && store.isEditingNumber"
-          class="absolute left-1/2 -top-6 z-2"
+          class="absolute left-1/2 -top-6"
           @click.stop="incrementValue">+</SmallButton>
         <SmallButton
           v-if="selected && store.isEditingNumber"
-          class="absolute left-1/2 -bottom-6 z-2"
+          class="absolute left-1/2 -bottom-6"
           @click.stop="decrementValue">-</SmallButton>
-      <span class="relative text-number z-1">{{ formatedValue }}</span>
         
     </span>
 </template>
