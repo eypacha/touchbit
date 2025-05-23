@@ -57,16 +57,11 @@ const spaceKey = { type: 'space', data: ' ', key: ' ' };
 
 // Handle keyboard input
 const handleKeyDown = (event) => {
-  // Skip if user is typing in an input field or textarea
-  if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-    return;
-  }
-  
   const key = event.key;
   
-  // Handle space key separately (since it's not in the layout)
-  if (key === ' ') {
-    keyPressed(spaceKey.type, spaceKey.data);
+  // Check for spacebar to toggle play/pause
+  if (key === ' ' || key === 'Spacebar') {
+    store.playPause();
     event.preventDefault();
     return;
   }
