@@ -1,0 +1,29 @@
+@layer base {
+  /* Autumn Theme */
+  [data-theme="autumn"] {
+--background: 75 8% 15%;
+--foreground: 60 30% 85%;
+--muted: 60 5% 25%;
+--muted-foreground: 60 15% 70%;
+--popover: 75 8% 15%;
+--popover-foreground: 60 30% 85%;
+--card: 70 8% 20%;
+--card-foreground: 60 30% 85%;
+--border: 60 5% 30%;
+--input: 60 5% 25%;
+--primary: 65 70% 60%;
+--primary-foreground: 70 8% 15%;
+--secondary: 25 70% 45%;
+--secondary-foreground: 60 30% 85%;
+--time: 130 50% 40%;
+--operator: 200 70% 50%;
+--number: 25 70% 45%;
+--action: 300 60% 50%;
+--error: 0 80% 50%;
+--accent: 60 5% 25%;
+--accent-foreground: 60 30% 85%;
+--destructive: 0 60% 40%;
+--destructive-foreground: 60 30% 85%;
+--ring: 60 5% 30%;
+  }
+}

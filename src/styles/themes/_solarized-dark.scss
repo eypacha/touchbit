@@ -1,0 +1,31 @@
+@layer base {
+    /* Solarized Dark Theme */
+
+[data-theme="solarized-dark"] {
+    --background: 192 100% 11%;
+    --foreground: 44 87% 94%;
+    --muted: 192 50% 20%;
+    --muted-foreground: 44 50% 70%;
+    --popover: 192 100% 11%;
+    --popover-foreground: 44 87% 94%;
+    --card: 192 100% 13%;
+    --card-foreground: 44 87% 94%;
+    --border: 192 50% 20%;
+    --input: 192 50% 20%;
+    --primary: 205 69% 48%;
+    --primary-foreground: 44 87% 94%;
+    --secondary: 192 50% 20%;
+    --secondary-foreground: 44 87% 94%;
+    --time: 331 64% 52%;
+    --operator: 205 69% 48%;
+    --number: 45 100% 35%;
+    --action: 18 80% 44%;
+    --error: 1 71% 52%;
+    --accent: 192 50% 20%;
+    --accent-foreground: 44 87% 94%;
+    --destructive: 1 71% 52%;
+    --destructive-foreground: 44 87% 94%;
+    --ring: 192 50% 20%;
+    --success: 68 100% 30%;
+}
+}
