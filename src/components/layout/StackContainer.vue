@@ -5,12 +5,7 @@
         v-for="(token, index) in store.stack"
         :key="index"
         class="relative h-12 p-0 mb-6 text-5xl font-bold text-center border-b cursor-pointer touch-manipulation token-container min-w-5"
-        :class="[
-            { disabled: token.disabled },
-            { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
-            `text-${token.type}`, 
-             isSelected(index) ? `border border-x-${token.type}` : 'border border-t-transparent border-x-transparent border-b-gray'
-        ]"
+        :class="getTokenClasses(token, index)"
         @click.stop="handleTouch(token, index)"
         >
             <span v-if="token.data === '<<'">«</span>
@@ -37,6 +32,17 @@ const store = useMainStore()
 const uiStore = useUIStore()
 
 const isSelected = (index) => store.selectedToken === index
+
+const getTokenClasses = (token, index) => {
+  return [
+    { disabled: token.disabled },
+    { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
+    `text-${token.type}`,
+    isSelected(index)
+      ? `border ${token.type === 'empty' ? 'border-foreground' : `border-${token.type}`}`
+      : 'border border-transparent'
+  ]
+}
 
 const formatNumber = computed(() => {
     return (data) => {
