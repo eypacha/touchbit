@@ -4,7 +4,7 @@
         <div
         v-for="(token, index) in store.stack"
         :key="index"
-        class="relative h-12 p-0 mb-6 text-5xl font-bold text-center border-b cursor-pointer touch-manipulation token-container min-w-5"
+        class="relative h-12 p-0 mb-6 font-bold text-center border-b cursor-pointer touch-manipulation token-container min-w-5"
         :class="getTokenClasses(token, index)"
         @click.stop="handleTouch(token, index)"
         >
@@ -26,7 +26,8 @@ import { computed } from 'vue'
 
 import { useMainStore } from '@/stores/mainStore'
 import { useUIStore } from '@/stores/uiStore'
-import { Number } from '@/components/ui/Number';
+import { Number } from '@/components/ui/number';
+import { ACTION_OPERATORS, WORD_OPERATORS } from '@/constants'
 
 const store = useMainStore()
 const uiStore = useUIStore()
@@ -34,14 +35,21 @@ const uiStore = useUIStore()
 const isSelected = (index) => store.selectedToken === index
 
 const getTokenClasses = (token, index) => {
+  const isActionOperator = ACTION_OPERATORS.includes(token.data);
+  const isWordOperator = WORD_OPERATORS.includes(token.data);
+  
+  const colorClass = isActionOperator ? 'text-action' : `text-${token.type}`;
+  const sizeClass = isWordOperator ? 'text-4xl mt-1' : 'text-5xl';
+
   return [
     { disabled: token.disabled },
     { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
-    `text-${token.type}`,
+    colorClass,
+    sizeClass,
     isSelected(index)
-      ? `border ${token.type === 'empty' ? 'border-foreground' : `border-${token.type}`}`
+      ? `border ${token.type === 'empty' ? 'border-foreground' : `border-${token.color || token.type}`}`
       : 'border border-transparent'
-  ]
+  ].filter(Boolean)
 }
 
 const formatNumber = computed(() => {

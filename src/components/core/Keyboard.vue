@@ -1,10 +1,24 @@
 <template>
-  <div class="w-full max-w-[450px] h-[300px] keyboard p-2" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
+  <div class="w-full max-w-[450px] h-[300px] keyboard p-2 mx-auto" @touchstart.stop.passive @mousedown.stop @keydown="handleKeyDown">
     <div v-if="!store.isBinaryEditor" class="grid grid-cols-12 gap-2">
       <div v-for="(key, index) in layout" :key="index" 
           :class="getColSpan(key.width)" class="relative">
-          <div v-if="key.submenu && !key.disabled" class="absolute flex -top-9 bg-background outline-1 outline z-2">
-            <button v-for="button in key.submenu" class="h-8 w-[60px]" :key="button.data">
+          <div v-if="key.submenu && !key.disabled && openSubmenu === key.data"
+            ref="submenuContainer"
+            class="absolute flex -top-9 bg-background outline-1 outline outline-time z-2"
+            :style="{ left: key.position + 'px' }">
+              <button v-for="button in key.submenu"
+                :key="button.data"
+                class="h-8 w-[50px] font-bold"
+                :class="[
+                  `text-${button.color || button.type}`,
+                  `border-${button.color || button.type}`
+                ]"
+                @touchstart.stop.passive="handleTouchStart(button.type, button.data, $event)"
+                @mousedown.stop="handleTouchStart(button.type, button.data, $event)"
+                @touchend="handleTouchEnd(button.type, button.data, $event)"
+                @mouseup="handleTouchEnd(button.type, button.data, $event)"
+                @touchcancel="handleTouchCancel()">
               {{ button.data }}
             </button>
           </div>
@@ -22,8 +36,8 @@
           <ChevronsRight v-else-if="key.data === '>>'" />
           <Delete v-else-if="key.data === 'BCKS'"/>
           <BetweenHorizontalEnd v-else-if="key.data === 'STACK'" stroke="hsl(var(--number))"/>
-          <Pi v-else-if="key.data === 'FUNC'" stroke="hsl(var(--number))"/>
-          <Share v-else-if="key.data === 'SHARE'" stroke="hsl(var(--number))"/>
+          <Pi v-else-if="key.data === 'MATH'" stroke="hsl(var(--number))"/>
+          <Share v-else-if="key.data === 'LOGIC'" stroke="hsl(var(--number))"/>
           <MoveLeft v-else-if="key.data === 'LEFT'" />
           <MoveRight v-else-if="key.data === 'RIGHT'"/>
           <Delete v-else-if="key.data === 'BCKS'" />
@@ -46,7 +60,8 @@ import {
   Pi,
   BetweenHorizontalEnd
 } from 'lucide-vue-next';
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, useTemplateRef } from 'vue';
+import { onClickOutside } from '@vueuse/core';
 import { useMainStore } from '@/stores/mainStore'
 import Key from '@/components/common/Key.vue'
 import BinaryEditor from '@/components/core/NumberEditor.vue'
@@ -57,7 +72,14 @@ const store = useMainStore()
 const pressTimer = ref(null);
 const longPressThreshold = 600;
 const isLongPress = ref(false);
-const currentKey = ref(null); 
+const currentKey = ref(null);
+const openSubmenu = ref(null); // Para controlar qué submenú está abierto
+const submenuContainer = useTemplateRef('submenuContainer'); // Referencia al contenedor del submenú
+
+// Cerrar submenú al hacer clic fuera
+onClickOutside(submenuContainer, () => {
+  openSubmenu.value = null;
+}); 
 
 // Add space key functionality (not on the physical keyboard)
 const spaceKey = { type: 'space', data: ' ', key: ' ' };
@@ -87,6 +109,28 @@ const handleKeyDown = (event) => {
 };
 
 const keyPressed = (type, data) => {
+  // Primero verificar si es una tecla con submenú
+  const keyWithSubmenu = layout.find(key => key.data === data && key.submenu);
+  
+  if (keyWithSubmenu) {
+    // Toggle del submenú
+    if (openSubmenu.value === data) {
+      openSubmenu.value = null; // Cerrar si ya está abierto
+    } else {
+      openSubmenu.value = data; // Abrir el submenú
+    }
+    return; // No ejecutar la acción normal
+  }
+  
+  // Si es un elemento del submenú, cerrar el submenú después de ejecutar
+  const isSubmenuItem = layout.some(key => 
+    key.submenu && key.submenu.some(subItem => subItem.data === data)
+  );
+  
+  if (isSubmenuItem) {
+    openSubmenu.value = null; // Cerrar submenú después de seleccionar
+  }
+  
   store.keyPressed(type, data)
 
   // hackry for dot key. Bug unsolved: the first dot key press is not registered
@@ -94,7 +138,6 @@ const keyPressed = (type, data) => {
   setTimeout(() => {
     store.keyPressed('dot', data)
   }, 10)
-  
 }
 
 const longPress = (type, data) => {
