@@ -1916,14 +1916,14 @@
     "@vueuse/shared" "12.8.2"
     vue "^3.5.13"
 
-"@vueuse/core@^13.1.0":
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-13.1.0.tgz#d5964c391e4d4fea3407909819c45de4bcb58211"
-  integrity sha512-PAauvdRXZvTWXtGLg8cPUFjiZEddTqmogdwYpnn60t08AA5a8Q4hZokBnpTOnVNqySlFlTcRYIC8OqreV4hv3Q==
+"@vueuse/core@^13.3.0":
+  version "13.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-13.3.0.tgz#9932afcd5d83f4b25f73313b91a94f3aef57c479"
+  integrity sha512-uYRz5oEfebHCoRhK4moXFM3NSCd5vu2XMLOq/Riz5FdqZMy2RvBtazdtL3gEcmDyqkztDe9ZP/zymObMIbiYSg==
   dependencies:
     "@types/web-bluetooth" "^0.0.21"
-    "@vueuse/metadata" "13.1.0"
-    "@vueuse/shared" "13.1.0"
+    "@vueuse/metadata" "13.3.0"
+    "@vueuse/shared" "13.3.0"
 
 "@vueuse/metadata@10.11.1":
   version "10.11.1"
@@ -1935,10 +1935,10 @@
   resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-12.8.2.tgz#6cb3a4e97cdcf528329eebc1bda73cd7f64318d3"
   integrity sha512-rAyLGEuoBJ/Il5AmFHiziCPdQzRt88VxR+Y/A/QhJ1EWtWqPBBAxTAFaSkviwEuOEZNtW8pvkPgoCZQ+HxqW1A==
 
-"@vueuse/metadata@13.1.0":
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-13.1.0.tgz#959f8f2da5b18fb9b80529714dddb6ab69131d82"
-  integrity sha512-+TDd7/a78jale5YbHX9KHW3cEDav1lz1JptwDvep2zSG8XjCsVE+9mHIzjTOaPbHUAk5XiE4jXLz51/tS+aKQw==
+"@vueuse/metadata@13.3.0":
+  version "13.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-13.3.0.tgz#b75185e304f3301e449ebcd55298db54a276b4fa"
+  integrity sha512-42IzJIOYCKIb0Yjv1JfaKpx8JlCiTmtCWrPxt7Ja6Wzoq0h79+YVXmBV03N966KEmDEESTbp5R/qO3AB5BDnGw==
 
 "@vueuse/shared@10.11.1", "@vueuse/shared@^10.11.0":
   version "10.11.1"
@@ -1954,10 +1954,10 @@
   dependencies:
     vue "^3.5.13"
 
-"@vueuse/shared@13.1.0":
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-13.1.0.tgz#b01ad108f0de3f1b02e0591c6fc54a9ee0029298"
-  integrity sha512-IVS/qRRjhPTZ6C2/AM3jieqXACGwFZwWTdw5sNTSKk2m/ZpkuuN+ri+WCVUP8TqaKwJYt/KuMwmXspMAw8E6ew==
+"@vueuse/shared@13.3.0":
+  version "13.3.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-13.3.0.tgz#b74f796d584cd1e62547bedb29bbbcf06e434671"
+  integrity sha512-L1QKsF0Eg9tiZSFXTgodYnu0Rsa2P0En2LuLrIs/jgrkyiDuJSsPZK+tx+wU0mMsYHUYEjNsuE41uqqkuR8VhA==
 
 abbrev@^2.0.0:
   version "2.0.0"
