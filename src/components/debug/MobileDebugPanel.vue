@@ -10,7 +10,7 @@
     <!-- Header -->
     <div class="debug-panel__header" @touchstart="startDrag" @mousedown="startDrag">
       <div class="debug-panel__title">
-        🐛 Debug Panel
+        Debug Panel
         <span class="debug-panel__memory" v-if="currentMemory">
           {{ formatBytes(currentMemory.used) }}
         </span>
@@ -113,7 +113,6 @@
       class="debug-toggle"
       :class="getToggleClasses()"
     >
-      {{ memoryStatus.icon }}
       <span v-if="currentMemory" class="debug-toggle__memory">
         {{ formatBytes(currentMemory.used, true) }}
       </span>
@@ -575,7 +574,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px;
-  font-size: 8px;
+  font-size: 9px;
   color: #ccc;
 }
 
@@ -704,8 +703,8 @@ onMounted(() => {
 
 .debug-toggle {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 10px;
+  right: 10px;
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -723,6 +722,7 @@ onMounted(() => {
   transition: all 0.3s ease;
   transform: scale(v-bind('debugScale'));
   transform-origin: center;
+  --debug-scale: v-bind('debugScale');
 }
 
 .debug-toggle--normal {
@@ -752,7 +752,7 @@ onMounted(() => {
 }
 
 .debug-toggle:hover {
-  transform: scale(1.05);
+  transform: scale(calc(var(--debug-scale, 1) * 1.05));
 }
 
 .debug-toggle--normal:hover {
@@ -771,29 +771,30 @@ onMounted(() => {
 }
 
 .debug-toggle__memory {
-  font-size: 8px;
+  font-size: 10px;
+  line-height: 1;
   margin-top: 2px;
 }
 
 .debug-toggle__percentage {
-  font-size: 7px;
-  margin-top: 1px;
+  font-size: 14px;
   font-weight: bold;
+  line-height: 1;
   opacity: 0.9;
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { transform: scale(var(--debug-scale, 1)); }
+  50% { transform: scale(calc(var(--debug-scale, 1) * 1.05)); }
 }
 
 @keyframes criticalPulse {
   0%, 100% { 
-    transform: scale(1);
+    transform: scale(var(--debug-scale, 1));
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
   }
   50% { 
-    transform: scale(1.1);
+    transform: scale(calc(var(--debug-scale, 1) * 1.1));
     box-shadow: 0 6px 20px rgba(239, 68, 68, 0.8);
   }
 }
@@ -806,8 +807,8 @@ onMounted(() => {
   }
   
   .debug-toggle {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     font-size: 14px;
   }
 }
