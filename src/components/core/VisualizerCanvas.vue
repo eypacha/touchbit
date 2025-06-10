@@ -27,9 +27,16 @@ let visualizationInterval = null;
 // Use the theme color composable
 const { numberColor, updateColors } = useThemeColor();
 
+// Store media query listener for cleanup
+let mediaQueryListener = null;
+
 onUnmounted(() => {
     if (visualizationInterval) {
         clearInterval(visualizationInterval);
+    }
+    // Cleanup media query listener
+    if (mediaQueryListener) {
+        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', mediaQueryListener);
     }
 });
 
@@ -38,8 +45,9 @@ onMounted(() => {
     const ctx = canvas.value.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     
-    // Optional: set a listener for theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColors);
+    // Set up theme change listener with proper cleanup
+    mediaQueryListener = updateColors;
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', mediaQueryListener);
     
     // Watch for play/pause changes
     watch(

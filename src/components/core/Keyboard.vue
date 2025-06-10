@@ -4,8 +4,7 @@
       <div v-for="(key, index) in layout" :key="index" 
           :class="getColSpan(key.width)" class="relative">
           <div v-if="key.submenu && !key.disabled && openSubmenu === key.data"
-            ref="submenuContainer"
-            class="absolute flex -top-9 bg-background outline-1 outline outline-time z-2"
+            class="absolute flex submenu-container -top-9 bg-background outline-1 outline outline-time z-2"
             :style="{ left: key.position + 'px' }">
               <button v-for="button in key.submenu"
                 :key="button.data"
@@ -37,7 +36,7 @@
           <Delete v-else-if="key.data === 'BCKS'"/>
           <BetweenHorizontalEnd v-else-if="key.data === 'STACK'" stroke="hsl(var(--number))"/>
           <Pi v-else-if="key.data === 'MATH'" stroke="hsl(var(--number))"/>
-          <Share v-else-if="key.data === 'LOGIC'" stroke="hsl(var(--number))"/>
+          <div v-else-if="key.data === 'LOGIC'" stroke="hsl(var(--number))">=</div>
           <MoveLeft v-else-if="key.data === 'LEFT'" />
           <MoveRight v-else-if="key.data === 'RIGHT'"/>
           <Delete v-else-if="key.data === 'BCKS'" />
@@ -60,8 +59,7 @@ import {
   Pi,
   BetweenHorizontalEnd
 } from 'lucide-vue-next';
-import { ref, useTemplateRef } from 'vue';
-import { onClickOutside } from '@vueuse/core';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useMainStore } from '@/stores/mainStore'
 import Key from '@/components/common/Key.vue'
 import BinaryEditor from '@/components/core/NumberEditor.vue'
@@ -74,11 +72,23 @@ const longPressThreshold = 600;
 const isLongPress = ref(false);
 const currentKey = ref(null);
 const openSubmenu = ref(null); // Para controlar qué submenú está abierto
-const submenuContainer = useTemplateRef('submenuContainer'); // Referencia al contenedor del submenú
 
-// Cerrar submenú al hacer clic fuera
-onClickOutside(submenuContainer, () => {
-  openSubmenu.value = null;
+// Handle click outside to close submenu
+const handleClickOutside = (event) => {
+  if (openSubmenu.value) {
+    const submenuElement = document.querySelector('.submenu-container');
+    if (submenuElement && !submenuElement.contains(event.target)) {
+      openSubmenu.value = null;
+    }
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
 }); 
 
 // Add space key functionality (not on the physical keyboard)

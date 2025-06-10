@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { memoryMonitor } from '@/utils/memoryMonitor';
 
 export const useLoggerStore = defineStore('logger', () => {
   const logs = ref([]);
@@ -22,6 +23,12 @@ export const useLoggerStore = defineStore('logger', () => {
     SAVE: "💾",
     LOAD: "📂",
     DELETE: "🗑️",
+    MEMORY_MONITOR: "💾",
+    MEMORY_WARNING: "⚠️",
+    MEMORY_CRITICAL: "🚨",
+    LIFECYCLE: "🔄",
+    CRASH_DETECTION: "💥",
+    GC: "🗑️"
   };
 
   function log(type, message) {
@@ -44,6 +51,11 @@ export const useLoggerStore = defineStore('logger', () => {
 
     // Also log to console
     console.log(`${logEntry.emoji} [${type.toUpperCase()}]`, message);
+
+    // Also log to memory monitor for persistent storage
+    if (memoryMonitor) {
+      memoryMonitor.log(type, message);
+    }
 
     return logEntry;
   }

@@ -32,11 +32,37 @@ let visualizationInterval = null;
 // Use the theme color composable
 const { numberColor, updateColors } = useThemeColor();
 
+// Store media query listener for cleanup
+let mediaQueryListener = null;
+
 onUnmounted(() => {
     if (visualizationInterval) {
         clearInterval(visualizationInterval);
     }
+    // Cleanup media query listener
+    if (mediaQueryListener) {
+        window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', mediaQueryListener);
+    }
+    
+    // Remove memory cleanup listeners
+    window.removeEventListener('memory-cleanup-requested', handleMemoryCleanup);
+    window.removeEventListener('aggressive-cleanup', handleMemoryCleanup);
 });
+
+// Memory cleanup handler
+const handleMemoryCleanup = () => {
+    if (visualizationInterval) {
+        clearInterval(visualizationInterval);
+        visualizationInterval = null;
+    }
+    
+    if (waveformCanvas.value) {
+        const ctx = waveformCanvas.value.getContext('2d');
+        if (ctx) {
+            ctx.clearRect(0, 0, waveformCanvas.value.width, waveformCanvas.value.height);
+        }
+    }
+};
 
 onMounted(() => {
     console.log("Waveform visualizer mounted with dimensions:", props.width, "x", props.height);
@@ -44,8 +70,13 @@ onMounted(() => {
     const waveCtx = waveformCanvas.value.getContext('2d');
     waveCtx.imageSmoothingEnabled = false;
     
-    // Optional: set a listener for theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColors);
+    // Set up theme change listener with proper cleanup
+    mediaQueryListener = updateColors;
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', mediaQueryListener);
+    
+    // Setup memory cleanup listeners
+    window.addEventListener('memory-cleanup-requested', handleMemoryCleanup);
+    window.addEventListener('aggressive-cleanup', handleMemoryCleanup);
     
     // Watch for play/pause changes
     watch(

@@ -35,12 +35,67 @@ let dataArray = null;
 // Use the theme color composable
 const { numberColor, updateColors } = useThemeColor();
 
-onUnmounted(() => {
+// Memory cleanup handler
+const handleMemoryCleanup = () => {
     if (analyzerInterval) {
         clearInterval(analyzerInterval);
         analyzerInterval = null;
     }
-});
+    
+    if (frequencyCanvas.value) {
+        const ctx = frequencyCanvas.value.getContext('2d');
+        if (ctx) {
+            ctx.clearRect(0, 0, frequencyCanvas.value.width, frequencyCanvas.value.height);
+        }
+    }
+    
+    // Clear audio data
+    dataArray = null;
+};
+
+function startFrequencyVisualization(ctx) {
+    console.log("Starting frequency visualization with interval");
+
+    if (analyzerInterval) {
+        clearInterval(analyzerInterval);
+    }
+    
+    const updateFrequencyVisualization = async () => {
+        // Check if we should be visualizing
+        if (!store.isPlaying || !uiStore.showFrequencyVisualizer) {
+            console.log("Stopping frequency analysis - isPlaying:", store.isPlaying, "showFrequencyVisualizer:", uiStore.showFrequencyVisualizer);
+            clearInterval(analyzerInterval);
+            analyzerInterval = null;
+            return;
+        }
+        
+        // Get frequency data from audio store
+        const data = await store.getFrequencyData();
+        
+        if (data) {
+            // Clear the canvas
+            ctx.clearRect(0, 0, props.width, props.height);
+            // Calculate bar width based on number of frequency bins
+            const barWidth = (props.width / data.length) * 2.5;
+            let barHeight;
+            let x = 0;
+            // Use the reactive number color
+            ctx.fillStyle = numberColor.value;
+            // Draw bars for each frequency
+            for (let i = 0; i < data.length; i++) {
+                barHeight = (data[i] / 255) * props.height;
+                ctx.fillRect(x, props.height - barHeight, barWidth, barHeight);
+                x += barWidth + 1;
+            }
+        }
+    };
+    
+    // Set interval for continuous updates
+    analyzerInterval = setInterval(updateFrequencyVisualization, 100);
+    
+    // Immediate update without waiting for interval
+    updateFrequencyVisualization();
+}
 
 onMounted(() => {
     console.log("Frequency visualizer mounted with dimensions:", props.width, "x", props.height);
@@ -50,6 +105,10 @@ onMounted(() => {
     
     // Optional: set a listener for theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColors);
+    
+    // Setup memory cleanup listeners
+    window.addEventListener('memory-cleanup-requested', handleMemoryCleanup);
+    window.addEventListener('aggressive-cleanup', handleMemoryCleanup);
     
     // Initialize audio context and analyzer for frequency visualization
     try {
@@ -113,49 +172,16 @@ onMounted(() => {
     );
 });
 
-function startFrequencyVisualization(ctx) {
-    console.log("Starting frequency visualization with interval");
-
+onUnmounted(() => {
     if (analyzerInterval) {
         clearInterval(analyzerInterval);
+        analyzerInterval = null;
     }
     
-    const updateFrequencyVisualization = async () => {
-        // Check if we should be visualizing
-        if (!store.isPlaying || !uiStore.showFrequencyVisualizer) {
-            console.log("Stopping frequency analysis - isPlaying:", store.isPlaying, "showFrequencyVisualizer:", uiStore.showFrequencyVisualizer);
-            clearInterval(analyzerInterval);
-            analyzerInterval = null;
-            return;
-        }
-        
-        // Get frequency data from audio store
-        const data = await store.getFrequencyData();
-        
-        if (data) {
-            // Clear the canvas
-            ctx.clearRect(0, 0, props.width, props.height);
-            // Calculate bar width based on number of frequency bins
-            const barWidth = (props.width / data.length) * 2.5;
-            let barHeight;
-            let x = 0;
-            // Use the reactive number color
-            ctx.fillStyle = numberColor.value;
-            // Draw bars for each frequency
-            for (let i = 0; i < data.length; i++) {
-                barHeight = (data[i] / 255) * props.height;
-                ctx.fillRect(x, props.height - barHeight, barWidth, barHeight);
-                x += barWidth + 1;
-            }
-        }
-    };
-    
-    // Set interval for continuous updates
-    analyzerInterval = setInterval(updateFrequencyVisualization, 100);
-    
-    // Immediate update without waiting for interval
-    updateFrequencyVisualization();
-}
+    // Remove memory cleanup listeners
+    window.removeEventListener('memory-cleanup-requested', handleMemoryCleanup);
+    window.removeEventListener('aggressive-cleanup', handleMemoryCleanup);
+});
 </script>
 
 <style scoped>

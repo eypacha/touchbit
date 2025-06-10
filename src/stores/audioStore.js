@@ -47,9 +47,10 @@ export const useAudioStore = defineStore("audio", () => {
       }
     } else {
       const result = audioEngine.pause();
+      stopRenderLoop(); // Stop the render loop when pausing
       if (result) {
         isPlaying.value = false;
-        renderLoop();
+        renderLoop(); // Call once more to update final state
       }
     }
   }
@@ -68,6 +69,7 @@ export const useAudioStore = defineStore("audio", () => {
   async function stop() {
     const result = await audioEngine.stop();
     time.value = 0;
+    stopRenderLoop(); // Stop the render loop
     if (result) {
       isPlaying.value = false;
     }
@@ -76,6 +78,7 @@ export const useAudioStore = defineStore("audio", () => {
   async function reset() {
     await audioEngine.reset();
     time.value = 0;
+    stopRenderLoop(); // Stop the render loop
   }
 
   function setExpression(expression) {
@@ -88,16 +91,38 @@ export const useAudioStore = defineStore("audio", () => {
     return sample.value;
   }
 
+  // Variable para controlar el render loop
+  let renderAnimationId = null;
+
   function renderLoop() {
     const updateTime = async () => {
       if (isPlaying.value) {
         time.value = audioEngine.getTime();
         sample.value = await audioEngine.getSampleForTime();
-        requestAnimationFrame(updateTime);
+        renderAnimationId = requestAnimationFrame(updateTime);
+      } else {
+        // Cleanup when not playing
+        if (renderAnimationId) {
+          cancelAnimationFrame(renderAnimationId);
+          renderAnimationId = null;
+        }
       }
     };
     
-    requestAnimationFrame(updateTime);
+    // Cancel any existing animation frame before starting new one
+    if (renderAnimationId) {
+      cancelAnimationFrame(renderAnimationId);
+    }
+    
+    renderAnimationId = requestAnimationFrame(updateTime);
+  }
+
+  // Function to stop render loop
+  function stopRenderLoop() {
+    if (renderAnimationId) {
+      cancelAnimationFrame(renderAnimationId);
+      renderAnimationId = null;
+    }
   }
 
   async function updateVisualization(width) {

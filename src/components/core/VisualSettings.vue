@@ -52,6 +52,19 @@
         />
       </div>
     </div>
+
+    <!-- Debug System Section -->
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col">
+          <span class="text-sm text-foreground">Memory Debug Panel</span>
+        </div>
+        <Switch 
+          :checked="isDebugEnabled"
+          @update:checked="toggleDebugSystem"
+        />
+      </div>
+    </div>
     
     <!-- Additional settings sections can be added here -->
   </div>
@@ -71,12 +84,21 @@ const uiStore = useUIStore();
 const selectedTheme = ref(themeStore.theme);
 const selectedVisualizerType = ref('waveform');
 
+// Debug system state - self-contained
+const isDebugEnabled = ref(false);
+
 onMounted(() => {
   // Ensure the selected theme matches the current theme
   selectedTheme.value = themeStore.theme;
   
   // Ensure the selected visualizer type matches the current state
   selectedVisualizerType.value = uiStore.visualizerType;
+  
+  // Load debug system state from localStorage
+  const savedDebugState = localStorage.getItem('touchbit-debug-enabled');
+  if (savedDebugState !== null) {
+    isDebugEnabled.value = savedDebugState === 'true';
+  }
 });
 
 function changeTheme() {
@@ -124,5 +146,20 @@ function toggleVisualizer(value) {
 function toggleLogs(value) {
   logger.showLogs = value;
   logger.log('SETTINGS', value ? 'Logger enabled' : 'Logger disabled');
+}
+
+function toggleDebugSystem(value) {
+  isDebugEnabled.value = value;
+  
+  // Save to localStorage
+  localStorage.setItem('touchbit-debug-enabled', value.toString());
+  
+  // Emit event to notify debug system components
+  window.dispatchEvent(new CustomEvent('debug-system-toggle', { 
+    detail: { enabled: value } 
+  }));
+  
+  // Log the change
+  logger.log('SETTINGS', value ? 'Debug system enabled' : 'Debug system disabled');
 }
 </script>

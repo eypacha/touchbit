@@ -13,6 +13,7 @@ class AudioEngine {
       this.gainNode = null;
       this.analyser = null;
       this.frequencyArray = null;
+      this.visualizationContext = null; // Reuse visualization context
     }
     /**
      * Initializes the audio context and sets up the ByteBeatNode.
@@ -177,13 +178,16 @@ class AudioEngine {
         const duration = endTime - startTime;
         this.position = endTime;
   
-        const context = await this.byteBeatNode.createContext();
+        // Reuse context instead of creating new one every time
+        if (!this.visualizationContext) {
+          this.visualizationContext = await this.byteBeatNode.createContext();
+        }
   
         const leftValues = await this.byteBeatNode.getSamplesForTimeRange(
           startTime,
           endTime,
           width,
-          context,
+          this.visualizationContext,
           this.stack,
           0
         );
@@ -191,7 +195,7 @@ class AudioEngine {
           startTime,
           endTime,
           width,
-          context,
+          this.visualizationContext,
           this.stack,
           1
         );
@@ -210,6 +214,40 @@ class AudioEngine {
   
       if (this.byteBeatNode) {
         this.byteBeatNode.reset();
+      }
+      
+      // Clear visualization context to free memory
+      this.visualizationContext = null;
+    }
+
+    /**
+     * Memory cleanup method for crash prevention
+     */
+    cleanup() {
+      try {
+        // Disconnect all audio nodes
+        if (this.byteBeatNode) {
+          this.byteBeatNode.disconnect();
+        }
+        if (this.gainNode) {
+          this.gainNode.disconnect();
+        }
+        if (this.analyser) {
+          this.analyser.disconnect();
+        }
+        
+        // Clear arrays
+        this.frequencyArray = null;
+        this.visualizationContext = null;
+        
+        // Suspend audio context temporarily
+        if (this.context && this.context.state === 'running') {
+          this.context.suspend();
+        }
+        
+        console.log('AudioEngine cleanup completed');
+      } catch (error) {
+        console.error('AudioEngine cleanup error:', error);
       }
     }
   
@@ -255,3 +293,19 @@ class AudioEngine {
   }
   
   export const audioEngine = new AudioEngine();
+  
+  // Setup memory cleanup listeners
+  window.addEventListener('memory-cleanup-requested', () => {
+    audioEngine.cleanup();
+  });
+  
+  window.addEventListener('aggressive-cleanup', () => {
+    audioEngine.cleanup();
+    // Force more aggressive cleanup
+    if (audioEngine.context) {
+      audioEngine.context.suspend();
+    }
+  });
+  
+  // Expose for debugging
+  window.audioEngine = audioEngine;
