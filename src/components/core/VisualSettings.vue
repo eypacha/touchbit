@@ -52,19 +52,6 @@
         />
       </div>
     </div>
-
-    <!-- Debug System Section -->
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center justify-between">
-        <div class="flex flex-col">
-          <span class="text-sm text-foreground">Memory Debug Panel</span>
-        </div>
-        <Switch 
-          :checked="isDebugEnabled"
-          @update:checked="toggleDebugSystem"
-        />
-      </div>
-    </div>
     
     <!-- Additional settings sections can be added here -->
   </div>

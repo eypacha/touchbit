@@ -19,8 +19,7 @@
     </div>
   </div>
   
-  <!-- Mobile Debug Panel (always available, but hidden by default) -->
-  <MobileDebugPanel />
+
 </template>
 
 <script setup>
@@ -37,7 +36,6 @@ import StackContainer from "@/components/layout/StackContainer.vue";
 import BottomContainer from "@/components/layout/BottomContainer.vue";
 import Visualizers from "@/components/core/Visualizers.vue";
 import Sidepanel from "@/components/layout/Sidepanel.vue";
-import MobileDebugPanel from "@/components/debug/MobileDebugPanel.vue";
 
 const store = useMainStore();
 const uiStore = useUIStore();
