@@ -1,20 +1,22 @@
 class AudioEngine {
-    constructor() {
-      this.context = null;
-      this.byteByteContext = null;
-      this.byteBeatNode = null;
-      this.sampleRate = 8000;
-      this.isPlaying = false;
-      this.position = 0;
-      this.lastUpdateTime = 0;
-      this.time = 0;
-      this.stack = null;
-      this.volume = 0.8;
-      this.gainNode = null;
-      this.analyser = null;
-      this.frequencyArray = null;
-      this.visualizationContext = null; // Reuse visualization context
-    }
+  constructor() {
+    this.context = null;
+    this.byteByteContext = null;
+    this.byteBeatNode = null;
+    this.sampleRate = 8000;
+    this.isPlaying = false;
+    this.position = 0;
+    this.lastUpdateTime = 0;
+    this.time = 0;
+    this.stack = null;
+    this.volume = 0.8;
+    this.gainNode = null;
+    this.analyser = null;
+    this.frequencyArray = null;
+    this.visualizationContext = null; // Reuse visualization context
+    this.lastSample = 0; // Cache last sample to avoid excessive computation
+    this.sampleUpdateThrottle = 0; // Throttle sample updates
+  }
     /**
      * Initializes the audio context and sets up the ByteBeatNode.
      * Automatically called on first play().
@@ -150,14 +152,26 @@ class AudioEngine {
 
     async getSampleForTime() {
       if(!this.byteBeatNode){
-        console.log('inciiando')
-         await this.initialize();
+        await this.initialize();
       }
 
-      let sample = await this.byteBeatNode.getSampleForTime(this.time, this.byteByteContext, this.stack);
-       sample = Math.round((sample + 1) * 127.5);
+      // Cache sample calculation to avoid excessive computation
+      if (!this.isPlaying) {
+        return this.lastSample || 0;
+      }
+      
+      // Throttle sample updates to reduce memory pressure
+      const now = performance.now();
+      if (now - this.sampleUpdateThrottle < 16) { // ~60fps limit
+        return this.lastSample || 0;
+      }
+      this.sampleUpdateThrottle = now;
 
-      return sample
+      let sample = await this.byteBeatNode.getSampleForTime(this.time, this.byteByteContext, this.stack);
+      sample = Math.round((sample + 1) * 127.5);
+      this.lastSample = sample;
+
+      return sample;
     }
   
     async getSamplesForVisualization(width) {
@@ -204,14 +218,15 @@ class AudioEngine {
       }
   
       return null;
-    }
-    /**
+    }    /**
      * Reset the timer
      */
     async reset() {
       this.position = 0;
       this.lastUpdateTime = 0;
-  
+      this.lastSample = 0;
+      this.sampleUpdateThrottle = 0;
+
       if (this.byteBeatNode) {
         this.byteBeatNode.reset();
       }
@@ -236,9 +251,16 @@ class AudioEngine {
           this.analyser.disconnect();
         }
         
-        // Clear arrays
+        // Clear arrays and cached values
         this.frequencyArray = null;
         this.visualizationContext = null;
+        this.lastSample = 0;
+        this.sampleUpdateThrottle = 0;
+        
+        // Reset position and timing
+        this.position = 0;
+        this.lastUpdateTime = 0;
+        this.time = 0;
         
         // Suspend audio context temporarily
         if (this.context && this.context.state === 'running') {
@@ -306,6 +328,36 @@ class AudioEngine {
       audioEngine.context.suspend();
     }
   });
+  
+  // Auto cleanup when page loses focus (important for mobile)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      // Page is hidden, perform cleanup
+      audioEngine.cleanup();
+    }
+  });
+  
+  // Auto cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    audioEngine.cleanup();
+  });
+  
+  // Auto cleanup on memory pressure (mobile browsers)
+  if ('memory' in performance) {
+    setInterval(() => {
+      const memInfo = performance.memory;
+      const memoryUsage = memInfo.usedJSHeapSize / memInfo.totalJSHeapSize;
+      
+      if (memoryUsage > 0.85) { // If using more than 85% of available memory
+        console.warn('High memory usage detected, performing cleanup');
+        audioEngine.cleanup();
+        // Trigger garbage collection if available
+        if (window.gc) {
+          window.gc();
+        }
+      }
+    }, 5000); // Check every 5 seconds
+  }
   
   // Expose for debugging
   window.audioEngine = audioEngine;

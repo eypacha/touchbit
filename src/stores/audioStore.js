@@ -93,12 +93,21 @@ export const useAudioStore = defineStore("audio", () => {
 
   // Variable para controlar el render loop
   let renderAnimationId = null;
+  let lastSampleUpdateTime = 0;
+  const SAMPLE_UPDATE_INTERVAL = 50; // Update sample every 50ms instead of every frame
 
   function renderLoop() {
     const updateTime = async () => {
       if (isPlaying.value) {
+        const now = performance.now();
         time.value = audioEngine.getTime();
-        sample.value = await audioEngine.getSampleForTime();
+        
+        // Throttle sample updates to reduce computation
+        if (now - lastSampleUpdateTime > SAMPLE_UPDATE_INTERVAL) {
+          sample.value = await audioEngine.getSampleForTime();
+          lastSampleUpdateTime = now;
+        }
+        
         renderAnimationId = requestAnimationFrame(updateTime);
       } else {
         // Cleanup when not playing
@@ -106,6 +115,7 @@ export const useAudioStore = defineStore("audio", () => {
           cancelAnimationFrame(renderAnimationId);
           renderAnimationId = null;
         }
+        lastSampleUpdateTime = 0;
       }
     };
     
