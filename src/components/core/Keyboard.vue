@@ -89,6 +89,12 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
+  
+  // Clear any pending timers to prevent memory leaks
+  if (pressTimer.value) {
+    clearTimeout(pressTimer.value);
+    pressTimer.value = null;
+  }
 }); 
 
 // Add space key functionality (not on the physical keyboard)
@@ -197,6 +203,7 @@ const handleTouchCancel = () => {
     pressTimer.value = null;
   }
   currentKey.value = null;
+  isLongPress.value = false;
 }
 
 const getColSpan = (width) => `col-span-${width ?? 2}`
