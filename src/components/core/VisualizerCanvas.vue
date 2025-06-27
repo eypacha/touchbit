@@ -118,8 +118,8 @@ function startVisualization(ctx) {
         }
     };
     
-    // Set interval for continuous updates
-    visualizationInterval = setInterval(updateVisualization, 100);
+    // Set interval for continuous updates (increased from 100ms to 150ms)
+    visualizationInterval = setInterval(updateVisualization, 150);
     
     // Immediate update without waiting for interval
     updateVisualization();
