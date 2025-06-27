@@ -59,20 +59,10 @@ const ctx = canvas.value.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 // Optional: set a listener for theme changes
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColors);
-// Initialize audio context and analyzer
 
-try {
-audioContext = new (window.AudioContext || window.webkitAudioContext)();
-analyser = audioContext.createAnalyser();
-analyser.fftSize = 512;
-// Must be a power of 2
-const bufferLength = analyser.frequencyBinCount;
-dataArray = new Uint8Array(bufferLength);
-}
+// Don't create separate audio context - use the main audio engine instead
+// Remove duplicate audio context initialization that causes memory leaks
 
-catch (e) {
-console.error("Error initializing audio analyzer:", e);
-}
 // Watch for play/pause changes
 watch(
 () => store.isPlaying,
@@ -128,7 +118,7 @@ clearInterval(analyzerInterval);
 analyzerInterval = null;
 return;
 }
-// Get frequency data from audio store
+// Get frequency data from audio store (this uses the main audio engine)
 const data = await store.getFrequencyData();
 
 if (data) {
@@ -152,8 +142,8 @@ x += barWidth + 1;
 }
 }
 ;
-// Set interval for continuous updates
-analyzerInterval = setInterval(updateFrequencyVisualization, 100);
+// Increase interval to reduce CPU usage (from 100ms to 150ms)
+analyzerInterval = setInterval(updateFrequencyVisualization, 150);
 // Immediate update without waiting for interval
 updateFrequencyVisualization();
 }
