@@ -51,11 +51,14 @@
       /// This is the function that the main script calls to post a message to the "worker."
       return_object.postMessage = function (message) {
         /// Delay the call just in case the "worker" script has not had time to load.
-        setTimeout(function () {
+        const timeoutId = setTimeout(function () {
           /// Call the global onmessage() created by the "worker."
           ///NOTE: Wrap the message in an object.
           global_var.onmessage({ data: message });
         }, 10);
+        
+        // Store timeout ID for potential cleanup
+        return_object._lastTimeoutId = timeoutId;
       };
 
       /// Create a global postMessage() function for the "worker" to call.
