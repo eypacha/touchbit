@@ -1,6 +1,6 @@
 <template>
   <span 
-    class="font-mono bg-muted px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary/20"
+    class="font-mono bg-muted px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary/20 whitespace-nowrap"
     @click="onClick"
   >
     {{ code }}
