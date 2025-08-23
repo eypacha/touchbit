@@ -13,11 +13,10 @@
       </Label>
       <input 
         type="number" 
-        v-model="selectedSampleRate[0]" 
+        v-model="sampleRateInput"
         class="w-24 mt-3 ml-2 text-center bg-transparent border rounded-md text-number" 
         :min="4000" 
         :max="16000" 
-        @input="setSampleRate" 
         @keydown.stop
         inputmode="numeric"
         pattern="[0-9]*"
@@ -29,7 +28,6 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { Number } from '@/components/ui/Number';
 import { useMainStore } from '@/stores/mainStore';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -38,9 +36,20 @@ const volumeValue = ref([80])
 const store = useMainStore();
 
 // Use computed property to keep the selectedSampleRate in sync with the store
+
 const selectedSampleRate = computed({
   get: () => [store.sampleRate],
   set: (value) => setSampleRate(value)
+});
+
+const sampleRateInput = computed({
+  get: () => selectedSampleRate.value[0],
+  set: (val) => {
+    let num = Number(val);
+    if (isNaN(num)) num = 4000;
+    num = Math.max(4000, Math.min(16000, num));
+    setSampleRate([num]);
+  }
 });
 
 function setVolume() {
