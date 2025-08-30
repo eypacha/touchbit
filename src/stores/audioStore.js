@@ -95,8 +95,11 @@ export const useAudioStore = defineStore("audio", () => {
 
   function setEQBypass(enabled) {
     try {
+      // Here `enabled` represents effect enabled (true = EQ active).
       eqEnabled.value = !!enabled;
-      audioEngine.setEQBypass(enabled);
+      // audioEngine expects a 'bypass' flag (true = bypass ON), so invert.
+      const bypass = !eqEnabled.value;
+      audioEngine.setEQBypass(bypass);
     } catch (e) {
       logger.log('ERROR', `Failed to toggle EQ bypass: ${e.message}`);
     }
