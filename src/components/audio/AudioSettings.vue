@@ -18,6 +18,8 @@
         :min="4000" 
         :max="16000" 
         @keydown.stop
+        @keydown.enter.prevent="applySampleRateInput"
+        @blur="applySampleRateInput"
         inputmode="numeric"
         pattern="[0-9]*"
         enterkeyhint="done"
@@ -27,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -35,22 +37,23 @@ import { Slider } from '@/components/ui/slider';
 const volumeValue = ref([80])
 const store = useMainStore();
 
-// Use computed property to keep the selectedSampleRate in sync with the store
-
 const selectedSampleRate = computed({
   get: () => [store.sampleRate],
   set: (value) => setSampleRate(value)
 });
 
-const sampleRateInput = computed({
-  get: () => selectedSampleRate.value[0],
-  set: (val) => {
-    let num = Number(val);
-    if (isNaN(num)) num = 4000;
-    num = Math.max(4000, Math.min(16000, num));
-    setSampleRate([num]);
-  }
+const sampleRateInput = ref(store.sampleRate);
+
+watch(() => store.sampleRate, (v) => {
+  sampleRateInput.value = v;
 });
+
+function applySampleRateInput() {
+  let num = Number(sampleRateInput.value);
+  if (isNaN(num)) num = 4000;
+  num = Math.max(4000, Math.min(16000, num));
+  setSampleRate([num]);
+}
 
 function setVolume() {
   const linearVolume = volumeValue.value[0] / 100;
