@@ -45,8 +45,8 @@ onUnmounted(() => {
     }
     
     // Remove memory cleanup listeners
-    window.removeEventListener('memory-cleanup-requested', handleMemoryCleanup);
-    window.removeEventListener('aggressive-cleanup', handleMemoryCleanup);
+    // window.removeEventListener('memory-cleanup-requested', handleMemoryCleanup);
+    // window.removeEventListener('aggressive-cleanup', handleMemoryCleanup);
 });
 
 // Memory cleanup handler
@@ -75,8 +75,8 @@ onMounted(() => {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', mediaQueryListener);
     
     // Setup memory cleanup listeners
-    window.addEventListener('memory-cleanup-requested', handleMemoryCleanup);
-    window.addEventListener('aggressive-cleanup', handleMemoryCleanup);
+    // window.addEventListener('memory-cleanup-requested', handleMemoryCleanup);
+    // window.addEventListener('aggressive-cleanup', handleMemoryCleanup);
     
     // Watch for play/pause changes
     watch(

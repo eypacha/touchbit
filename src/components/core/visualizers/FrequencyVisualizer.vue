@@ -107,8 +107,8 @@ onMounted(() => {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateColors);
     
     // Setup memory cleanup listeners
-    window.addEventListener('memory-cleanup-requested', handleMemoryCleanup);
-    window.addEventListener('aggressive-cleanup', handleMemoryCleanup);
+    // window.addEventListener('memory-cleanup-requested', handleMemoryCleanup);
+    // window.addEventListener('aggressive-cleanup', handleMemoryCleanup);
     
     // Initialize audio context and analyzer for frequency visualization
     try {

@@ -14,7 +14,7 @@ class AudioEngine {
     this.analyser = null;
     this.frequencyArray = null;
     this.visualizationContext = null; // Reuse visualization context
-    this.lastSample = 0; // Cache last sample to avoid excessive computation
+    this.lastSample = 0; // Cache last sample to avogid excessive computation
     this.sampleUpdateThrottle = 0; // Throttle sample updates
   }
     /**
@@ -197,7 +197,7 @@ class AudioEngine {
           this.visualizationContext = await this.byteBeatNode.createContext();
         }
   
-        const leftValues = await this.byteBeatNode.getSamplesForTimeRange(
+        const monoAudio = await this.byteBeatNode.getSamplesForTimeRange(
           startTime,
           endTime,
           width,
@@ -205,16 +205,8 @@ class AudioEngine {
           this.stack,
           0
         );
-        const rightValues = await this.byteBeatNode.getSamplesForTimeRange(
-          startTime,
-          endTime,
-          width,
-          this.visualizationContext,
-          this.stack,
-          1
-        );
   
-        return { left: leftValues, right: rightValues };
+        return { left: monoAudio, right: monoAudio };
       }
   
       return null;
@@ -316,48 +308,48 @@ class AudioEngine {
   
   export const audioEngine = new AudioEngine();
   
-  // Setup memory cleanup listeners
-  window.addEventListener('memory-cleanup-requested', () => {
-    audioEngine.cleanup();
-  });
+  // Setup memory qui listeners
+  // window.addEventListener('memory-cleanup-requested', () => {
+  //   audioEngine.cleanup();
+  // });
   
-  window.addEventListener('aggressive-cleanup', () => {
-    audioEngine.cleanup();
-    // Force more aggressive cleanup
-    if (audioEngine.context) {
-      audioEngine.context.suspend();
-    }
-  });
+  // window.addEventListener('aggressive-cleanup', () => {
+  //   audioEngine.cleanup();
+  //   // Force more aggressive cleanup
+  //   if (audioEngine.context) {
+  //     audioEngine.context.suspend();
+  //   }
+  // });
   
   // Auto cleanup when page loses focus (important for mobile)
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      // Page is hidden, perform cleanup
-      audioEngine.cleanup();
-    }
-  });
+  // document.addEventListener('visibilitychange', () => {
+  //   if (document.hidden) {
+  //     // Page is hidden, perform cleanup
+  //     audioEngine.cleanup();
+  //   }
+  // });
   
   // Auto cleanup on page unload
-  window.addEventListener('beforeunload', () => {
-    audioEngine.cleanup();
-  });
+  // window.addEventListener('beforeunload', () => {
+  //   audioEngine.cleanup();
+  // });
   
   // Auto cleanup on memory pressure (mobile browsers)
-  if ('memory' in performance) {
-    setInterval(() => {
-      const memInfo = performance.memory;
-      const memoryUsage = memInfo.usedJSHeapSize / memInfo.totalJSHeapSize;
+  // if ('memory' in performance) {
+  //   setInterval(() => {
+  //     const memInfo = performance.memory;
+  //     const memoryUsage = memInfo.usedJSHeapSize / memInfo.totalJSHeapSize;
       
-      if (memoryUsage > 0.85) { // If using more than 85% of available memory
-        console.warn('High memory usage detected, performing cleanup');
-        audioEngine.cleanup();
-        // Trigger garbage collection if available
-        if (window.gc) {
-          window.gc();
-        }
-      }
-    }, 5000); // Check every 5 seconds
-  }
+  //     if (memoryUsage > 0.85) { // If using more than 85% of available memory
+  //       console.warn('High memory usage detected, performing cleanup');
+  //       audioEngine.cleanup();
+  //       // Trigger garbage collection if available
+  //       if (window.gc) {
+  //         window.gc();
+  //       }
+  //     }
+  //   }, 5000); // Check every 5 seconds
+  // }
   
   // Expose for debugging
   window.audioEngine = audioEngine;
