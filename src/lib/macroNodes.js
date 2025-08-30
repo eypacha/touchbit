@@ -174,7 +174,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AudioParam rate ... Chorus effect speed
   //     boolean effect   ... Effect enable
   //   
-  class Macro_ChorusNode extends GainNode {
+  export class Macro_ChorusNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._effect = true;
@@ -236,7 +236,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AudioParam rate ... Phaser effect speed
   //     boolean effect   ... Effect enable
   //   
-  class Macro_PhaserNode extends GainNode {
+  export class Macro_PhaserNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._effect = true;
@@ -300,7 +300,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AduioParam reso  ... Resonance
   //     boolean effect   ... Effect enable
   //   
-  class Macro_DeepPhaserNode extends GainNode {
+  export class Macro_DeepPhaserNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._effect = true;
@@ -373,7 +373,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AudioParam mix       ... Delay mix ratio
   //     boolean effect       ... Effect enable
   //   
-  class Macro_DelayNode extends GainNode {
+  export class Macro_DelayNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._effect = true;
@@ -435,7 +435,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AudioParam mix       ... Delay mix ratio [0..1]
   //     boolean effect       ... Effect enable
   //   
-  class Macro_PingPongDelayNode extends GainNode {
+  export class Macro_PingPongDelayNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._effect = true;
@@ -502,7 +502,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AudioParam bits ... Bit Depth [0..1]
   //     boolean effect  ... Effect enable
   //   
-  class Macro_BitCrusherNode extends GainNode {
+  export class Macro_BitCrusherNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._curve = new Float32Array(1023);
@@ -578,7 +578,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AudioParam drive ... Drive [0..1]
   //     boolean effect   ... Effect enable
   //   
-  class Macro_OverDriveNode extends GainNode {
+  export class Macro_OverDriveNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._curve = new Float32Array(1024);
@@ -658,7 +658,7 @@ export class Macro_ToneControlNode extends GainNode {
   //     AudioParam fuzz ... Fuzz [0..1]
   //     boolean effect   ... Effect enable
   //   
-  class Macro_FuzzNode extends GainNode {
+  export class Macro_FuzzNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._curve = new Float32Array(1024);
@@ -734,7 +734,7 @@ export class Macro_ToneControlNode extends GainNode {
   //    AudioParam Q         ... Filter Q [1..20]
   //    boolean effect       ... Effect enable
   //   
-  class Macro_AutoWahNode extends GainNode {
+  export class Macro_AutoWahNode extends GainNode {
     constructor(actx,opt){
       super(actx);
       this._effect = true;
