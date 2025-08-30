@@ -4,6 +4,7 @@ import { useLoggerStore } from "@/stores/loggerStore";
 import { audioEngine } from "@/services/audioEngine";
 import { SAMPLE_RATE_KEY } from "@/constants/index";
 
+
 export const useAudioStore = defineStore("audio", () => {
   const logger = useLoggerStore();
   
@@ -11,6 +12,8 @@ export const useAudioStore = defineStore("audio", () => {
   const volume = ref(0.8);
   const sampleRate = ref(getSavedSampleRate());
   const reverbWet = ref(0.0);
+  const graphicEQ = ref([0,0,0,0,0,0,0]);
+  const eqEnabled = ref(false);
   const time = ref(0);
   const sample = ref(0);
   const visualizationData = ref(null);
@@ -68,6 +71,34 @@ export const useAudioStore = defineStore("audio", () => {
       audioEngine.setReverbWet(v);
     } catch (e) {
       logger.log('ERROR', `Failed to set reverb wet: ${e.message}`);
+    }
+  }
+
+  function setGraphicEQ(values = {}) {
+    // values: { eq: [v0..v6] } or { bass, mid, treble }
+    try {
+      if (values.eq && Array.isArray(values.eq)) {
+        graphicEQ.value = values.eq.slice(0,7);
+        audioEngine.setGraphicEQ({ eq: graphicEQ.value });
+      } else {
+        // update mapping
+        const bass = typeof values.bass !== 'undefined' ? values.bass : graphicEQ.value[0];
+        const mid = typeof values.mid !== 'undefined' ? values.mid : graphicEQ.value[3];
+        const treble = typeof values.treble !== 'undefined' ? values.treble : graphicEQ.value[6];
+        graphicEQ.value = [bass, graphicEQ.value[1], graphicEQ.value[2], mid, graphicEQ.value[4], graphicEQ.value[5], treble];
+        audioEngine.setGraphicEQ({ bass, mid, treble });
+      }
+    } catch (e) {
+      logger.log('ERROR', `Failed to set graphic EQ: ${e.message}`);
+    }
+  }
+
+  function setEQBypass(enabled) {
+    try {
+      eqEnabled.value = !!enabled;
+      audioEngine.setEQBypass(enabled);
+    } catch (e) {
+      logger.log('ERROR', `Failed to toggle EQ bypass: ${e.message}`);
     }
   }
 
@@ -156,6 +187,15 @@ export const useAudioStore = defineStore("audio", () => {
     return frequencyData.value;
   }
 
+  function dumpEQ() {
+    try {
+      return audioEngine.dumpEQ();
+    } catch (e) {
+      logger.log('ERROR', `Failed to dump EQ: ${e.message}`);
+      return null;
+    }
+  }
+
   return {
     isPlaying,
     volume,
@@ -168,6 +208,8 @@ export const useAudioStore = defineStore("audio", () => {
     playPause,
     setVolume,
   setReverbWet,
+  setGraphicEQ,
+  setEQBypass,
     setSampleRate,
     stop,
     reset,
@@ -175,5 +217,6 @@ export const useAudioStore = defineStore("audio", () => {
     getSampleForTime,
     updateVisualization,
     getFrequencyData
+  ,dumpEQ
   };
 });

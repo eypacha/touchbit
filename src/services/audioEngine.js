@@ -1,4 +1,5 @@
 import { createImpulseResponse } from '@/utils/reverbUtils';
+import { Macro_GraphicEqNode } from '@/lib/macroNodes';
 
 class AudioEngine {
   constructor() {
@@ -24,6 +25,9 @@ class AudioEngine {
     this.dryGainNode = null;
     this.outputGainNode = null; // combines wet + dry
     this.reverbWet = 0.0; // default wet mix starts at 0 (no reverb)
+  this.eqNode = null;
+  this.pendingEQ = null;
+  this.pendingEQBypass = null;
   }
   /**
    * Initializes the audio context and sets up the ByteBeatNode.
@@ -67,9 +71,34 @@ class AudioEngine {
       // Create impulse response using util (short reverb)
       this.convolverNode.buffer = createImpulseResponse(this.context, 2.0, 2.0, 2);
 
-      // Wire the wet/dry routing: gainNode -> (dryGain -> output) and (convolver -> wetGain -> output)
-      this.gainNode.connect(this.dryGainNode);
-      this.gainNode.connect(this.convolverNode);
+      // Insert EQ node (7-band graphic) between gainNode and dry/wet path if available
+      try {
+        // create with neutral gains
+        this.eqNode = new Macro_GraphicEqNode(this.context, { eq: [0,0,0,0,0,0,0], effect: true });
+        console.debug('[AudioEngine] eqNode (Graphic) created', this.eqNode);
+        // route: gainNode -> eqNode -> (dry, convolver)
+        this.gainNode.connect(this.eqNode);
+        this.eqNode.connect(this.dryGainNode);
+        this.eqNode.connect(this.convolverNode);
+
+        // apply pending EQ if any (map bass->eq[0], mid->eq[3], treble->eq[6])
+        if (this.pendingEQ) {
+          const { bass = 0, mid = 0, treble = 0 } = this.pendingEQ;
+          try { this.eqNode.eq[0].setValueAtTime(bass, this.context.currentTime); } catch (e) {}
+          try { this.eqNode.eq[3].setValueAtTime(mid, this.context.currentTime); } catch (e) {}
+          try { this.eqNode.eq[6].setValueAtTime(treble, this.context.currentTime); } catch (e) {}
+          this.pendingEQ = null;
+        }
+        if (this.pendingEQBypass !== null) {
+          try { this.setEQBypass(this.pendingEQBypass); } catch (e) {}
+          this.pendingEQBypass = null;
+        }
+      } catch (e) {
+        // Fallback: connect gainNode directly to dry and convolver
+        console.debug('[AudioEngine] eqNode creation failed, using fallback connection', e);
+        this.gainNode.connect(this.dryGainNode);
+        this.gainNode.connect(this.convolverNode);
+      }
       this.convolverNode.connect(this.wetGainNode);
       this.dryGainNode.connect(this.outputGainNode);
       this.wetGainNode.connect(this.outputGainNode);
@@ -133,6 +162,117 @@ class AudioEngine {
     if (this.wetGainNode && this.dryGainNode) {
       this.wetGainNode.gain.setValueAtTime(v, this.context.currentTime);
       this.dryGainNode.gain.setValueAtTime(1 - v, this.context.currentTime);
+    }
+  }
+
+  /**
+   * Set graphic EQ values. Accepts either { eq: [v0..v6] } or { bass, mid, treble }
+   * bass -> eq[0], mid -> eq[3], treble -> eq[6]
+   */
+  setGraphicEQ(values = {}) {
+    if (!this.context) {
+      // store pending until initialize
+      if (values.eq) this.pendingEQ = { eq: values.eq.slice(0,7) };
+      else this.pendingEQ = { bass: values.bass || 0, mid: values.mid || 0, treble: values.treble || 0 };
+      return;
+    }
+
+    if (this.eqNode && this.eqNode.eq) {
+      try {
+        if (values.eq && Array.isArray(values.eq)) {
+          const arr = values.eq.slice(0,7);
+          for (let i = 0; i < arr.length; i++) {
+            try {
+              this.eqNode.eq[i].setValueAtTime(arr[i], this.context.currentTime);
+              // also set .value to reflect immediately for dumps/reads
+              try { this.eqNode.eq[i].value = arr[i]; } catch (e) {}
+            } catch (e) {
+              console.debug('[AudioEngine] error applying eq[%d] = %o', i, arr[i], e);
+            }
+          }
+        } else {
+          // map bass/mid/treble
+          if (typeof values.bass !== 'undefined') {
+            try { this.eqNode.eq[0].setValueAtTime(values.bass, this.context.currentTime); this.eqNode.eq[0].value = values.bass; } catch (e) { console.debug('[AudioEngine] error setting bass', e); }
+          }
+          if (typeof values.mid !== 'undefined') {
+            try { this.eqNode.eq[3].setValueAtTime(values.mid, this.context.currentTime); this.eqNode.eq[3].value = values.mid; } catch (e) { console.debug('[AudioEngine] error setting mid', e); }
+          }
+          if (typeof values.treble !== 'undefined') {
+            try { this.eqNode.eq[6].setValueAtTime(values.treble, this.context.currentTime); this.eqNode.eq[6].value = values.treble; } catch (e) { console.debug('[AudioEngine] error setting treble', e); }
+          }
+          
+        }
+      } catch (e) {
+        console.debug('[AudioEngine] setGraphicEQ error', e);
+      }
+    } else {
+      // store pending
+      if (values.eq) this.pendingEQ = { eq: values.eq.slice(0,7) };
+      else this.pendingEQ = { bass: values.bass || 0, mid: values.mid || 0, treble: values.treble || 0 };
+    }
+  }
+
+  setEQBypass(bypass) {
+    // bypass: true => route around EQ; false => route through EQ if available
+    const isBypass = !!bypass;
+
+    // If not initialized or no gain node yet, store pending
+    if (!this.gainNode) {
+      this.pendingEQBypass = isBypass;
+      return;
+    }
+
+    // Safe disconnect current connections
+    try {
+      if (this.eqNode) {
+        try { this.gainNode.disconnect(this.eqNode); } catch (e) {}
+        try { this.eqNode.disconnect(this.dryGainNode); } catch (e) {}
+        try { this.eqNode.disconnect(this.convolverNode); } catch (e) {}
+      }
+      try { this.gainNode.disconnect(this.dryGainNode); } catch (e) {}
+      try { this.gainNode.disconnect(this.convolverNode); } catch (e) {}
+    } catch (e) {}
+
+    if (isBypass) {
+      // connect gain directly to dry and convolver
+      try { this.gainNode.connect(this.dryGainNode); } catch (e) {}
+      try { this.gainNode.connect(this.convolverNode); } catch (e) {}
+    } else {
+      // route through EQ if exists, otherwise direct
+      if (this.eqNode) {
+        try { this.gainNode.connect(this.eqNode); } catch (e) {}
+        try { this.eqNode.connect(this.dryGainNode); } catch (e) {}
+        try { this.eqNode.connect(this.convolverNode); } catch (e) {}
+      } else {
+        try { this.gainNode.connect(this.dryGainNode); } catch (e) {}
+        try { this.gainNode.connect(this.convolverNode); } catch (e) {}
+      }
+    }
+
+    // update macro internal flag if available
+    if (this.eqNode) {
+      try { this.eqNode.effect = !isBypass; } catch (e) {}
+    }
+
+    this.pendingEQBypass = isBypass;
+  }
+
+  isEQEnabled() {
+    return !!(this.eqNode && this.eqNode.effect) || !!this.pendingEQBypass;
+  }
+
+  // Diagnostic: return current eq values and effect state (safe)
+  dumpEQ() {
+    try {
+      if (!this.eqNode) return { exists: false };
+      const eqVals = Array.isArray(this.eqNode.eq)
+        ? this.eqNode.eq.map((p) => (p && typeof p.value !== 'undefined' ? p.value : null))
+        : null;
+      return { exists: true, effect: !!this.eqNode.effect, eq: eqVals };
+    } catch (e) {
+      console.debug('[AudioEngine] dumpEQ error', e);
+      return { exists: false, error: String(e) };
     }
   }
   /**

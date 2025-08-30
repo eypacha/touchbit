@@ -12,7 +12,33 @@
         <Slider v-model="reverbValue" class="my-2" :max="100"  @update:modelValue="setReverb" @touchstart.stop.passive />
       </Label>
     </div>
+    <div class="block w-full p-2">
+      <Label>3-band EQ</Label>
+      <div class="flex gap-4 mt-2">
+        <div class="flex-1">
+          <Label>Bass
+            <Slider :modelValue="[bassVal]" :min="-12" :max="12" @update:modelValue="(v) => updateBand('bass', v)" />
+          </Label>
+        </div>
+        <div class="flex-1">
+          <Label>Mid
+            <Slider :modelValue="[midVal]" :min="-12" :max="12" @update:modelValue="(v) => updateBand('mid', v)" />
+          </Label>
+        </div>
+        <div class="flex-1">
+          <Label>Treble
+            <Slider :modelValue="[trebleVal]" :min="-12" :max="12" @update:modelValue="(v) => updateBand('treble', v)" />
+          </Label>
+        </div>
+        <div class="ml-2">
+          <Label>Bypass
+            <Switch v-model:checked="eqBypass" />
+          </Label>
+        </div>
+      </div>
+    </div>
     <div class="flex w-full p-2">
+      
       <Label class="justify-center flex-1 align-center">
         Sample Rate
         <Slider v-model="selectedSampleRate" class="my-2" :min="4000" :max="16000" @update:modelValue="setSampleRate" @touchstart.stop.passive />
@@ -39,6 +65,7 @@ import { ref, computed, watch } from 'vue';
 import { useMainStore } from '@/stores/mainStore';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 
 const volumeValue = ref([80])
 const store = useMainStore();
@@ -82,4 +109,35 @@ function setReverb() {
   const v = reverbValue.value[0] / 100;
   store.setReverbWet(v);
 }
+
+// Graphic EQ UI
+const eqBypass = ref(store.eqEnabled || false);
+const bassVal = ref(store.graphicEQ ? store.graphicEQ[0] : 0);
+const midVal = ref(store.graphicEQ ? store.graphicEQ[3] : 0);
+const trebleVal = ref(store.graphicEQ ? store.graphicEQ[6] : 0);
+
+watch(() => store.graphicEQ, (v) => {
+  if (!v) return;
+  bassVal.value = v[0];
+  midVal.value = v[3];
+  trebleVal.value = v[6];
+});
+
+watch(() => store.eqEnabled, (v) => {
+  eqBypass.value = !!v;
+});
+
+function updateBand(band, v) {
+  const num = Array.isArray(v) ? Number(v[0]) : Number(v);
+  if (!Number.isFinite(num)) return;
+  if (band === 'bass') bassVal.value = num;
+  if (band === 'mid') midVal.value = num;
+  if (band === 'treble') trebleVal.value = num;
+  store.setGraphicEQ({ bass: bassVal.value, mid: midVal.value, treble: trebleVal.value });
+}
+
+
+watch(eqBypass, (v) => {
+  store.setEQBypass(!!v);
+});
 </script>

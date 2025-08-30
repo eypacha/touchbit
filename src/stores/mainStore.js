@@ -2,7 +2,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useThemeStore } from "./themeStore";
 import { useLoggerStore } from "@/stores/loggerStore";
-import { useAudioStore } from "./audioStore"; 
+import { useAudioStore } from "./audioStore";
 import { useExpressionManager } from "@/composables/useExpressionManager";
 import { useNavigationManager } from "@/composables/useNavigationManager";
 import { useHistoryManager } from "@/composables/useHistoryManager";
@@ -14,7 +14,7 @@ export const useMainStore = defineStore("main", () => {
   const selectedToken = ref(0);
   const currentNumber = ref("");
   const isEditingNumber = ref(false);
-  const isBinaryEditor = ref(false); 
+  const isBinaryEditor = ref(false);
   const holdMode = ref(false);
 
   const stack = ref([]);
@@ -45,7 +45,19 @@ export const useMainStore = defineStore("main", () => {
       audioStore.setReverbWet(wet);
     }
   }
-  
+
+  function setGraphicEQ(values) {
+    if (audioStore && typeof audioStore.setGraphicEQ === 'function') {
+      audioStore.setGraphicEQ(values);
+    }
+  }
+
+  function setEQBypass(enabled) {
+    if (audioStore && typeof audioStore.setEQBypass === 'function') {
+      audioStore.setEQBypass(enabled);
+    }
+  }
+
   async function stop() {
     await audioStore.stop();
   }
@@ -57,7 +69,7 @@ export const useMainStore = defineStore("main", () => {
   async function updateVisualization(width) {
     return await audioStore.updateVisualization(width);
   }
-  
+
   async function getFrequencyData() {
     return await audioStore.getFrequencyData();
   }
@@ -69,6 +81,8 @@ export const useMainStore = defineStore("main", () => {
   const sampleRate = computed(() => audioStore.sampleRate); // <-- Añade esta línea
   const visualizationData = computed(() => audioStore.visualizationData);
   const frequencyData = computed(() => audioStore.frequencyData);
+  const graphicEQ = computed(() => audioStore.graphicEQ);
+  const eqEnabled = computed(() => audioStore.eqEnabled);
 
   const getExpression = computed(() => {
     return stack.value
@@ -80,64 +94,64 @@ export const useMainStore = defineStore("main", () => {
   // Resto del código existente sin cambios
   function keyPressed(type, data) {
     switch (type) {
-        case 'number':
-          console.log('number', data);
-          const currentToken = stack.value[selectedToken.value];
-          const dataStr = data.toString();
+      case 'number':
+        console.log('number', data);
+        const currentToken = stack.value[selectedToken.value];
+        const dataStr = data.toString();
 
-          // Si ya estamos editando un número y el token actual es de tipo 'number'
-          if (isEditingNumber.value === true && currentToken && currentToken.type === 'number') {
-            // Si es un dígito, lo agregamos al final del número actual
-            currentToken.data += dataStr;
-          } else {
-            // Si no estamos editando un número, creamos un nuevo token de número
-            newToken({ type: 'number', data: dataStr });
-            // Indicamos que ahora estamos editando un número
-            isEditingNumber.value = true; 
+        // Si ya estamos editando un número y el token actual es de tipo 'number'
+        if (isEditingNumber.value === true && currentToken && currentToken.type === 'number') {
+          // Si es un dígito, lo agregamos al final del número actual
+          currentToken.data += dataStr;
+        } else {
+          // Si no estamos editando un número, creamos un nuevo token de número
+          newToken({ type: 'number', data: dataStr });
+          // Indicamos que ahora estamos editando un número
+          isEditingNumber.value = true;
+        }
+        break;
+
+      case 'dot':
+        console.log('dot pressed');
+        const currentNumberToken = stack.value[selectedToken.value];
+
+        // Si ya estamos editando un número y el token actual es de tipo 'number'
+        if (isEditingNumber.value === true && currentNumberToken && currentNumberToken.type === 'number') {
+          // Solo agregamos el punto si no existe ya un punto decimal
+          console.log('currentToken for dot', currentNumberToken.data);
+          if (!currentNumberToken.data.includes('.')) {
+            currentNumberToken.data += '.';
           }
-          break;
-        
-        case 'dot':
-          console.log('dot pressed');
-          const currentNumberToken = stack.value[selectedToken.value];
-          
-          // Si ya estamos editando un número y el token actual es de tipo 'number'
-          if (isEditingNumber.value === true && currentNumberToken && currentNumberToken.type === 'number') {
-            // Solo agregamos el punto si no existe ya un punto decimal
-            console.log('currentToken for dot', currentNumberToken.data);
-            if (!currentNumberToken.data.includes('.')) {
-              currentNumberToken.data += '.';
-            }
-          } else {
-            // Si no estamos editando un número, creamos un nuevo token con '0.'
-            newToken({ type: 'number', data: '0.' });
-            isEditingNumber.value = true;
-          }
-          break;
-        case 'operator':
-            if (isEditingNumber.value) {
-                isEditingNumber.value = false;
-                navigationManager.moveNext(); 
-            }
-            newToken({ type: 'operator', data: data });
-            navigationManager.moveNext(); 
-            break;
-        case 'time':
-            isEditingNumber.value = false;
-            newToken({ type: 'time', data: 't' });
-            navigationManager.moveNext(); 
-            break;
-        case 'action':
-            isEditingNumber.value = false;
-            handleAction(data);
-            break;
-        default:
-            break;
+        } else {
+          // Si no estamos editando un número, creamos un nuevo token con '0.'
+          newToken({ type: 'number', data: '0.' });
+          isEditingNumber.value = true;
+        }
+        break;
+      case 'operator':
+        if (isEditingNumber.value) {
+          isEditingNumber.value = false;
+          navigationManager.moveNext();
+        }
+        newToken({ type: 'operator', data: data });
+        navigationManager.moveNext();
+        break;
+      case 'time':
+        isEditingNumber.value = false;
+        newToken({ type: 'time', data: 't' });
+        navigationManager.moveNext();
+        break;
+      case 'action':
+        isEditingNumber.value = false;
+        handleAction(data);
+        break;
+      default:
+        break;
     }
-}
+  }
 
   function keyLongPressed(type, data) {
-    switch (data){
+    switch (data) {
       case 'LEFT':
         navigationManager.moveFirst();
         break;
@@ -167,7 +181,7 @@ export const useMainStore = defineStore("main", () => {
     if (expressionManager.delToken(selectedToken.value, saveToHistory)) {
       if (stack.value.length === 0) {
         stack.value.push({ type: 'empty', data: '' });
-        selectedToken.value = 0; 
+        selectedToken.value = 0;
       } else if (selectedToken.value === stack.value.length) {
         navigationManager.movePrev();
       }
@@ -180,16 +194,16 @@ export const useMainStore = defineStore("main", () => {
 
   function backspaceToken() {
     if (selectedToken.value <= 0) return;
-    
+
     expressionManager.delToken(selectedToken.value, saveToHistory);
     navigationManager.movePrev();
-  } 
+  }
 
   function toggleHoldMode() {
     logger.log('INFO', `HOLD MODE ${holdMode.value ? 'OFF' : 'ON'}`);
-    
+
     holdMode.value = !holdMode.value;
-    
+
     if (!holdMode.value) {
       expressionManager.evalBytebeat();  // Changed from evalBytebeat()
     }
@@ -207,7 +221,7 @@ export const useMainStore = defineStore("main", () => {
         console.log('LEFT pressed');
         navigationManager.movePrev();
         break;
-       
+
       case 'RIGHT':
         console.log('RIGHT pressed');
         navigationManager.moveNext();
@@ -219,10 +233,10 @@ export const useMainStore = defineStore("main", () => {
         break;
 
       case 'DEL':
-        console.log('delete',selectedToken.value);
+        console.log('delete', selectedToken.value);
         delToken();
         break;
-        
+
       case 'BCKS':
         backspaceToken();
         break;
@@ -240,7 +254,7 @@ export const useMainStore = defineStore("main", () => {
         redo();
         console.log('Redo pressed');
         break;
-        
+
       default:
         break;
     }
@@ -265,49 +279,54 @@ export const useMainStore = defineStore("main", () => {
     isEditingNumber,
     isBinaryEditor,
     holdMode,
-    
+
     // Navigation
     moveTo,
     movePrev,
     moveNext,
     moveFirst,
     moveLast,
-    
+
     // Expression Management
     getExpression, // Exportamos nuestra propia computed property
     setExpression,
     evalBytebeat: expressionManager.evalBytebeat,
     loadExpressionFromHash,
-    
+
     // Editing Functions
     keyPressed,
     keyLongPressed,
     toggleBinaryEditor,
     modToken,
-    
+
     // History Management
     saveToHistory,
     undo,
     redo,
-    
+
     // Audio Control
     playPause,
     setVolume,
     setSampleRate,
     sampleRate,
-  // Reverb wet passthrough (read-only state)
-  reverbWet: computed(() => audioStore.reverbWet),
+    // Reverb wet passthrough (read-only state)
+    reverbWet: computed(() => audioStore.reverbWet),
     stop,
     reset,
     isPlaying,
     time,
     sample,
-    
+
     // Visualization
     updateVisualization,
-  setReverbWet,
+    setReverbWet,
+    setGraphicEQ,
+    setEQBypass,
+    dumpEQ: () => audioStore.dumpEQ && audioStore.dumpEQ(),
     getFrequencyData,
     visualizationData,
     frequencyData,
+    graphicEQ,
+    eqEnabled,
   }
 });
