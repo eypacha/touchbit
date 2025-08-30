@@ -42,21 +42,16 @@ export const useUIStore = defineStore('ui', () => {
   // Load settings from localStorage on initialization
   function initUISettings() {
     const savedVisualizerType = localStorage.getItem('touchbit-visualizer-type');
-    const savedActiveTab = localStorage.getItem('touchbit-active-tab');
-    
+  
     if (savedVisualizerType !== null) {
       visualizerType.value = savedVisualizerType;
     }
     
-    if (savedActiveTab !== null) {
-      activeTab.value = savedActiveTab;
-    }
   }
 
   // Save settings to localStorage
   function saveUISettings() {
     localStorage.setItem('touchbit-visualizer-type', visualizerType.value);
-    localStorage.setItem('touchbit-active-tab', activeTab.value);
   }
 
   return {
