@@ -6,6 +6,12 @@
         <Slider v-model="volumeValue" class="my-2" :max="100"  @update:modelValue="setVolume" @touchstart.stop.passive />
       </Label>
     </div>
+    <div class="block w-full p-2">
+      <Label>
+        Reverb
+        <Slider v-model="reverbValue" class="my-2" :max="100"  @update:modelValue="setReverb" @touchstart.stop.passive />
+      </Label>
+    </div>
     <div class="flex w-full p-2">
       <Label class="justify-center flex-1 align-center">
         Sample Rate
@@ -36,6 +42,11 @@ import { Slider } from '@/components/ui/slider';
 
 const volumeValue = ref([80])
 const store = useMainStore();
+const reverbValue = ref([Math.round((store.reverbWet || 0) * 100)])
+
+watch(() => store.reverbWet, (v) => {
+  reverbValue.value = [Math.round((v || 0) * 100)];
+});
 
 const selectedSampleRate = computed({
   get: () => [store.sampleRate],
@@ -65,5 +76,10 @@ function setSampleRate(value) {
   const rate = value ? value[0] : selectedSampleRate.value[0];
   console.log('setSampleRate', rate);
   store.setSampleRate(rate);
+}
+
+function setReverb() {
+  const v = reverbValue.value[0] / 100;
+  store.setReverbWet(v);
 }
 </script>

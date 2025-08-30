@@ -38,6 +38,13 @@ export const useMainStore = defineStore("main", () => {
   function setSampleRate(rate) {
     audioStore.setSampleRate(rate);
   }
+
+  function setReverbWet(wet) {
+    // forward to audioStore
+    if (audioStore && typeof audioStore.setReverbWet === 'function') {
+      audioStore.setReverbWet(wet);
+    }
+  }
   
   async function stop() {
     await audioStore.stop();
@@ -288,6 +295,8 @@ export const useMainStore = defineStore("main", () => {
     setVolume,
     setSampleRate,
     sampleRate,
+  // Reverb wet passthrough (read-only state)
+  reverbWet: computed(() => audioStore.reverbWet),
     stop,
     reset,
     isPlaying,
@@ -296,6 +305,7 @@ export const useMainStore = defineStore("main", () => {
     
     // Visualization
     updateVisualization,
+  setReverbWet,
     getFrequencyData,
     visualizationData,
     frequencyData,

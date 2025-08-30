@@ -10,6 +10,7 @@ export const useAudioStore = defineStore("audio", () => {
   const isPlaying = ref(false);
   const volume = ref(0.8);
   const sampleRate = ref(getSavedSampleRate());
+  const reverbWet = ref(0.0);
   const time = ref(0);
   const sample = ref(0);
   const visualizationData = ref(null);
@@ -58,6 +59,16 @@ export const useAudioStore = defineStore("audio", () => {
   function setVolume(vol, rampTime) {
     volume.value = vol;
     audioEngine.setVolume(vol, rampTime);
+  }
+
+  function setReverbWet(wet) {
+    const v = Math.max(0, Math.min(1, Number(wet) || 0));
+    reverbWet.value = v;
+    try {
+      audioEngine.setReverbWet(v);
+    } catch (e) {
+      logger.log('ERROR', `Failed to set reverb wet: ${e.message}`);
+    }
   }
 
   function setSampleRate(rate) {
@@ -149,12 +160,14 @@ export const useAudioStore = defineStore("audio", () => {
     isPlaying,
     volume,
     sampleRate,
+  reverbWet,
     time,
     sample,
     visualizationData,
     frequencyData,
     playPause,
     setVolume,
+  setReverbWet,
     setSampleRate,
     stop,
     reset,
