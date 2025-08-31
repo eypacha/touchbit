@@ -29,9 +29,8 @@
       <div class="block w-full p-2">
         <Label class="flex items-center justify-between">
           <div>Equalizer</div>
-          <Switch v-model:checked="eqActive" />
         </Label>
-        <div class="flex flex-col gap-3 mt-2 px-4" v-show="eqActive">
+        <div class="flex flex-col gap-3 mt-2 px-4">
           <div>
             <Label>Bass
               <Slider :modelValue="[bassVal]" :min="-12" :max="12" @update:modelValue="(v) => updateBand('bass', v)" />
@@ -105,7 +104,6 @@ function setReverb() {
 }
 
 // Graphic EQ UI
-const eqActive = ref(store.eqEnabled || false);
 const bassVal = ref(store.graphicEQ ? store.graphicEQ[0] : 0);
 const midVal = ref(store.graphicEQ ? store.graphicEQ[3] : 0);
 const trebleVal = ref(store.graphicEQ ? store.graphicEQ[6] : 0);
@@ -117,10 +115,6 @@ watch(() => store.graphicEQ, (v) => {
   trebleVal.value = v[6];
 });
 
-watch(() => store.eqEnabled, (v) => {
-  eqActive.value = !!v;
-});
-
 function updateBand(band, v) {
   const num = Array.isArray(v) ? Number(v[0]) : Number(v);
   if (!Number.isFinite(num)) return;
@@ -129,9 +123,4 @@ function updateBand(band, v) {
   if (band === 'treble') trebleVal.value = num;
   store.setGraphicEQ({ bass: bassVal.value, mid: midVal.value, treble: trebleVal.value });
 }
-
-
-watch(eqActive, (v) => {
-  store.setEQBypass(!!v);
-});
 </script>

@@ -206,6 +206,8 @@ export const useAudioStore = defineStore("audio", () => {
   reverbWet,
     time,
     sample,
+  graphicEQ,
+  eqEnabled,
     visualizationData,
     frequencyData,
     playPause,

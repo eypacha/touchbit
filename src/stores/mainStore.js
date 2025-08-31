@@ -78,7 +78,7 @@ export const useMainStore = defineStore("main", () => {
   const isPlaying = computed(() => audioStore.isPlaying);
   const time = computed(() => audioStore.time);
   const sample = computed(() => audioStore.sample);
-  const sampleRate = computed(() => audioStore.sampleRate); // <-- Añade esta línea
+  const sampleRate = computed(() => audioStore.sampleRate);
   const visualizationData = computed(() => audioStore.visualizationData);
   const frequencyData = computed(() => audioStore.frequencyData);
   const graphicEQ = computed(() => audioStore.graphicEQ);
