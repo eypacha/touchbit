@@ -1,8 +1,9 @@
 <template>
-    <div class="absolute top-0 left-0 w-full h-[calc(100dvh-400px)] pointer-events-none">
+    <div class="absolute top-0 left-0 w-full pointer-events-none">
         <WaveformVisualizer 
             :width="width" 
             :height="height" 
+            :lineWidth="lineWidth"
             v-show="uiStore.visualizerType === 'waveform'" />
         <FrequencyVisualizer 
             :width="width" 
@@ -25,6 +26,10 @@ const props = defineProps({
     height: {
         type: Number,
         default: 256
+    },
+    lineWidth: {
+        type: Number,
+        default: 1
     }
 });
 

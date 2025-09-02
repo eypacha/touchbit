@@ -21,6 +21,10 @@ const props = defineProps({
     height: {
         type: Number,
         default: 256
+    },
+    lineWidth: {
+        type: Number,
+        default: 1
     }
 });
 
@@ -152,7 +156,7 @@ function startWaveformVisualization(ctx) {
             ctx.clearRect(0, 0, props.width, props.height);
             
             // Use the reactive number color
-            ctx.lineWidth = 1;
+            ctx.lineWidth = props.lineWidth;
             ctx.strokeStyle = numberColor.value;
             ctx.beginPath();
             for (let x = 0; x < props.width; ++x) {
@@ -164,6 +168,7 @@ function startWaveformVisualization(ctx) {
                 }
             }
             ctx.stroke();
+            
         }
     };
     

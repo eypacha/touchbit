@@ -6,16 +6,11 @@
     </div>
   </div>
   <div class="flex">
-    <div class="w-full md:max-w-[450px]">
-      <Toolbar />
-      <main class="flex flex-col w-full h-[calc(100dvh-65px)] relative">
-          <Visualizers class="h-[calc(100dvh-400px)]"/>
-          <StackContainer/>
-        <BottomContainer class="flex-0 h-[338px]"/>
-      </main>
-    </div>
-    <div class="hidden md:block md:flex-1">
-      <Sidepanel />
+    <div class="w-full">
+    <main class="flex flex-col w-full h-[100dvh] relative">
+      <Visualizers class="h-[100dvh]" width="1920" height="1080" :lineWidth="5"/>
+      <StreamStackContainer/>
+    </main>
     </div>
   </div>
   
@@ -31,11 +26,8 @@ import { useThemeStore } from '@/stores/themeStore';
 import { useUIStore } from '@/stores/uiStore';
 
 import Logo from '@/components/core/Logo.vue';
-import Toolbar from "@/components/layout/Toolbar.vue";
-import StackContainer from "@/components/layout/StackContainer.vue";
-import BottomContainer from "@/components/layout/BottomContainer.vue";
+import StreamStackContainer from "@/components/layout/StreamStackContainer.vue";
 import Visualizers from "@/components/core/Visualizers.vue";
-import Sidepanel from "@/components/layout/Sidepanel.vue";
 
 const store = useMainStore();
 const uiStore = useUIStore();
