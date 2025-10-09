@@ -11,7 +11,7 @@ Touchbit is an interactive web application for exploring, editing, and visualizi
 - **ByteBeat Expression Editor**: Modify and test mathematical formulas to generate algorithmic music in real time.
 - **Audio Visualizers**: Graphically display the waveform and spectrum of generated expressions.
 - **Preset Management and Saving**: Save, load, and share your favorite expressions.
-- **Modern, Responsive Interface**: Built with Vue 3, Vite, and TailwindCSS, optimized for desktop and mobile devices.
+- **Modern, Responsive Interface**: Built with Vue 3, Vite, and TailwindCSS, designed for mobile devices.
 - **Interactive Panels**: Tools for editing parameters, visualizing results, and navigating between different usage modes.
 - **Collaboration and Streaming Support**: Share sessions and view creations in real time.
 
