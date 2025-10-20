@@ -21,7 +21,7 @@ export const layout = [
         { type: 'operator', data: 'max', color: 'action' },
       ]
   },
-  { type: 'operator', data: 'f->t', color: 'time', disabled: true},
+  { type: 'operator', data: 'RND', color: 'time'},
   { type: 'number', data: 7, key: '7' },
   { type: 'number', data: 8, key: '8' },
   { type: 'number', data: 9, key: '9' },
