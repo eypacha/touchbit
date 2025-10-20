@@ -1,0 +1,16 @@
+// Expresiones ByteBeat de ejemplo para el botón RND
+export const RANDOM_EXPRESSIONS = [
+  't 96 & t 4 >> |',
+  't t 4 >> | 0.999 *',
+  't 13 >> t ~ 12 >> | 7 % t * 96 &',
+  't t 10 >> 42 & t *',
+  't 255 % t 511 & ^ 3 *',
+  't 5 * 3 >> t & t 4096 % 1024 min & t 12 >> 19 & 1 + 25 * pick 208 % 3 * + + 4 / 255 & dup dup 4 *',
+  't 65535 % 1232 % t ^ 127 % 3 / t 4 >> |',
+  't 5 * t 7 >> & t 3 * t 10 >> & |',
+  't 1024 / 10 | t * 85 &',
+  't 12 >> tan t * 64 & | t 4 >> |',
+  't t 6 >> 33 % % 1 -',
+  't 60 ^ t 9.97 * | 127 & t 4 >> |',
+  't t t 14 >> 5 % 10 + >> 14 & >> t * 128 & t 5 >> >>'
+];

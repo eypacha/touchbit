@@ -1,4 +1,5 @@
 import { ref, computed } from "vue";
+import { RANDOM_EXPRESSIONS } from "@/constants/randomExpressions";
 import { defineStore } from "pinia";
 import { useThemeStore } from "./themeStore";
 import { useLoggerStore } from "@/stores/loggerStore";
@@ -129,6 +130,12 @@ export const useMainStore = defineStore("main", () => {
         }
         break;
       case 'operator':
+        if (data === 'RND') {
+          const random = RANDOM_EXPRESSIONS[Math.floor(Math.random() * RANDOM_EXPRESSIONS.length)];
+          setExpression(random);
+          isEditingNumber.value = false;
+          break;
+        }
         if (isEditingNumber.value) {
           isEditingNumber.value = false;
           navigationManager.moveNext();
