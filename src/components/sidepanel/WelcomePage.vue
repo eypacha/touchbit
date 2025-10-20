@@ -16,7 +16,6 @@
         <li><CodeExample code="t 13 >> t ~ 12 >> | 7 % t * 96 &" :onClick="() => loadExample('t 13 >> t ~ 12 >> | 7 % t * 96 &')" />: <span class="font-bold">this != copla</span> by eypacha</li>
         <li><CodeExample code="t t 10 >> 42 & t *" :onClick="() => loadExample('t t 10 >> 42 & t *')" />: <span class="font-bold">42 Melody</span></li>
         <li><CodeExample code="t 255 % t 511 & ^ 3 *" :onClick="() => loadExample('t 255 % t 511 & ^ 3 *')" />: <span class="font-bold">Starlost</span> from Glitch Machine</li>
-        <li><CodeExample code="t 5 * 3 >> t & t 4096 % 1024 min & t 12 >> 19 & 1 + 25 * pick 208 % 3 * + + 4 / 255 & dup dup 4 *" :onClick="() => loadExample('t 5 * 3 >> t & t 4096 % 1024 min & t 12 >> 19 & 1 + 25 * pick 208 % 3 * + + 4 / 255 & dup dup 4 *')" />: <span class="font-bold">Guitarhead</span> by Glitch Machine</li>
       </ul>
     </div>
     
