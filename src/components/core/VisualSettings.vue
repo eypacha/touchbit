@@ -2,14 +2,14 @@
   <div class="w-full h-[450px] p-2 flex flex-col gap-4">
     <!-- Theme Section -->
     <div class="flex flex-col gap-2">
-      <h3 class="text-sm font-bold text-primary">Theme</h3>
-      
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
+      <div class="flex flex-row gap-4">
+        <!-- Columna izquierda: selector de theme -->
+        <div class="flex-1 flex flex-col gap-1">
+          <label class="text-xs text-muted-foreground mb-1">Theme</label>
           <select 
             v-model="selectedTheme" 
             @change="changeTheme"
-            class="flex-1 p-2 bg-transparent border rounded-md focus:outline-none focus:border-primary border-muted text-foreground"
+            class="w-full p-2 bg-transparent border rounded-md focus:outline-none focus:border-primary border-muted text-foreground"
           >
             <option 
               v-for="theme in themeStore.availableThemes" 
@@ -19,6 +19,21 @@
               {{ formatThemeName(theme) }}
             </option>
           </select>
+        </div>
+        <!-- Columna derecha: slider de hueRotation -->
+        <div class="flex flex-col gap-1 min-w-[180px]">
+          <label class="text-xs text-muted-foreground mb-1">Hue Rotation</label>
+          <div class="flex items-center gap-2 mt-2">
+            <Slider
+              :min="0"
+              :max="360"
+              :step="1"
+              :model-value="[themeStore.hueRotation]"
+              @update:modelValue="onHueRotationChange"
+              class="w-32"
+            />
+            <span class="text-xs text-muted-foreground">{{ themeStore.hueRotation }}°</span>
+          </div>
         </div>
       </div>
     </div>
@@ -88,11 +103,16 @@ const uiStore = useUIStore();
 const selectedTheme = ref(themeStore.theme);
 const selectedVisualizerType = ref('waveform');
 
-// Cambiar tamaño de fuente global del stack
 function onFontSizeChange(valArr) {
   const newSize = valArr[0];
   themeStore.setFontSize(newSize);
   logger.log('FONT', `Font size = ${newSize} rem`);
+}
+// Cambiar hueRotation global
+function onHueRotationChange(valArr) {
+  const newHue = valArr[0];
+  themeStore.setHueRotation(newHue);
+  logger.log('TIPOGRAFIA', `[App] Hue rotation cambiado a: ${newHue}°`);
 }
 
 // Debug system state - self-contained

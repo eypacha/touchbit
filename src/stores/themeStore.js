@@ -19,8 +19,17 @@ export const useThemeStore = defineStore("theme", () => {
         'matcha'
     ];
 
+
     // Tamaño de tipografía global para StackContainer
     const fontSize = ref(2.5); // valor inicial en rem
+
+    // Estado reactivo para hue-rotation global
+    const hueRotation = ref(0); // valor inicial en grados
+
+    function setHueRotation(newHue) {
+        hueRotation.value = newHue;
+        localStorage.setItem('touchbit-hue-rotation', newHue);
+    }
 
     function setTheme(newTheme) {
         // Update the data-theme attribute on the html element
@@ -47,6 +56,11 @@ export const useThemeStore = defineStore("theme", () => {
         if (savedFontSize) {
             fontSize.value = parseFloat(savedFontSize);
         }
+        // Inicializar hueRotation desde localStorage
+        const savedHue = localStorage.getItem('touchbit-hue-rotation');
+        if (savedHue !== null) {
+            hueRotation.value = parseInt(savedHue, 10);
+        }
     }
 
     function saveThemePreference() {
@@ -57,8 +71,10 @@ export const useThemeStore = defineStore("theme", () => {
         theme,
         availableThemes,
         fontSize,
+        hueRotation,
         setTheme,
         setFontSize,
+        setHueRotation,
         initTheme,
         saveThemePreference
     };
