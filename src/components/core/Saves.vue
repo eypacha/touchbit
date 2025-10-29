@@ -33,7 +33,7 @@
         class="flex items-center px-1 mb-2 overflow-hidden border rounded-md border-muted bg-card group"
       >
         <button 
-          class="flex-1 p-1 text-sm text-left hover:bg-muted group-hover:bg-muted/50"
+          class="flex-1 p-1 text-sm text-left hover:bg-muted group-hover:bg-muted/50 max-w-[calc(100%-1.5rem)]"
           @click="loadExpression(expression.expression, expression.id)"
           :title="expression.expression"
         >
