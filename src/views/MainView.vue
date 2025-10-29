@@ -11,7 +11,7 @@
       <main class="flex flex-col w-full h-[calc(100dvh-65px)] relative">
           <Visualizers class="h-[calc(100dvh-400px)]"/>
           <StackContainer/>
-        <BottomContainer class="flex-0 h-[338px]"/>
+        <BottomContainer class="flex-0 h-[338px] bg-background"/>
       </main>
     </div>
     <div class="hidden md:block md:flex-1">

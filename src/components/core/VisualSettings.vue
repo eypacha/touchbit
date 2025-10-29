@@ -112,7 +112,7 @@ function onFontSizeChange(valArr) {
 function onHueRotationChange(valArr) {
   const newHue = valArr[0];
   themeStore.setHueRotation(newHue);
-  logger.log('TIPOGRAFIA', `[App] Hue rotation cambiado a: ${newHue}°`);
+  logger.log('TIPOGRAFIA', `Hue rotation = ${newHue}°`);
 }
 
 // Debug system state - self-contained
