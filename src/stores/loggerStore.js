@@ -27,7 +27,8 @@ export const useLoggerStore = defineStore('logger', () => {
     MEMORY_CRITICAL: "🚨",
     LIFECYCLE: "🔄",
     CRASH_DETECTION: "💥",
-    GC: "🗑️"
+    GC: "🗑️",
+    FONT: "🔤"
   };
 
   function log(type, message) {

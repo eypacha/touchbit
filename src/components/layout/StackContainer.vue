@@ -1,13 +1,15 @@
 <template>
-    <div class="flex flex-wrap content-start h-full gap-1 px-3 overflow-x-hidden overflow-y-scroll text-3xl pt-9 bg-background pb-x"
-         @click="handleContainerClick">
+    <div class="flex flex-wrap content-start h-full gap-1 px-3 overflow-x-hidden overflow-y-scroll pt-9 bg-background pb-x"
+        @click="handleContainerClick"
+        :style="{ fontSize: fontSize + 'rem' }">
         <div
         v-for="(token, index) in store.stack"
         :key="index"
-        class="relative h-12 p-0 mb-6 font-bold text-center border-b cursor-pointer touch-manipulation token-container min-w-5"
-        :class="getTokenClasses(token, index)"
-        @click.stop="handleTouch(token, index)"
-        >
+    class="relative p-0 mb-6 font-bold text-center border-b cursor-pointer touch-manipulation token-container min-w-5"
+    :class="getTokenClasses(token, index)"
+    :style="{ fontSize: fontSize + 'rem' }"
+    @click.stop="handleTouch(token, index)"
+    >
             <span v-if="token.data === '<<'">«</span>
             <span v-else-if="token.data === '>>'">»</span>
             <span v-else-if="token.data === '~ ~'" class="opacity-35">~</span>
@@ -22,15 +24,27 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import { useMainStore } from '@/stores/mainStore'
 import { useUIStore } from '@/stores/uiStore'
 import { Number } from '@/components/ui/number';
 import { ACTION_OPERATORS, WORD_OPERATORS } from '@/constants'
 
+import { useThemeStore } from '@/stores/themeStore'
+
 const store = useMainStore()
 const uiStore = useUIStore()
+const themeStore = useThemeStore()
+
+
+// Computed reactivo para el tamaño de la tipografía
+const fontSize = computed(() => themeStore.fontSize)
+
+// Log para testeo
+watch(fontSize, (newVal) => {
+    console.log('[StackContainer] fontSize cambiado (global):', newVal)
+})
 
 const isSelected = (index) => store.selectedToken === index
 
@@ -38,18 +52,17 @@ const getTokenClasses = (token, index) => {
   const isActionOperator = ACTION_OPERATORS.includes(token.data);
   const isWordOperator = WORD_OPERATORS.includes(token.data);
   
-  const colorClass = isActionOperator ? 'text-action' : `text-${token.type}`;
-  const sizeClass = isWordOperator ? 'text-4xl mt-1' : 'text-5xl';
+    const colorClass = isActionOperator ? 'text-action' : `text-${token.type}`;
+    // Eliminar sizeClass para que el tamaño lo controle el style inline
 
-  return [
-    { disabled: token.disabled },
-    { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
-    colorClass,
-    sizeClass,
-    isSelected(index)
-      ? `border ${token.type === 'empty' ? 'border-foreground' : `border-${token.color || token.type}`}`
-      : 'border border-transparent'
-  ].filter(Boolean)
+    return [
+        { disabled: token.disabled },
+        { 'editing-number': isSelected(index) && token.type === 'number' && store.isEditingNumber },
+        colorClass,
+        isSelected(index)
+            ? `border ${token.type === 'empty' ? 'border-foreground' : `border-${token.color || token.type}`}`
+            : 'border border-transparent'
+    ].filter(Boolean)
 }
 
 const formatNumber = computed(() => {

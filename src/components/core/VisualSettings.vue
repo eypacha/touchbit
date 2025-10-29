@@ -42,6 +42,22 @@
       </div>
     </div>
     
+    <!-- Font Size Section -->
+    <div class="flex flex-col gap-2">
+      <h3 class="text-sm font-bold text-primary">Stack Font Size</h3>
+      <div class="flex items-center gap-4">
+        <Slider
+          :min="1.2"
+          :max="4"
+          :step="0.05"
+          :model-value="[themeStore.fontSize]"
+          @update:modelValue="onFontSizeChange"
+          class="w-40"
+        />
+        <span class="text-xs text-muted-foreground">{{ themeStore.fontSize.toFixed(2) }} rem</span>
+      </div>
+    </div>
+
     <!-- Logger Settings Section -->
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between">
@@ -64,12 +80,20 @@ import { useLoggerStore } from '@/stores/loggerStore';
 import { useUIStore } from '@/stores/uiStore';
 import { useMainStore } from '@/stores/mainStore';
 import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 
 const themeStore = useThemeStore();
 const logger = useLoggerStore();
 const uiStore = useUIStore();
 const selectedTheme = ref(themeStore.theme);
 const selectedVisualizerType = ref('waveform');
+
+// Cambiar tamaño de fuente global del stack
+function onFontSizeChange(valArr) {
+  const newSize = valArr[0];
+  themeStore.setFontSize(newSize);
+  logger.log('FONT', `Font size = ${newSize} rem`);
+}
 
 // Debug system state - self-contained
 const isDebugEnabled = ref(false);
